@@ -1,9 +1,9 @@
 # liuliangchuhai · 流量出海
 
 An AI-assisted market strategy demo for local products from Guangxi, China,
-exploring ASEAN markets. Browse three demo products—Liuzhou luosifen, Wuzhou
-Liubao tea, and Guilin monk fruit—then turn a market-fit analysis into a content
-plan. Built with FastAPI and Next.js.
+exploring ASEAN markets. Browse the Guangxi demo catalog—from Liuzhou luosifen
+to Qinzhou Nixing pottery—then turn a market-fit analysis into a content plan.
+Built with FastAPI and Next.js.
 
 The default demo runs without API keys. DeepSeek can provide real market analysis
 and localized content plans. Content plans are marketing copy and creative prompts,
@@ -104,7 +104,7 @@ The landing-page example is sample output; the DeepSeek report below is a real r
 
 ### Product catalog
 
-![Current catalog with all three demo products](.github/screenshots/readme/products.jpg)
+![Current demo product catalog](.github/screenshots/readme/products.jpg)
 
 ### Product detail
 
