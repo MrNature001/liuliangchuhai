@@ -1,0 +1,106 @@
+{
+  "common": {
+    "appName": "广西-东盟线上文化展",
+    "welcome": "欢迎",
+    "explore": "探索",
+    "learnMore": "了解更多",
+    "search": "搜索",
+    "close": "关闭",
+    "back": "返回",
+    "next": "下一个",
+    "previous": "上一个",
+    "loading": "加载中...",
+    "error": "错误",
+    "success": "成功",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "share": "分享",
+    "download": "下载",
+    "upload": "上传",
+    "view": "查看",
+    "home": "首页"
+  },
+  "navigation": {
+    "exhibitions": "展厅",
+    "guangxi": "壮乡之韵",
+    "guilin": "山水桂林",
+    "asean": "东盟十国",
+    "exchange": "丝路新章",
+    "archive": "数字遗产",
+    "interactive": "互动体验",
+    "3dHall": "3D虚拟展厅",
+    "arExperience": "AR体验",
+    "about": "关于",
+    "contact": "联系",
+    "help": "帮助",
+    "accessibility": "无障碍",
+    "language": "语言"
+  },
+  "hero": {
+    "title": "广西-东盟线上文化展",
+    "subtitle": "探索广西壮族文化的独特魅力，体验东盟十国的多元文化交融",
+    "startExploring": "开始探索",
+    "enter3DHall": "进入3D虚拟展厅"
+  },
+  "exhibitions": {
+    "title": "六大主题展厅",
+    "description": "穿越时空，感受广西与东盟的文化魅力",
+    "exploreHall": "探索展厅"
+  },
+  "features": {
+    "title": "沉浸式文化体验",
+    "3d": {
+      "title": "3D虚拟展厅",
+      "description": "第一人称视角漫游，体验真实的展厅空间"
+    },
+    "ar": {
+      "title": "AR增强现实",
+      "description": "将文化元素投射到现实世界，互动体验更真实"
+    },
+    "i18n": {
+      "title": "11种语言",
+      "description": "中文、英文及东盟十国语言全面支持"
+    },
+    "accessibility": {
+      "title": "无障碍访问",
+      "description": "WCAG 2.2 AA标准，让每个人都能享受文化"
+    }
+  },
+  "footer": {
+    "aboutUs": "关于我们",
+    "aboutDescription": "广西-东盟线上文化展致力于展现广西壮族文化特色与东盟十国的文化交流。",
+    "quickLinks": "快速链接",
+    "aboutProject": "关于项目",
+    "accessibility": "无障碍访问",
+    "privacy": "隐私政策",
+    "contact": "联系我们",
+    "languages": "语言 / Languages",
+    "copyright": "© 2024 广西-东盟线上文化展。为文化传承而构建。"
+  },
+  "accessibility": {
+    "skipToMain": "跳转到主内容",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "previousSlide": "上一张",
+    "nextSlide": "下一张",
+    "playVideo": "播放视频",
+    "pauseVideo": "暂停视频"
+  },
+  "search": {
+    "placeholder": "搜索文物、展览...",
+    "noResults": "未找到结果",
+    "resultsFor": "搜索结果：",
+    "filters": "筛选",
+    "sortBy": "排序方式"
+  },
+  "artifacts": {
+    "viewDetails": "查看详情",
+    "period": "时期",
+    "material": "材质",
+    "dimensions": "尺寸",
+    "location": "位置",
+    "description": "描述"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "common": {
+    "appName": "Guangxi-ASEAN Cultural Exhibition",
+    "welcome": "Welcome",
+    "explore": "Explore",
+    "learnMore": "Learn More",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "download": "Download",
+    "upload": "Upload",
+    "view": "View",
+    "home": "Home"
+  },
+  "navigation": {
+    "exhibitions": "Exhibitions",
+    "guangxi": "Guangxi Culture",
+    "guilin": "Guilin Landscape",
+    "asean": "ASEAN Nations",
+    "exchange": "Cultural Exchange",
+    "archive": "Digital Heritage",
+    "interactive": "Interactive",
+    "3dHall": "3D Virtual Hall",
+    "arExperience": "AR Experience",
+    "about": "About",
+    "contact": "Contact",
+    "help": "Help",
+    "accessibility": "Accessibility",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Guangxi-ASEAN Online Cultural Exhibition",
+    "subtitle": "Explore the unique charm of Guangxi Zhuang culture and experience the multicultural fusion of ASEAN nations",
+    "startExploring": "Start Exploring",
+    "enter3DHall": "Enter 3D Virtual Hall"
+  },
+  "exhibitions": {
+    "title": "Six Themed Galleries",
+    "description": "Travel through time and experience the cultural charm of Guangxi and ASEAN",
+    "exploreHall": "Explore Gallery"
+  },
+  "features": {
+    "title": "Immersive Cultural Experience",
+    "3d": {
+      "title": "3D Virtual Hall",
+      "description": "First-person perspective tour, experience real exhibition space"
+    },
+    "ar": {
+      "title": "AR Experience",
+      "description": "Project cultural elements into the real world for authentic interaction"
+    },
+    "i18n": {
+      "title": "11 Languages",
+      "description": "Full support for Chinese, English, and 10 ASEAN languages"
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "description": "WCAG 2.2 AA compliant, culture for everyone"
+    }
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "aboutDescription": "Guangxi-ASEAN Online Cultural Exhibition is dedicated to showcasing Guangxi Zhuang culture and ASEAN cultural exchange.",
+    "quickLinks": "Quick Links",
+    "aboutProject": "About Project",
+    "accessibility": "Accessibility",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "languages": "Languages",
+    "copyright": "© 2024 Guangxi-ASEAN Cultural Exhibition. Built with love for cultural preservation."
+  },
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "playVideo": "Play video",
+    "pauseVideo": "Pause video"
+  },
+  "search": {
+    "placeholder": "Search artifacts, exhibitions...",
+    "noResults": "No results found",
+    "resultsFor": "Results for:",
+    "filters": "Filters",
+    "sortBy": "Sort by"
+  },
+  "artifacts": {
+    "viewDetails": "View Details",
+    "period": "Period",
+    "material": "Material",
+    "dimensions": "Dimensions",
+    "location": "Location",
+    "description": "Description"
+  }
+}

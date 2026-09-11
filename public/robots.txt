@@ -1,0 +1,12 @@
+# Guangxi-ASEAN Cultural Exhibition - Robots.txt
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://www.guangxi-asean-cultural.com/sitemap.xml

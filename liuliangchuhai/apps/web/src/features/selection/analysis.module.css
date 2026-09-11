@@ -1,0 +1,51 @@
+.page { composes: page from "../../app/ui.module.css"; }
+.navigation { composes: breadcrumb from "../../app/ui.module.css"; }
+.header { composes: pageHeader from "../../app/ui.module.css"; }
+.eyebrow { composes: eyebrow from "../../app/ui.module.css"; }
+.muted { color: var(--muted); }
+.layout { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); align-items: start; gap: 24px; }
+.panel { composes: panel from "../../app/ui.module.css"; }
+.panel h2 { font-size: 24px; }
+.panel h3 { margin: 16px 0 8px; }
+.panel > p { margin-top: 12px; }
+.fields { display: grid; gap: 8px; min-width: 0; margin: 24px 0 0; padding: 0; border: 0; }
+.fields label { margin-top: 8px; font-size: 13px; font-weight: 600; }
+.fields label span { color: var(--muted); font-weight: 400; }
+.fields input, .fields select, .fields textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid #b8bfaf;
+  border-radius: var(--control-radius);
+  background: #fffffb;
+  color: var(--ink);
+  /* Prevent focus zoom on small touch screens. */
+  font-size: 16px;
+}
+.fields textarea { resize: vertical; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.presetButton { composes: secondary from "../../app/ui.module.css"; min-height: 36px; padding: 6px 12px; font-size: 12px; }
+.presetButton[aria-pressed="true"] { border-color: var(--ink); background: var(--surface-muted); }
+.submitButton { composes: primary from "../../app/ui.module.css"; margin-top: 16px; }
+.secondaryButton { composes: secondary from "../../app/ui.module.css"; margin-top: 12px; }
+.fields:disabled .submitButton:disabled { opacity: 1; }
+.status { composes: status from "../../app/ui.module.css"; }
+.error { composes: error from "../../app/ui.module.css"; }
+.recommendation { composes: badge from "../../app/ui.module.css"; color: var(--ink); background: var(--surface-muted); font-weight: 600; }
+.score { margin-bottom: 4px; font-weight: 600; }
+.sections { display: grid; gap: 16px; margin-top: 24px; }
+.sections section { border-top: 1px solid var(--line); }
+.sections p, .sections ul { color: var(--muted); }
+.report p { white-space: pre-wrap; }
+.sections ul { margin: 8px 0 0; padding-left: 20px; }
+.sections li + li { margin-top: 6px; }
+.contentPlan { margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--line); }
+.contentPlan > .muted { margin-top: 12px; }
+.contentPlan .sections { gap: 12px; }
+.contentPlan .sections section { padding: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--card-radius); }
+.contentPlan .sections h3 { margin-top: 0; }
+
+@media (max-width: 760px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+}

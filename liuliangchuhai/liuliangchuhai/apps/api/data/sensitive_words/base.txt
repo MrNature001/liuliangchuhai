@@ -1,0 +1,42 @@
+# 基础敏感词库 (示例)
+# 来源: konsheng/Sensitive-lexicon (MIT License)
+# 使用说明: 生产环境需从 GitHub 下载完整词库
+# GitHub: https://github.com/konsheng/Sensitive-lexicon
+
+# 政治敏感词示例
+习近平
+江泽民
+胡锦涛
+
+# 色情相关
+色情
+淫秽
+黄色网站
+
+# 暴力相关
+暴力
+恐怖主义
+杀人
+
+# 赌博相关
+赌博
+博彩
+六合彩
+
+# 毒品相关
+毒品
+海洛因
+冰毒
+
+# 仇恨言论
+种族歧视
+性别歧视
+地域歧视
+
+# 欺诈相关
+诈骗
+传销
+非法集资
+
+# 注: 此文件仅作示例，实际使用需下载完整词库
+# 下载地址: https://github.com/konsheng/Sensitive-lexicon/blob/main/words.txt

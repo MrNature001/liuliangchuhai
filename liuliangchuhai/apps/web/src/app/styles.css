@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f7ef;
+  color: #263c30;
+  font-size: 16px;
+  --ink: #263c30;
+  --muted: #636b5e;
+  --line: #dcded2;
+  --paper: #f7f7ef;
+  --surface: #fcfcf7;
+  --surface-muted: #e9eddf;
+  --accent: #536a43;
+  --focus: #bc562e;
+  --error: #963f32;
+  --error-surface: #fbefeb;
+  --page-max: 1184px;
+  --page-gutter: 48px;
+  --section-space: 64px;
+  --card-padding: 24px;
+  --card-radius: 7px;
+  --control-radius: 5px;
+  --body-size: 14px;
+  --small-size: 12px;
+  --page-title: clamp(32px, 4vw, 48px);
+  --section-title: clamp(24px, 2.4vw, 32px);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; font-size: var(--body-size); line-height: 1.65; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: var(--page-title); font-weight: 500; line-height: 1.15; letter-spacing: -0.035em; }
+h2 { font-size: var(--section-title); font-weight: 500; line-height: 1.25; letter-spacing: -0.025em; }
+h3 { font-size: 16px; font-weight: 500; line-height: 1.4; }
+a { color: inherit; text-underline-offset: 4px; }
+button, input, select, textarea { font: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+button:disabled, fieldset:disabled { opacity: 0.55; }
+button:disabled, fieldset:disabled :is(input, select, textarea) { cursor: not-allowed; }
+
+@media (max-width: 1050px) {
+  :root { --page-gutter: 32px; }
+}
+
+@media (max-width: 760px) {
+  :root { --page-gutter: 20px; --section-space: 40px; --card-padding: 20px; }
+}

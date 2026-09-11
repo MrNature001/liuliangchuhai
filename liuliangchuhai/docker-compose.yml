@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # CosyVoice TTS 自托管服务 (8语言: zh/en/ja/ko/es/fr/de/ru)
+  cosyvoice:
+    image: funaudiolm/cosyvoice:latest
+    container_name: cosyvoice-tts
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_DIR=/models
+      - DEVICE=cuda
+    volumes:
+      - ./models/cosyvoice:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - llch-network
+
+  # Postgres 数据库 (用于 Langfuse)
+  postgres:
+    image: postgres:15-alpine
+    container_name: llch-postgres
+    environment:
+      POSTGRES_USER: llch
+      POSTGRES_PASSWORD: llch_password
+      POSTGRES_DB: llch_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - llch-network
+    restart: unless-stopped
+
+  # Redis (缓存)
+  redis:
+    image: redis:7-alpine
+    container_name: llch-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - llch-network
+    restart: unless-stopped
+
+  # Langfuse (LLM 观测平台 - 可选)
+  langfuse:
+    image: langfuse/langfuse:latest
+    container_name: langfuse
+    depends_on:
+      - postgres
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://llch:llch_password@postgres:5432/llch_db
+      - NEXTAUTH_SECRET=your_nextauth_secret_here
+      - NEXTAUTH_URL=http://localhost:3001
+      - SALT=your_salt_here
+    networks:
+      - llch-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  llch-network:
+    driver: bridge

@@ -1,0 +1,371 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS 变量定义 | CSS Variables */
+:root {
+  /* 壮族传统配色 | Zhuang Traditional Colors */
+  --color-zhuang-red: #d73c2c;
+  --color-zhuang-blue: #1e5ba8;
+  --color-zhuang-black: #1a1a1a;
+  --color-zhuang-gold: #d4af37;
+  --color-zhuang-green: #2e8b57;
+
+  /* 水墨画风格 | Ink Painting Colors */
+  --color-ink-black: #000000;
+  --color-ink-gray-dark: #333333;
+  --color-ink-gray: #808080;
+  --color-ink-gray-light: #cccccc;
+  --color-ink-cyan: #7fcdcd;
+  --color-ink-green: #90ee90;
+
+  /* 字体 | Fonts */
+  --font-sans: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --font-zhuang: 'Source Serif Pro', serif;
+
+  /* 间距 | Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* 阴影 | Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* 过渡 | Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+
+  /* Z-index 层级 | Z-index Layers */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+}
+
+/* 深色模式 | Dark Mode */
+.dark {
+  --color-bg-primary: #1a1a1a;
+  --color-bg-secondary: #2d2d2d;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cccccc;
+}
+
+/* 基础样式重置 | Base Styles Reset */
+@layer base {
+}
+
+  html {
+    @apply antialiased;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+    font-family: var(--font-sans);
+    min-height: 100vh;
+  }
+
+  /* 标题样式 | Heading Styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+    line-height: 1.3;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* 链接样式 | Link Styles */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply opacity-80;
+  }
+
+  /* 按钮重置 | Button Reset */
+  button {
+    @apply cursor-pointer;
+  }
+
+  /* 图片优化 | Image Optimization */
+  img {
+    @apply max-w-full h-auto;
+  }
+
+  /* 选中文本样式 | Text Selection */
+  ::selection {
+    @apply bg-zhuang-red text-white;
+  }
+
+  /* 滚动条样式 | Scrollbar Styles */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
+  }
+
+/* 组件样式 | Component Styles */
+@layer components {
+  /* 跳过导航链接（无障碍） | Skip Navigation Link */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999];
+    @apply bg-white text-gray-900 px-4 py-2 rounded-md shadow-lg;
+    @apply border-2 border-zhuang-red;
+  }
+
+  /* 焦点可见样式（无障碍） | Focus Visible Styles */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zhuang-red focus-visible:ring-offset-2;
+  }
+
+  /* 容器 | Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* 文化特色按钮 - 绣球形 | Cultural Button - Embroidery Ball */
+  .btn-embroidery {
+    @apply relative px-6 py-3 rounded-full;
+    @apply bg-gradient-to-br from-zhuang-red to-pink-600;
+    @apply text-white font-medium;
+    @apply shadow-md hover:shadow-lg;
+    @apply transition-all duration-300;
+    @apply hover:scale-105 active:scale-95;
+  }
+
+  /* 文化特色卡片 | Cultural Card */
+  .card-cultural {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md;
+    @apply border border-gray-200 dark:border-gray-700;
+    @apply overflow-hidden;
+    @apply transition-all duration-300;
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* 壮锦纹样边框 | Zhuangjin Pattern Border */
+  .border-zhuangjin {
+    @apply relative;
+  }
+
+  .border-zhuangjin::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background-image: url('/icons/zhuangjin-patterns/border.svg');
+    background-repeat: repeat;
+    background-size: 20px;
+    opacity: 0.3;
+  }
+
+  /* 水墨画效果容器 | Ink Painting Effect Container */
+  .ink-container {
+    @apply relative overflow-hidden;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(0, 0, 0, 0.05) 100%
+    );
+  }
+
+  /* 加载动画 - 铜鼓旋转 | Loading Animation - Drum Rotation */
+  .loader-drum {
+    @apply w-12 h-12 rounded-full;
+    @apply border-4 border-gray-200;
+    @apply border-t-zhuang-gold;
+    animation: drumRotate 1s linear infinite;
+  }
+
+  /* 文物卡片 | Artifact Card */
+  .artifact-card {
+    @apply card-cultural p-4;
+    @apply cursor-pointer;
+  }
+
+  .artifact-card:hover .artifact-image {
+    @apply scale-110;
+  }
+
+  .artifact-image {
+    @apply transition-transform duration-500;
+  }
+
+  /* 展厅导航项 | Exhibition Nav Item */
+  .exhibition-nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+    @apply transition-colors duration-200;
+  }
+
+  .exhibition-nav-item.active {
+    @apply bg-zhuang-red text-white;
+  }
+
+  /* 语言切换按钮 | Language Switcher Button */
+  .lang-button {
+    @apply px-3 py-2 rounded-md text-sm font-medium;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-800;
+    @apply transition-colors duration-200;
+  }
+
+  .lang-button.active {
+    @apply bg-zhuang-blue text-white;
+  }
+}
+
+/* 工具类 | Utility Classes */
+@layer utilities {
+  /* 文本渐变 | Text Gradient */
+  .text-gradient-zhuang {
+    @apply bg-gradient-to-r from-zhuang-red via-zhuang-blue to-zhuang-gold;
+    @apply bg-clip-text text-transparent;
+  }
+
+  /* 水墨晕染效果 | Ink Diffusion Effect */
+  .ink-diffusion {
+    filter: blur(1px);
+    opacity: 0.8;
+  }
+
+  /* 隐藏滚动条但保持滚动功能 | Hide Scrollbar but Keep Scrolling */
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 无障碍：仅屏幕阅读器可见 | Accessibility: Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* 玻璃态效果 | Glassmorphism */
+  .glass-effect {
+    @apply bg-white/70 dark:bg-gray-900/70;
+    @apply backdrop-blur-md;
+    @apply border border-white/20;
+  }
+
+  /* 动画延迟工具类 | Animation Delay Utilities */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* 打印样式 | Print Styles */
+@media print {
+  body {
+    @apply text-black bg-white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  a[href]::after {
+    content: ' (' attr(href) ')';
+  }
+
+  abbr[title]::after {
+    content: ' (' attr(title) ')';
+  }
+}
+
+/* 减少动画偏好（无障碍） | Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 高对比度模式（无障碍） | High Contrast Mode */
+@media (prefers-contrast: high) {
+  .card-cultural {
+    @apply border-2 border-black dark:border-white;
+  }
+
+  a {
+    @apply underline;
+  }
+}
