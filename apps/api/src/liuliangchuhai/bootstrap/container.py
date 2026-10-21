@@ -27,7 +27,9 @@ from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPre
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
+from liuliangchuhai.infrastructure.products.enrichment import EnrichedProductRepository
 from liuliangchuhai.infrastructure.products.json_repository import JsonProductRepository
+from liuliangchuhai.infrastructure.products.openfoodfacts import OpenFoodFactsSource
 
 
 @dataclass(frozen=True, slots=True)
@@ -107,12 +109,24 @@ def _build_digital_human(settings: Settings) -> DigitalHumanPort:
     raise ValueError(f"Unsupported digital-human provider: {settings.digital_human_provider!r}")
 
 
+def _build_product_repository(settings: Settings, curated: ProductRepository) -> ProductRepository:
+    if settings.product_source == "off":
+        return curated
+    if settings.product_source == "openfoodfacts":
+        return EnrichedProductRepository(
+            curated,
+            OpenFoodFactsSource(timeout_seconds=settings.product_source_timeout_seconds),
+        )
+    raise ValueError(f"Unsupported product source: {settings.product_source!r}")
+
+
 def build_container(settings: Settings) -> Container:
     llm = _build_llm(settings)
     digital_human = _build_digital_human(settings)
     catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
     with as_file(catalog) as path:
-        product_repository = JsonProductRepository(path)
+        curated_repository = JsonProductRepository(path)
+    product_repository: ProductRepository = _build_product_repository(settings, curated_repository)
     get_product = GetProduct(product_repository)
     analyze_product = AnalyzeProductUseCase(llm)
     content_planner = _build_content_planner(settings)

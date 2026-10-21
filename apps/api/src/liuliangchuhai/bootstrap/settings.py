@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # values resolve against apps/api so the path is independent of the CWD.
     media_dir: str = "media"
     media_url_prefix: str = "/media"
+    # Optional catalog enrichment. `off` keeps the curated demo catalog exactly
+    # as shipped; `openfoodfacts` adds a product photo/link where it has a match.
+    product_source: str = "off"
+    product_source_timeout_seconds: float = Field(default=8, gt=0)
     cors_origins: list[str] = ["http://localhost:3000"]
 
     @property
