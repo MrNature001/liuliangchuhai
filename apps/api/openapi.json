@@ -619,9 +619,119 @@
             "title": "Category",
             "type": "string"
           },
+          "category_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category En"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "category_ms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Ms"
+          },
+          "category_th": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Th"
+          },
+          "category_vi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Vi"
+          },
           "cultural_background": {
             "title": "Cultural Background",
             "type": "string"
+          },
+          "cultural_background_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultural Background En"
+          },
+          "cultural_background_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultural Background Id"
+          },
+          "cultural_background_ms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultural Background Ms"
+          },
+          "cultural_background_th": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultural Background Th"
+          },
+          "cultural_background_vi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cultural Background Vi"
           },
           "description": {
             "title": "Description",
@@ -763,6 +873,61 @@
             "title": "Origin",
             "type": "string"
           },
+          "origin_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin En"
+          },
+          "origin_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Id"
+          },
+          "origin_ms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Ms"
+          },
+          "origin_th": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Th"
+          },
+          "origin_vi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Vi"
+          },
           "price": {
             "anyOf": [
               {
@@ -788,6 +953,61 @@
           "usage": {
             "title": "Usage",
             "type": "string"
+          },
+          "usage_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage En"
+          },
+          "usage_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Id"
+          },
+          "usage_ms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Ms"
+          },
+          "usage_th": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Th"
+          },
+          "usage_vi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Vi"
           }
         },
         "required": [
@@ -811,7 +1031,27 @@
           "description_vi",
           "description_th",
           "description_ms",
-          "description_id"
+          "description_id",
+          "category_en",
+          "category_vi",
+          "category_th",
+          "category_ms",
+          "category_id",
+          "origin_en",
+          "origin_vi",
+          "origin_th",
+          "origin_ms",
+          "origin_id",
+          "usage_en",
+          "usage_vi",
+          "usage_th",
+          "usage_ms",
+          "usage_id",
+          "cultural_background_en",
+          "cultural_background_vi",
+          "cultural_background_th",
+          "cultural_background_ms",
+          "cultural_background_id"
         ],
         "title": "ProductResponse",
         "type": "object"

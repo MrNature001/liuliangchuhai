@@ -20,8 +20,9 @@ TEXT_FIELDS = {
 }
 PRODUCT_FIELDS = TEXT_FIELDS | {"images", "ingredients", "price", "purchase_url"}
 LOCALIZED_LANGUAGES = ("en", "vi", "th", "ms", "id")
+LOCALIZED_KINDS = ("name", "description", "category", "origin", "usage", "cultural_background")
 LOCALIZED_FIELDS = {
-    f"{kind}_{language}" for kind in ("name", "description") for language in LOCALIZED_LANGUAGES
+    f"{kind}_{language}" for kind in LOCALIZED_KINDS for language in LOCALIZED_LANGUAGES
 }
 # price, purchase_url and every localized string are required-but-nullable.
 NULLABLE_TEXT_FIELDS = {"price", "purchase_url"} | LOCALIZED_FIELDS
@@ -141,7 +142,12 @@ type Fields = Assert<Equal<keyof ProductResponse,
     "id" | "name" | "category" | "description" | "origin" | "cultural_background" |
     "images" | "usage" | "ingredients" | "price" | "purchase_url" |
     "name_en" | "name_vi" | "name_th" | "name_ms" | "name_id" |
-    "description_en" | "description_vi" | "description_th" | "description_ms" | "description_id">>;
+    "description_en" | "description_vi" | "description_th" | "description_ms" | "description_id" |
+    "category_en" | "category_vi" | "category_th" | "category_ms" | "category_id" |
+    "origin_en" | "origin_vi" | "origin_th" | "origin_ms" | "origin_id" |
+    "usage_en" | "usage_vi" | "usage_th" | "usage_ms" | "usage_id" |
+    "cultural_background_en" | "cultural_background_vi" | "cultural_background_th" |
+    "cultural_background_ms" | "cultural_background_id">>;
 type ListFields = Assert<Equal<keyof ProductListResponse, "items">>;
 const product: ProductResponse = {
     id: "sample", name: "Name", category: "Category", description: "Description",
@@ -149,7 +155,12 @@ const product: ProductResponse = {
     ingredients: [], price: "12.50", purchase_url: null,
     name_en: null, name_vi: null, name_th: null, name_ms: null, name_id: null,
     description_en: null, description_vi: null, description_th: null, description_ms: null,
-    description_id: null
+    description_id: null, category_en: null, category_vi: null, category_th: null,
+    category_ms: null, category_id: null, origin_en: null, origin_vi: null, origin_th: null,
+    origin_ms: null, origin_id: null, usage_en: null, usage_vi: null, usage_th: null,
+    usage_ms: null, usage_id: null, cultural_background_en: null,
+    cultural_background_vi: null, cultural_background_th: null,
+    cultural_background_ms: null, cultural_background_id: null
 };
 const free: ProductResponse = { ...product, price: "0" };
 const unpriced: ProductResponse = { ...product, price: null };

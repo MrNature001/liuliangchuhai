@@ -4,8 +4,9 @@ from decimal import Decimal
 # Optional localized copy for the demo markets plus English. Fields stay flat so
 # the API contract remains a fixed shape; each is nonblank when present.
 LOCALIZED_LANGUAGES = ("en", "vi", "th", "ms", "id")
+LOCALIZED_KINDS = ("name", "description", "category", "origin", "usage", "cultural_background")
 LOCALIZED_TEXT_FIELDS = tuple(
-    f"{kind}_{language}" for kind in ("name", "description") for language in LOCALIZED_LANGUAGES
+    f"{kind}_{language}" for kind in LOCALIZED_KINDS for language in LOCALIZED_LANGUAGES
 )
 
 
@@ -34,6 +35,26 @@ class Product:
     description_th: str | None = None
     description_ms: str | None = None
     description_id: str | None = None
+    category_en: str | None = None
+    category_vi: str | None = None
+    category_th: str | None = None
+    category_ms: str | None = None
+    category_id: str | None = None
+    origin_en: str | None = None
+    origin_vi: str | None = None
+    origin_th: str | None = None
+    origin_ms: str | None = None
+    origin_id: str | None = None
+    usage_en: str | None = None
+    usage_vi: str | None = None
+    usage_th: str | None = None
+    usage_ms: str | None = None
+    usage_id: str | None = None
+    cultural_background_en: str | None = None
+    cultural_background_vi: str | None = None
+    cultural_background_th: str | None = None
+    cultural_background_ms: str | None = None
+    cultural_background_id: str | None = None
 
     def __post_init__(self) -> None:
         for field in (

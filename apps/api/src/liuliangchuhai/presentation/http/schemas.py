@@ -74,6 +74,26 @@ class ProductResponse(BaseModel):
     description_th: str | None
     description_ms: str | None
     description_id: str | None
+    category_en: str | None
+    category_vi: str | None
+    category_th: str | None
+    category_ms: str | None
+    category_id: str | None
+    origin_en: str | None
+    origin_vi: str | None
+    origin_th: str | None
+    origin_ms: str | None
+    origin_id: str | None
+    usage_en: str | None
+    usage_vi: str | None
+    usage_th: str | None
+    usage_ms: str | None
+    usage_id: str | None
+    cultural_background_en: str | None
+    cultural_background_vi: str | None
+    cultural_background_th: str | None
+    cultural_background_ms: str | None
+    cultural_background_id: str | None
 
 
 class ProductListResponse(BaseModel):

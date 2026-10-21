@@ -329,8 +329,28 @@ export interface components {
         ProductResponse: {
             /** Category */
             category: string;
+            /** Category En */
+            category_en: string | null;
+            /** Category Id */
+            category_id: string | null;
+            /** Category Ms */
+            category_ms: string | null;
+            /** Category Th */
+            category_th: string | null;
+            /** Category Vi */
+            category_vi: string | null;
             /** Cultural Background */
             cultural_background: string;
+            /** Cultural Background En */
+            cultural_background_en: string | null;
+            /** Cultural Background Id */
+            cultural_background_id: string | null;
+            /** Cultural Background Ms */
+            cultural_background_ms: string | null;
+            /** Cultural Background Th */
+            cultural_background_th: string | null;
+            /** Cultural Background Vi */
+            cultural_background_vi: string | null;
             /** Description */
             description: string;
             /** Description En */
@@ -363,12 +383,32 @@ export interface components {
             name_vi: string | null;
             /** Origin */
             origin: string;
+            /** Origin En */
+            origin_en: string | null;
+            /** Origin Id */
+            origin_id: string | null;
+            /** Origin Ms */
+            origin_ms: string | null;
+            /** Origin Th */
+            origin_th: string | null;
+            /** Origin Vi */
+            origin_vi: string | null;
             /** Price */
             price: string | null;
             /** Purchase Url */
             purchase_url: string | null;
             /** Usage */
             usage: string;
+            /** Usage En */
+            usage_en: string | null;
+            /** Usage Id */
+            usage_id: string | null;
+            /** Usage Ms */
+            usage_ms: string | null;
+            /** Usage Th */
+            usage_th: string | null;
+            /** Usage Vi */
+            usage_vi: string | null;
         };
         /** ProviderStatusResponse */
         ProviderStatusResponse: {

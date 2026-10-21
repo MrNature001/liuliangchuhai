@@ -26,7 +26,7 @@ TEXT_FIELDS = {
 }
 LOCALIZED_FIELDS = {
     f"{kind}_{language}"
-    for kind in ("name", "description")
+    for kind in ("name", "description", "category", "origin", "usage", "cultural_background")
     for language in ("en", "vi", "th", "ms", "id")
 }
 PRODUCT_FIELDS = TEXT_FIELDS | {"images", "ingredients", "price", "purchase_url"} | LOCALIZED_FIELDS

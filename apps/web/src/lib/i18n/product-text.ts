@@ -41,10 +41,12 @@ export function localizedText(product: AnyProduct, locale: Locale): ProductText 
     description: suffix
       ? pick(record[`description${suffix}`], product.description)
       : product.description,
-    category: pick(record[`category${suffix}`], product.category),
-    origin: pick(record[`origin${suffix}`], product.origin),
-    usage: pick(record[`usage${suffix}`], product.usage),
-    culturalBackground: pick(record[`cultural_background${suffix}`], product.cultural_background),
+    category: suffix ? pick(record[`category${suffix}`], product.category) : product.category,
+    origin: suffix ? pick(record[`origin${suffix}`], product.origin) : product.origin,
+    usage: suffix ? pick(record[`usage${suffix}`], product.usage) : product.usage,
+    culturalBackground: suffix
+      ? pick(record[`cultural_background${suffix}`], product.cultural_background)
+      : product.cultural_background,
     ingredients: product.ingredients,
   }
 }
