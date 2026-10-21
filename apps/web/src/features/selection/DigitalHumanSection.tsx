@@ -28,6 +28,16 @@ export function DigitalHumanSection({ script }: { script: string }) {
   const inFlight = useRef(false)
   const generating = video.status === "generating"
   const isPlaceholder = video.status === "success" && video.result.media_url.startsWith("mock:")
+  // The API serves rendered files from its own origin; a relative URL must be
+  // resolved against the API base, not against the page the user is on.
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "")
+  const mediaSrc =
+    video.status === "success" && !isPlaceholder
+      ? video.result.media_url.startsWith("/")
+        ? `${apiBase}${video.result.media_url}`
+        : video.result.media_url
+      : ""
+  const fileName = mediaSrc ? mediaSrc.split("/").pop() ?? "presenter.mp4" : "presenter.mp4"
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -87,12 +97,17 @@ export function DigitalHumanSection({ script }: { script: string }) {
           <figure>
             <video
               className={styles.digitalHumanVideo}
-              src={video.result.media_url}
+              src={mediaSrc}
               controls
               playsInline
               aria-label={t.digitalHuman.videoLabel}
             />
-            <figcaption className={styles.muted}>{t.digitalHuman.videoLabel}</figcaption>
+            <figcaption className={styles.captionRow}>
+              <span className={styles.muted}>{t.digitalHuman.videoLabel}</span>
+              <a className={styles.copyButton} href={mediaSrc} download={fileName}>
+                {t.digitalHuman.download}
+              </a>
+            </figcaption>
           </figure>
         )
       )}

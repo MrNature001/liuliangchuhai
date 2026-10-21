@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from liuliangchuhai.bootstrap.container import build_container
 from liuliangchuhai.bootstrap.settings import Settings
@@ -22,6 +23,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
+    )
+
+    media_dir = resolved_settings.resolved_media_dir
+    media_dir.mkdir(parents=True, exist_ok=True)
+    app.mount(
+        resolved_settings.media_url_prefix,
+        StaticFiles(directory=media_dir),
+        name="media",
     )
 
     @app.get("/", include_in_schema=False)

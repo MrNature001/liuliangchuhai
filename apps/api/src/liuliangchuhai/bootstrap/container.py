@@ -23,6 +23,7 @@ from liuliangchuhai.infrastructure.assistant.mock import MockAssistantAdapter
 from liuliangchuhai.infrastructure.content.deepseek import DeepSeekContentPlannerAdapter
 from liuliangchuhai.infrastructure.content.mock import MockContentPlannerAdapter
 from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
+from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPresenterAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
@@ -89,6 +90,12 @@ def _build_content_planner(settings: Settings) -> ContentPlannerPort:
 def _build_digital_human(settings: Settings) -> DigitalHumanPort:
     if settings.digital_human_provider == "mock":
         return MockDigitalHumanAdapter()
+    if settings.digital_human_provider == "local":
+        return LocalPresenterAdapter(
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+            timeout_seconds=settings.digital_human_timeout_seconds,
+        )
     if settings.digital_human_provider == "heygen":
         assert settings.heygen_api_key is not None
         return HeyGenDigitalHumanAdapter(

@@ -59,3 +59,6 @@
 .copyButton:hover, .copyButton:focus-visible { border-color: var(--accent); color: var(--ink); }
 
 .digitalHumanVideo { width: 100%; max-width: 480px; aspect-ratio: 16 / 9; border-radius: var(--card-radius); background: #000; }
+
+.captionRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.captionRow a { text-decoration: none; }

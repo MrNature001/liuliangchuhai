@@ -62,7 +62,7 @@ export type Dictionary = {
   digitalHuman: {
     title: string; intro: string; language: string; generate: string; generating: string
     statusGenerating: string; statusReady: string; placeholder: string; videoLabel: string
-    mockNote: string
+    mockNote: string; download: string
   }
   assistant: {
     label: string; eyebrow: string; title: string; subtitle: string; close: string; expand: string; collapse: string
@@ -169,6 +169,7 @@ const zh: Dictionary = {
     statusGenerating: "正在渲染数字人视频，可能需要几分钟…", statusReady: "视频已生成。",
     placeholder: "尚未生成视频", videoLabel: "数字人口播视频",
     mockNote: "当前为演示模式：返回的是占位地址，不会渲染真实视频。",
+    download: "下载视频",
   },
   assistant: {
     label: "商品助手", eyebrow: "广西 · 商品导览", title: "桂品 AI 助手", subtitle: "了解商品 · 文化背景 · 出海分析",
@@ -281,6 +282,7 @@ const en: Dictionary = {
     statusGenerating: "Rendering the digital-human video. This can take several minutes…", statusReady: "Video ready.",
     placeholder: "No video yet", videoLabel: "Digital-human presenter video",
     mockNote: "Demo mode: a placeholder address is returned and no video is rendered.",
+    download: "Download video",
   },
   assistant: {
     label: "Product assistant", eyebrow: "GUANGXI · PRODUCT GUIDE", title: "Guipin AI Assistant", subtitle: "Products · Culture · Market entry",
@@ -393,6 +395,7 @@ const vi: Dictionary = {
     statusGenerating: "Đang kết xuất video người dẫn ảo, có thể mất vài phút…", statusReady: "Video đã sẵn sàng.",
     placeholder: "Chưa có video", videoLabel: "Video người dẫn ảo",
     mockNote: "Chế độ demo: trả về địa chỉ tạm, không kết xuất video thật.",
+    download: "Tải video",
   },
   assistant: {
     label: "Trợ lý sản phẩm", eyebrow: "QUẢNG TÂY · HƯỚNG DẪN SẢN PHẨM", title: "Trợ lý AI Guipin", subtitle: "Sản phẩm · Văn hóa · Phân tích thị trường",
@@ -505,6 +508,7 @@ const th: Dictionary = {
     statusGenerating: "กำลังเรนเดอร์วิดีโอผู้ประกาศ อาจใช้เวลาหลายนาที…", statusReady: "วิดีโอพร้อมแล้ว",
     placeholder: "ยังไม่มีวิดีโอ", videoLabel: "วิดีโอผู้ประกาศดิจิทัล",
     mockNote: "โหมดสาธิต: ระบบคืนที่อยู่ตัวอย่างและไม่เรนเดอร์วิดีโอจริง",
+    download: "ดาวน์โหลดวิดีโอ",
   },
   assistant: {
     label: "ผู้ช่วยสินค้า", eyebrow: "กว่างซี · ไกด์สินค้า", title: "ผู้ช่วย AI Guipin", subtitle: "สินค้า · วัฒนธรรม · การวิเคราะห์ตลาด",
@@ -618,6 +622,7 @@ const ms: Dictionary = {
     statusReady: "Video sedia.",
     placeholder: "Belum ada video", videoLabel: "Video penyampai digital",
     mockNote: "Mod demo: alamat pemegang tempat dikembalikan dan tiada video dirender.",
+    download: "Muat turun video",
   },
   assistant: {
     label: "Pembantu produk", eyebrow: "GUANGXI · PANDUAN PRODUK", title: "Pembantu AI Guipin", subtitle: "Produk · Budaya · Analisis pasaran",
@@ -731,6 +736,7 @@ const id: Dictionary = {
     statusReady: "Video siap.",
     placeholder: "Belum ada video", videoLabel: "Video pembawa acara digital",
     mockNote: "Mode demo: alamat pengganti dikembalikan dan tidak ada video yang dirender.",
+    download: "Unduh video",
   },
   assistant: {
     label: "Asisten produk", eyebrow: "GUANGXI · PANDUAN PRODUK", title: "Asisten AI Guipin", subtitle: "Produk · Budaya · Analisis pasar",

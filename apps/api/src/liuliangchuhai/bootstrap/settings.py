@@ -5,7 +5,8 @@ from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Resolve .env relative to apps/api/ so every launch directory finds the same file.
-_env_file = Path(__file__).resolve().parent.parent.parent.parent / ".env"
+_API_DIR = Path(__file__).resolve().parent.parent.parent.parent
+_env_file = _API_DIR / ".env"
 
 
 class Settings(BaseSettings):
@@ -29,7 +30,17 @@ class Settings(BaseSettings):
     heygen_avatar_id: str = ""
     heygen_voice_id: str = ""
     digital_human_timeout_seconds: float = Field(default=300, gt=0)
+    # Where the key-free local presenter writes rendered MP4 files. Relative
+    # values resolve against apps/api so the path is independent of the CWD.
+    media_dir: str = "media"
+    media_url_prefix: str = "/media"
     cors_origins: list[str] = ["http://localhost:3000"]
+
+    @property
+    def resolved_media_dir(self) -> Path:
+        """Absolute media directory, anchored to apps/api for relative values."""
+        candidate = Path(self.media_dir)
+        return candidate if candidate.is_absolute() else _API_DIR / candidate
 
     @model_validator(mode="after")
     def require_selected_provider_credentials(self) -> Self:
