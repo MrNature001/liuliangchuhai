@@ -36,15 +36,38 @@ def test_mock_has_no_random_or_clock_dependencies() -> None:
         )
 
 
+LOOPBACK_HOSTS = {"127.0.0.1", "::1", "localhost", ""}
+
+
+def _is_loopback(args: tuple[object, ...]) -> bool:
+    """Allow the asyncio self-pipe; only external destinations are forbidden."""
+    for value in args:
+        if isinstance(value, tuple) and value and isinstance(value[0], str):
+            return value[0] in LOOPBACK_HOSTS
+        if isinstance(value, str) and value in LOOPBACK_HOSTS:
+            return True
+    return False
+
+
 @pytest.fixture(autouse=True)
 def forbid_network(monkeypatch: pytest.MonkeyPatch) -> None:
-    def unexpected_call(*args: object, **kwargs: object) -> None:
-        pytest.fail("MockContentPlannerAdapter attempted an external network call")
+    real_create_connection = socket.create_connection
+    real_getaddrinfo = socket.getaddrinfo
+    real_connect = socket.socket.connect
+    real_connect_ex = socket.socket.connect_ex
 
-    monkeypatch.setattr(socket, "create_connection", unexpected_call)
-    monkeypatch.setattr(socket, "getaddrinfo", unexpected_call)
-    monkeypatch.setattr(socket.socket, "connect", unexpected_call)
-    monkeypatch.setattr(socket.socket, "connect_ex", unexpected_call)
+    def guarded(real, label):
+        def wrapper(*args: object, **kwargs: object):
+            if _is_loopback(args):
+                return real(*args, **kwargs)
+            pytest.fail(f"MockContentPlannerAdapter attempted an external network call ({label})")
+
+        return wrapper
+
+    monkeypatch.setattr(socket, "create_connection", guarded(real_create_connection, "connect"))
+    monkeypatch.setattr(socket, "getaddrinfo", guarded(real_getaddrinfo, "getaddrinfo"))
+    monkeypatch.setattr(socket.socket, "connect", guarded(real_connect, "socket.connect"))
+    monkeypatch.setattr(socket.socket, "connect_ex", guarded(real_connect_ex, "socket.connect_ex"))
 
 
 @pytest.fixture

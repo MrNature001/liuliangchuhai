@@ -2,6 +2,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from tests.support.tsc import tsc_command
+
 ROOT = Path(__file__).resolve().parents[4]
 
 
@@ -61,9 +63,7 @@ const invalid: Operation["responses"][502]["content"]["application/json"] = {
     )
     result = subprocess.run(
         [
-            "pnpm",
-            "exec",
-            "tsc",
+            *tsc_command(),
             "--noEmit",
             "--strict",
             "--skipLibCheck",

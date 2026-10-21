@@ -248,27 +248,42 @@ def generate_openapi(destination: Path = OPENAPI_FILE) -> None:
     )
 
 
+def openapi_typescript_command(source: Path, destination: Path) -> list[str]:
+    """Resolve the web app's openapi-typescript CLI without a pnpm/cmd.exe shim.
+
+    Arguments stay relative to the web app because the CLI percent-encodes absolute
+    paths that contain non-ASCII characters, which then no longer resolve on disk.
+    """
+    try:
+        source_arg = os.path.relpath(source, WEB_DIR)
+        destination_arg = os.path.relpath(destination, WEB_DIR)
+    except ValueError:
+        # relpath crosses drives (Windows temp dir on C:, project on D:); the CLI
+        # cannot percent-encode absolute paths, so expose them through the cwd.
+        source_arg = str(source)
+        destination_arg = str(destination)
+    cli = WEB_DIR / "node_modules" / "openapi-typescript" / "bin" / "cli.js"
+    if cli.is_file():
+        node = shutil.which("node")
+        if node:
+            return [node, str(cli), source_arg, "--output", destination_arg]
+    return pnpm_command("exec", "openapi-typescript", source_arg, "--output", destination_arg)
+
+
 def generate_client(source: Path = OPENAPI_FILE, destination: Path = CLIENT_FILE) -> None:
     if not source.is_file():
         raise SystemExit(f"OpenAPI source does not exist: {source}. Run the openapi task first.")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    run(
-        pnpm_command(
-            "exec",
-            "openapi-typescript",
-            str(source),
-            "--output",
-            str(destination),
-        ),
-        cwd=WEB_DIR,
-    )
+    run(openapi_typescript_command(source, destination), cwd=WEB_DIR)
     generated = destination.read_text(encoding="utf-8")
     if not generated.startswith(GENERATED_WARNING):
         destination.write_text(GENERATED_WARNING + generated, encoding="utf-8")
 
 
 def generated_check() -> None:
-    with tempfile.TemporaryDirectory(prefix="liuliangchuhai-generated-") as temporary:
+    # Keep the scratch directory on the project drive: the TypeScript CLI cannot
+    # resolve absolute paths across Windows drives that contain non-ASCII characters.
+    with tempfile.TemporaryDirectory(prefix="liuliangchuhai-generated-", dir=ROOT) as temporary:
         temporary_path = Path(temporary)
         openapi_candidate = temporary_path / "openapi.json"
         client_candidate = temporary_path / "schema.ts"

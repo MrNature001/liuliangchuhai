@@ -1,14 +1,14 @@
 import subprocess
 from pathlib import Path
 
+from tests.support.tsc import tsc_command
+
 
 def test_frontend_adapter_preserves_analysis_and_masks_failures(tmp_path: Path) -> None:
     web = Path(__file__).resolve().parents[4] / "apps/web"
     compiled = subprocess.run(
         [
-            "pnpm",
-            "exec",
-            "tsc",
+            *tsc_command(),
             "--strict",
             "--skipLibCheck",
             "--target",

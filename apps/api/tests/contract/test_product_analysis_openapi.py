@@ -6,6 +6,8 @@ import pytest
 from liuliangchuhai.bootstrap.app import create_app
 from liuliangchuhai.bootstrap.settings import Settings
 
+from tests.support.tsc import tsc_command
+
 ROOT = Path(__file__).resolve().parents[4]
 
 
@@ -151,9 +153,7 @@ const invalid: Responses[502]["content"]["application/json"] = {
     )
     result = subprocess.run(
         [
-            "pnpm",
-            "exec",
-            "tsc",
+            *tsc_command(),
             "--noEmit",
             "--strict",
             "--skipLibCheck",
