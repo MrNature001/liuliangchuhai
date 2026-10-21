@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     # outlast a single market-analysis call; keep the budgets independent.
     content_plan_timeout_seconds: float = Field(default=60, gt=0)
     digital_human_provider: str = "mock"
+    heygen_api_key: SecretStr | None = None
+    heygen_avatar_id: str = ""
+    heygen_voice_id: str = ""
+    digital_human_timeout_seconds: float = Field(default=300, gt=0)
     cors_origins: list[str] = ["http://localhost:3000"]
 
     @model_validator(mode="after")
@@ -36,4 +40,15 @@ class Settings(BaseSettings):
                 "LIULIANGCHUHAI_DEEPSEEK_API_KEY is required when the LLM or assistant "
                 "provider is deepseek"
             )
+        if self.digital_human_provider == "heygen":
+            if self.heygen_api_key is None or not self.heygen_api_key.get_secret_value().strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_HEYGEN_API_KEY is required when the digital-human "
+                    "provider is heygen"
+                )
+            if not self.heygen_avatar_id.strip() or not self.heygen_voice_id.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_HEYGEN_AVATAR_ID and LIULIANGCHUHAI_HEYGEN_VOICE_ID "
+                    "are required when the digital-human provider is heygen"
+                )
         return self

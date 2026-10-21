@@ -325,6 +325,68 @@
         "title": "ContentPlanResponse",
         "type": "object"
       },
+      "DigitalHumanErrorResponse": {
+        "properties": {
+          "code": {
+            "enum": [
+              "digital_human_unavailable",
+              "digital_human_rejected",
+              "invalid_digital_human_response",
+              "digital_human_deadline_exceeded"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "DigitalHumanErrorResponse",
+        "type": "object"
+      },
+      "DigitalHumanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "language": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Language",
+            "type": "string"
+          },
+          "script": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Script",
+            "type": "string"
+          }
+        },
+        "required": [
+          "script",
+          "language"
+        ],
+        "title": "DigitalHumanRequest",
+        "type": "object"
+      },
+      "DigitalHumanResponse": {
+        "properties": {
+          "media_url": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Media Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media_url"
+        ],
+        "title": "DigitalHumanResponse",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -970,6 +1032,74 @@
           }
         },
         "summary": "Create Content Plan"
+      }
+    },
+    "/digital-human": {
+      "post": {
+        "operationId": "generate_digital_human",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DigitalHumanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigitalHumanResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigitalHumanErrorResponse"
+                }
+              }
+            },
+            "description": "Provider rejected the generation input"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigitalHumanErrorResponse"
+                }
+              }
+            },
+            "description": "Provider returned an unreadable result"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigitalHumanErrorResponse"
+                }
+              }
+            },
+            "description": "Provider is temporarily unavailable"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigitalHumanErrorResponse"
+                }
+              }
+            },
+            "description": "Generation exceeded the local deadline"
+          }
+        },
+        "summary": "Generate Digital Human Video"
       }
     },
     "/health": {

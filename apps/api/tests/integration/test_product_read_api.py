@@ -61,6 +61,7 @@ def read_boundary(
         get_system_status=real.get_system_status,
         reply_to_customer=real.reply_to_customer,
         create_content_plan_by_id=real.create_content_plan_by_id,
+        generate_digital_human=real.generate_digital_human,
     )
     # Non-alphabetical order and non-null Decimal expose accidental sorting/coercion.
     reads.list_products.execute.return_value = products

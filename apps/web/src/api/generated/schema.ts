@@ -39,6 +39,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/digital-human": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Digital Human Video */
+        post: operations["generate_digital_human"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -209,6 +226,28 @@ export interface components {
             short_video_prompt: string;
             /** Social Caption */
             social_caption: string;
+        };
+        /** DigitalHumanErrorResponse */
+        DigitalHumanErrorResponse: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "digital_human_unavailable" | "digital_human_rejected" | "invalid_digital_human_response" | "digital_human_deadline_exceeded";
+            /** Message */
+            message: string;
+        };
+        /** DigitalHumanRequest */
+        DigitalHumanRequest: {
+            /** Language */
+            language: string;
+            /** Script */
+            script: string;
+        };
+        /** DigitalHumanResponse */
+        DigitalHumanResponse: {
+            /** Media Url */
+            media_url: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -477,6 +516,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ContentPlanErrorResponse"];
+                };
+            };
+        };
+    };
+    generate_digital_human: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DigitalHumanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigitalHumanResponse"];
+                };
+            };
+            /** @description Provider rejected the generation input */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigitalHumanErrorResponse"];
+                };
+            };
+            /** @description Provider returned an unreadable result */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigitalHumanErrorResponse"];
+                };
+            };
+            /** @description Provider is temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigitalHumanErrorResponse"];
+                };
+            };
+            /** @description Generation exceeded the local deadline */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DigitalHumanErrorResponse"];
                 };
             };
         };

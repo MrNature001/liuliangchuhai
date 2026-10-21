@@ -22,6 +22,7 @@ from liuliangchuhai.infrastructure.assistant.deepseek import DeepSeekAssistantAd
 from liuliangchuhai.infrastructure.assistant.mock import MockAssistantAdapter
 from liuliangchuhai.infrastructure.content.deepseek import DeepSeekContentPlannerAdapter
 from liuliangchuhai.infrastructure.content.mock import MockContentPlannerAdapter
+from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
@@ -85,15 +86,23 @@ def _build_content_planner(settings: Settings) -> ContentPlannerPort:
     raise ValueError(f"Unsupported LLM provider: {settings.llm_provider!r}")
 
 
-def _build_digital_human(provider: str) -> DigitalHumanPort:
-    if provider == "mock":
+def _build_digital_human(settings: Settings) -> DigitalHumanPort:
+    if settings.digital_human_provider == "mock":
         return MockDigitalHumanAdapter()
-    raise ValueError(f"Unsupported digital-human provider: {provider!r}")
+    if settings.digital_human_provider == "heygen":
+        assert settings.heygen_api_key is not None
+        return HeyGenDigitalHumanAdapter(
+            api_key=settings.heygen_api_key.get_secret_value(),
+            avatar_id=settings.heygen_avatar_id,
+            voice_id=settings.heygen_voice_id,
+            timeout_seconds=settings.digital_human_timeout_seconds,
+        )
+    raise ValueError(f"Unsupported digital-human provider: {settings.digital_human_provider!r}")
 
 
 def build_container(settings: Settings) -> Container:
     llm = _build_llm(settings)
-    digital_human = _build_digital_human(settings.digital_human_provider)
+    digital_human = _build_digital_human(settings)
     catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
     with as_file(catalog) as path:
         product_repository = JsonProductRepository(path)

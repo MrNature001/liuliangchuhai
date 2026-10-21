@@ -11,6 +11,7 @@ import {
 import { useLocale } from "@/lib/i18n/LocaleProvider"
 
 import { CopyButton } from "./CopyButton"
+import { DigitalHumanSection } from "./DigitalHumanSection"
 import styles from "./analysis.module.css"
 
 type ContentPlanState =
@@ -107,6 +108,7 @@ export default function ContentPlanSection({
           ))}
         </div>
       )}
+      {plan.status === "success" && <DigitalHumanSection script={plan.result.live_script} />}
     </section>
   )
 }

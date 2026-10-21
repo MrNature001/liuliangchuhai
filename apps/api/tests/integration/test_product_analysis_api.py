@@ -71,6 +71,9 @@ def analysis_app(
         ),
         analyze_product_by_id=analysis_use_case,
         create_content_plan_by_id=SimpleNamespace(execute=AsyncMock()),
+        generate_digital_human=SimpleNamespace(
+            execute=AsyncMock(side_effect=AssertionError("Analysis must not generate video"))
+        ),
         list_products=SimpleNamespace(
             execute=AsyncMock(side_effect=AssertionError("Analysis must not list products"))
         ),
