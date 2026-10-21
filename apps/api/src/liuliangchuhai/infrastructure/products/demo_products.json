@@ -1,0 +1,210 @@
+[
+  {
+    "id": "liuzhou-luosifen",
+    "name": "柳州螺蛳粉",
+    "category": "地方食品",
+    "description": "以米粉、酸笋和配料呈现柳州风味的演示商品。此记录不对应具体品牌或销售规格。",
+    "origin": "广西柳州",
+    "cultural_background": "螺蛳粉是柳州地方饮食的代表之一，体现了当地对酸、辣、鲜风味的偏好。",
+    "images": [
+      "/products/liuzhou-luosifen.svg",
+      "/products/liuzhou-luosifen-2.svg",
+      "/products/liuzhou-luosifen-3.svg"
+    ],
+    "usage": "米粉煮熟后搭配汤底与配料食用；具体烹煮方式以实际产品说明为准。",
+    "ingredients": [
+      "米粉",
+      "酸笋",
+      "腐竹",
+      "花生"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Liuzhou Luosifen (River Snail Rice Noodles)",
+    "description_en": "A Liuzhou-style rice noodle dish with a slow-simmered river-snail broth, sour bamboo shoots and rich toppings. A demo record, not tied to a specific brand.",
+    "name_vi": "Bún ốc Liễu Châu",
+    "description_vi": "Món bún kiểu Liễu Châu với nước dùng ốc hầm chậm, măng chua và nhiều topping. Bản ghi demo, không gắn với thương hiệu cụ thể.",
+    "name_th": "เส้นหมี่หอยขมหลิ่วโจว",
+    "description_th": "เมนูเส้นหมี่สไตล์หลิ่วโจวกับน้ำซุปหอยขมเคี่ยวนาน หน่อไม้ดอง และเครื่องเคียงครบครัน เป็นรายการสาธิต ไม่ผูกกับแบรนด์ใด",
+    "name_ms": "Luosifen Liuzhou (Mi Beras Siput Sungai)",
+    "description_ms": "Hidangan mi beras gaya Liuzhou dengan sup siput sungai direneh lama, rebung masam dan pelbagai topping. Rekod demo, tidak terikat jenama tertentu.",
+    "name_id": "Luosifen Liuzhou (Mi Beras Siput)",
+    "description_id": "Hidangan mi beras khas Liuzhou dengan kuah siput sungai dimasak lama, rebung asam, dan beragam topping. Catatan demo, tidak terkait merek tertentu."
+  },
+  {
+    "id": "wuzhou-liubao-tea",
+    "name": "梧州六堡茶",
+    "category": "茶叶",
+    "description": "用于展示广西茶文化的六堡茶演示商品，不代表具体品牌、年份或等级。",
+    "origin": "广西梧州",
+    "cultural_background": "六堡茶与梧州地方茶文化相联系，是广西具有地方特色的茶品。",
+    "images": [
+      "/products/wuzhou-liubao-tea.svg",
+      "/products/wuzhou-liubao-tea-2.svg",
+      "/products/wuzhou-liubao-tea-3.svg"
+    ],
+    "usage": "取适量茶叶冲泡饮用，投茶量和冲泡时间按个人口味及实际产品说明调整。",
+    "ingredients": [
+      "茶叶"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Wuzhou Liubao Tea",
+    "description_en": "A Liubao dark tea that presents Guangxi tea culture. A demo product, not tied to a specific brand, vintage or grade.",
+    "name_vi": "Trà Lục Bảo Ngô Châu",
+    "description_vi": "Trà đen Lục Bảo giới thiệu văn hóa trà Quảng Tây. Sản phẩm trình diễn, không gắn với thương hiệu, niên vụ hay cấp độ cụ thể.",
+    "name_th": "ชาหลิวเป่าอู๋โจว",
+    "description_th": "ชาดำหลิวเป่าที่นำเสนอวัฒนธรรมชากว่างซี สินค้าสาธิต ไม่ระบุยี่ห้อ ปีเก็บ หรือเกรด",
+    "name_ms": "Teh Liubao Wuzhou",
+    "description_ms": "Teh hitam Liubao yang memperkenalkan budaya teh Guangxi. Produk demo, tanpa jenama, tahun atau gred tertentu.",
+    "name_id": "Teh Liubao Wuzhou",
+    "description_id": "Teh hitam Liubao yang menampilkan budaya teh Guangxi. Produk demo, tanpa merek, tahun, atau mutu tertentu."
+  },
+  {
+    "id": "guilin-luohanguo",
+    "name": "桂林罗汉果",
+    "category": "农产干货",
+    "description": "用于展示桂林地方农产品的干罗汉果演示商品，不对应具体品牌或包装。",
+    "origin": "广西桂林",
+    "cultural_background": "罗汉果是桂林地区具有代表性的地方农产品，常见于当地的日常饮食与饮品中。",
+    "images": [
+      "/products/guilin-luohanguo.svg",
+      "/products/guilin-luohanguo-2.svg",
+      "/products/guilin-luohanguo-3.svg"
+    ],
+    "usage": "按实际产品说明处理后泡饮或用于烹饪。",
+    "ingredients": [
+      "罗汉果"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Guilin Monk Fruit",
+    "description_en": "Dried monk fruit that presents a Guilin local agricultural product. A demo product, not tied to a specific brand or packaging.",
+    "name_vi": "La hán quả Quế Lâm",
+    "description_vi": "La hán quả khô giới thiệu nông sản địa phương Quế Lâm. Sản phẩm trình diễn, không gắn với thương hiệu hay bao bì cụ thể.",
+    "name_th": "หล่อฮั่งก้วยกุ้ยหลิน",
+    "description_th": "หล่อฮั่งก้วยแห้งที่นำเสนอสินค้าเกษตรท้องถิ่นกุ้ยหลิน สินค้าสาธิต ไม่ผูกกับยี่ห้อหรือบรรจุภัณฑ์",
+    "name_ms": "Buah Monk Guilin",
+    "description_ms": "Buah monk kering yang memperkenalkan hasil pertanian tempatan Guilin. Produk demo, tanpa jenama atau pembungkusan tertentu.",
+    "name_id": "Buah Monk Guilin",
+    "description_id": "Buah monk kering khas hasil pertanian lokal Guilin. Produk demo, tanpa merek atau kemasan tertentu."
+  },
+  {
+    "id": "baise-mango",
+    "name": "百色芒果",
+    "category": "水果",
+    "description": "用于展示百色地方水果的芒果演示商品，不对应具体品种、等级或包装规格。",
+    "origin": "广西百色",
+    "cultural_background": "百色位于广西西部，当地气候适宜芒果种植，芒果是该地区常见的地方水果之一。",
+    "images": [
+      "/products/baise-mango.svg",
+      "/products/baise-mango-2.svg",
+      "/products/baise-mango-3.svg"
+    ],
+    "usage": "按实际产品说明判断成熟度后鲜食，或用于制作饮品与甜品。",
+    "ingredients": [
+      "芒果"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Baise Mango",
+    "description_en": "A mango that presents Baise local fruit. A demo product, not tied to a specific variety, grade or pack size.",
+    "name_vi": "Xoài Bách Sắc",
+    "description_vi": "Xoài giới thiệu trái cây địa phương Bách Sắc. Sản phẩm trình diễn, không gắn với giống, cấp độ hay quy cách đóng gói cụ thể.",
+    "name_th": "มะม่วงไป่เซ่อ",
+    "description_th": "มะม่วงที่นำเสนอผลไม้ท้องถิ่นไป่เซ่อ สินค้าสาธิต ไม่ระบุพันธุ์ เกรด หรือขนาดบรรจุ",
+    "name_ms": "Mangga Baise",
+    "description_ms": "Mangga yang memperkenalkan buah-buahan tempatan Baise. Produk demo, tanpa varieti, gred atau saiz pek tertentu.",
+    "name_id": "Mangga Baise",
+    "description_id": "Mangga khas buah-buahan lokal Baise. Produk demo, tanpa varietas, mutu, atau ukuran kemasan tertentu."
+  },
+  {
+    "id": "hengzhou-jasmine-tea",
+    "name": "横州茉莉花茶",
+    "category": "花茶",
+    "description": "以茉莉花与茶叶窨制工艺呈现的花茶演示商品，不代表具体品牌、批次或等级。",
+    "origin": "广西横州",
+    "cultural_background": "横州种植茉莉花的历史较长，当地将茉莉花与茶叶结合的窨制做法是广西花茶的地方特色之一。",
+    "images": [
+      "/products/hengzhou-jasmine-tea.svg",
+      "/products/hengzhou-jasmine-tea-2.svg",
+      "/products/hengzhou-jasmine-tea-3.svg"
+    ],
+    "usage": "取适量茶叶冲泡饮用，投茶量与水温按个人口味及实际产品说明调整。",
+    "ingredients": [
+      "茶叶",
+      "茉莉花"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Hengzhou Jasmine Tea",
+    "description_en": "A scented tea made by layering jasmine blossom with green tea. A demo product, not tied to a specific brand, batch or grade.",
+    "name_vi": "Trà hoa nhài Hoành Châu",
+    "description_vi": "Trà ướp hương kết hợp hoa nhài với trà xanh. Sản phẩm trình diễn, không gắn với thương hiệu, lô hay cấp độ cụ thể.",
+    "name_th": "ชามะลิเหิงโจว",
+    "description_th": "ชาอบกลิ่นที่ทำจากการซ้อนดอกมะลิกับชาเขียว สินค้าสาธิต ไม่ระบุยี่ห้อ รุ่น หรือเกรด",
+    "name_ms": "Teh Melur Hengzhou",
+    "description_ms": "Teh wangi yang dihasilkan dengan melapisi bunga melur pada teh hijau. Produk demo, tanpa jenama, kelompok atau gred tertentu.",
+    "name_id": "Teh Melati Hengzhou",
+    "description_id": "Teh beraroma yang dibuat dengan melapisi bunga melati pada teh hijau. Produk demo, tanpa merek, batch, atau mutu tertentu."
+  },
+  {
+    "id": "beihai-salted-duck-egg",
+    "name": "北海海鸭蛋",
+    "category": "腌制食品",
+    "description": "用于展示北海沿海饮食的腌制鸭蛋演示商品，不对应具体品牌、腌制配方或包装规格。",
+    "origin": "广西北海",
+    "cultural_background": "北海地处北部湾沿海，滩涂放养与腌制加工是当地饮食中较为常见的处理方式。",
+    "images": [
+      "/products/beihai-salted-duck-egg.svg",
+      "/products/beihai-salted-duck-egg-2.svg",
+      "/products/beihai-salted-duck-egg-3.svg"
+    ],
+    "usage": "按实际产品说明蒸煮后食用，或作为佐餐配菜。",
+    "ingredients": [
+      "鸭蛋",
+      "食盐"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Beihai Salted Sea-Duck Egg",
+    "description_en": "Salted duck eggs that present Beihai coastal cuisine. A demo product, not tied to a specific brand, recipe or pack size.",
+    "name_vi": "Trứng vịt biển muối Bắc Hải",
+    "description_vi": "Trứng vịt muối giới thiệu ẩm thực ven biển Bắc Hải. Sản phẩm trình diễn, không gắn với thương hiệu, công thức hay quy cách đóng gói cụ thể.",
+    "name_th": "ไข่เป็ดทะเลเค็มเป่ยไห่",
+    "description_th": "ไข่เป็ดเค็มที่นำเสนออาหารชายฝั่งเป่ยไห่ สินค้าสาธิต ไม่ผูกกับยี่ห้อ สูตร หรือขนาดบรรจุ",
+    "name_ms": "Telur Itik Laut Masin Beihai",
+    "description_ms": "Telur itik masin yang memperkenalkan masakan pesisir Beihai. Produk demo, tanpa jenama, resipi atau saiz pek tertentu.",
+    "name_id": "Telur Bebek Laut Asin Beihai",
+    "description_id": "Telur bebek asin khas pangan pesisir Beihai. Produk demo, tanpa merek, resep, atau ukuran kemasan tertentu."
+  },
+  {
+    "id": "qinzhou-nixing-pottery",
+    "name": "钦州坭兴陶",
+    "category": "手工艺品",
+    "description": "用于展示钦州传统制陶工艺的陶器演示商品，不对应具体器型、窑口或作者。",
+    "origin": "广西钦州",
+    "cultural_background": "坭兴陶取材于钦州当地陶土，烧制过程中形成的窑变色泽是这一工艺的地方特征。",
+    "images": [
+      "/products/qinzhou-nixing-pottery.svg",
+      "/products/qinzhou-nixing-pottery-2.svg",
+      "/products/qinzhou-nixing-pottery-3.svg"
+    ],
+    "usage": "可作为茶器或陈设器使用，具体养护方式以实际产品说明为准。",
+    "ingredients": [
+      "陶土"
+    ],
+    "price": null,
+    "purchase_url": null,
+    "name_en": "Qinzhou Nixing Pottery",
+    "description_en": "Pottery that presents Qinzhou traditional clay craft. A demo product, not tied to a specific shape, kiln or maker.",
+    "name_vi": "Gốm Nê Hưng Khâm Châu",
+    "description_vi": "Gốm giới thiệu nghề đất sét truyền thống Khâm Châu. Sản phẩm trình diễn, không gắn với kiểu dáng, lò hay tác giả cụ thể.",
+    "name_th": "เครื่องปั้นดินเผาหนิซิ่งชินโจว",
+    "description_th": "เครื่องปั้นดินเผาที่นำเสนองานดินเหนียวดั้งเดิมชินโจว สินค้าสาธิต ไม่ระบุรูปทรง เตา หรือผู้ทำ",
+    "name_ms": "Tembikar Nixing Qinzhou",
+    "description_ms": "Tembikar yang memperkenalkan kraf tanah liat tradisional Qinzhou. Produk demo, tanpa bentuk, kiln atau pembuat tertentu.",
+    "name_id": "Tembikar Nixing Qinzhou",
+    "description_id": "Tembikar khas kerajinan tanah liat tradisional Qinzhou. Produk demo, tanpa bentuk, kiln, atau pembuat tertentu."
+  }
+]

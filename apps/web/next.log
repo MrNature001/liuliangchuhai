@@ -1,0 +1,20 @@
+
+> liuliangchuhai-web@0.1.0 dev D:\桌面\liuliangchuhai-main\apps\web
+> next dev
+
+▲ Next.js 16.3.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.119.81:3000
+- Environments: .env.local
+✓ Ready in 808ms
+✓ Running next.config.ts took 195ms
+
+ GET / 200 in 1249ms (next.js: 583ms, application-code: 666ms)
+ GET /products 200 in 340ms (next.js: 63ms, application-code: 277ms)
+ GET /analysis 200 in 136ms (next.js: 51ms, application-code: 86ms)
+ GET / 200 in 68ms (next.js: 6ms, application-code: 61ms)
+ GET /analysis 200 in 24ms (next.js: 6ms, application-code: 18ms)
+ GET /analysis 200 in 22ms (next.js: 6ms, application-code: 16ms)
+ GET /products 200 in 62ms (next.js: 16ms, application-code: 45ms)
+ GET /products/wuzhou-liubao-tea 200 in 2.8s (next.js: 2.8s, application-code: 41ms)
+ GET /analysis?product_id=wuzhou-liubao-tea 200 in 47ms (next.js: 15ms, application-code: 32ms)
