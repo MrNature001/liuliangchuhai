@@ -9,3 +9,4 @@ node_modules/
 *.tsbuildinfo
 .env
 .env.local
+apps/api/media/

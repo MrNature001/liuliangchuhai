@@ -65,22 +65,30 @@ async def probe_duration(media: Path) -> float:
     return await asyncio.to_thread(_probe_blocking, media)
 
 
-async def _run(arguments: list[str], *, timeout_seconds: float) -> None:
+def _run_blocking(arguments: list[str], timeout_seconds: float) -> None:
+    """Run ffmpeg in a worker thread.
+
+    asyncio subprocess transports are unavailable on the selector event loop that
+    uvicorn's reloader uses on Windows, so the blocking API is the portable one.
+    """
     try:
-        async with asyncio.timeout(timeout_seconds):
-            process = await asyncio.create_subprocess_exec(
-                *arguments,
-                stdout=asyncio.subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-            )
-            _, stderr = await process.communicate()
-    except TimeoutError:
+        completed = subprocess.run(
+            arguments,
+            capture_output=True,
+            timeout=timeout_seconds,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
         raise DigitalHumanDeadlineExceeded("video assembly exceeded the local deadline") from None
     except OSError as error:
         raise DigitalHumanUnavailable("ffmpeg could not be started") from error
-    if process.returncode != 0:
-        tail = stderr.decode("utf-8", "replace").strip().splitlines()[-1:]
-        raise DigitalHumanUnavailable(f"ffmpeg failed: {tail[0] if tail else process.returncode}")
+    if completed.returncode != 0:
+        tail = completed.stderr.decode("utf-8", "replace").strip().splitlines()[-1:]
+        raise DigitalHumanUnavailable(f"ffmpeg failed: {tail[0] if tail else completed.returncode}")
+
+
+async def _run(arguments: list[str], *, timeout_seconds: float) -> None:
+    await asyncio.to_thread(_run_blocking, arguments, timeout_seconds)
 
 
 async def render(
