@@ -49,3 +49,11 @@
 @media (max-width: 760px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
 }
+
+.sectionHeading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.copyButton {
+  flex: 0 0 auto; padding: 4px 10px; border: 1px solid var(--line);
+  border-radius: var(--control-radius); background: transparent;
+  color: var(--muted); font: inherit; font-size: var(--small-size); cursor: pointer;
+}
+.copyButton:hover, .copyButton:focus-visible { border-color: var(--accent); color: var(--ink); }

@@ -14,6 +14,7 @@ import { useProductText } from "@/lib/i18n/use-product-text"
 import { useLocale } from "@/lib/i18n/LocaleProvider"
 
 import ContentPlanSection from "./ContentPlanSection"
+import { CopyButton } from "./CopyButton"
 import { resolveProductSelection } from "./product-selection"
 import styles from "./analysis.module.css"
 
@@ -46,7 +47,10 @@ function AnalysisReport({ result }: { result: ProductAnalysisResponse }) {
       <p className={styles.recommendation}>{t.analysis.recommendations[result.recommendation]}</p>
       <p className={styles.score}>{t.analysis.heuristic}: {result.score} / 100</p>
       <p className={styles.muted}>{t.analysis.heuristicNote}</p>
-      <h3>{t.analysis.summary}</h3>
+      <div className={styles.sectionHeading}>
+        <h3>{t.analysis.summary}</h3>
+        <CopyButton text={result.summary} />
+      </div>
       <p>{result.summary}</p>
       <div className={styles.sections}>
         {sections.map(([title, items]) => (

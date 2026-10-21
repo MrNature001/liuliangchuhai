@@ -80,7 +80,7 @@ def _build_content_planner(settings: Settings) -> ContentPlannerPort:
         return DeepSeekContentPlannerAdapter(
             api_key=settings.deepseek_api_key.get_secret_value(),
             model=settings.deepseek_model,
-            timeout_seconds=settings.deepseek_timeout_seconds,
+            timeout_seconds=settings.content_plan_timeout_seconds,
         )
     raise ValueError(f"Unsupported LLM provider: {settings.llm_provider!r}")
 

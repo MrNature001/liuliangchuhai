@@ -10,6 +10,7 @@ import {
 } from "@/api/content-plan"
 import { useLocale } from "@/lib/i18n/LocaleProvider"
 
+import { CopyButton } from "./CopyButton"
 import styles from "./analysis.module.css"
 
 type ContentPlanState =
@@ -97,7 +98,10 @@ export default function ContentPlanSection({
           </section>
           {textSections.map(([title, text]) => (
             <section key={title}>
-              <h3>{title}</h3>
+              <div className={styles.sectionHeading}>
+                <h3>{title}</h3>
+                <CopyButton text={text} />
+              </div>
               <p>{text}</p>
             </section>
           ))}

@@ -10,6 +10,7 @@ def test_provider_defaults_are_mock() -> None:
     assert settings.digital_human_provider == "mock"
     assert settings.deepseek_model == "deepseek-v4-flash"
     assert settings.deepseek_timeout_seconds == 20
+    assert settings.content_plan_timeout_seconds == 60
 
 
 def test_deepseek_configuration_works() -> None:

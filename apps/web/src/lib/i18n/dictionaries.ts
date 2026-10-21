@@ -34,6 +34,10 @@ export type Dictionary = {
     breadcrumb: string; origin: string; price: string; analyze: string; visitSeller: string; newTab: string
     culturalBackground: string; howToUse: string; ingredients: string
   }
+  images: {
+    productAlt: string; unavailable: string; catalogMissing: string
+    galleryLabel: string; showImage: string
+  }
   productsError: { eyebrow: string; title: string; body: string; retry: string; back: string }
   productsLoading: { eyebrow: string; title: string; body: string }
   notFound: { eyebrow: string; title: string; body: string; browse: string }
@@ -52,6 +56,7 @@ export type Dictionary = {
     title: string; intro: string; language: string; generate: string; generating: string
     statusGenerating: string; statusReady: string; keySellingPoints: string
     imagePrompt: string; shortVideoIdea: string; shortVideoPrompt: string; liveScript: string; socialCaption: string
+    copy: string; copied: string; copyFailed: string
     languages: { en: string; zh: string; vi: string; th: string; ms: string; id: string }
   }
   assistant: {
@@ -120,6 +125,10 @@ const zh: Dictionary = {
     visitSeller: "访问卖家网站", newTab: "（在新标签页打开）",
     culturalBackground: "文化背景", howToUse: "使用方法", ingredients: "配料",
   },
+  images: {
+    productAlt: "{name} — 商品图片 {index}", unavailable: "图片暂不可用", catalogMissing: "未提供图片",
+    galleryLabel: "{name} 图片", showImage: "查看第 {index} 张，共 {total} 张",
+  },
   productsError: { eyebrow: "商品目录", title: "无法加载商品", body: "商品信息暂时不可用，请稍后重试。", retry: "重试", back: "返回目录" },
   productsLoading: { eyebrow: "商品目录", title: "正在加载商品…", body: "正在获取商品信息。" },
   notFound: { eyebrow: "商品未找到 · 404", title: "该商品不可用", body: "它可能已被移除，或者链接有误。", browse: "浏览全部商品" },
@@ -145,6 +154,7 @@ const zh: Dictionary = {
     statusGenerating: "正在生成内容方案…", statusReady: "内容方案已生成。", keySellingPoints: "核心卖点",
     imagePrompt: "图片提示词", shortVideoIdea: "短视频创意", shortVideoPrompt: "短视频脚本",
     liveScript: "直播话术", socialCaption: "社媒文案",
+    copy: "复制", copied: "已复制", copyFailed: "复制失败",
     languages: { en: "英语", zh: "中文", vi: "越南语", th: "泰语", ms: "马来语", id: "印尼语" },
   },
   assistant: {
@@ -219,6 +229,10 @@ const en: Dictionary = {
     visitSeller: "Visit seller website", newTab: "(opens in a new tab)",
     culturalBackground: "Cultural background", howToUse: "How to use", ingredients: "Ingredients",
   },
+  images: {
+    productAlt: "{name} — product image {index}", unavailable: "Image unavailable", catalogMissing: "Catalog image not provided",
+    galleryLabel: "{name} images", showImage: "Show image {index} of {total}",
+  },
   productsError: { eyebrow: "The product collection", title: "Unable to load products", body: "Product information is temporarily unavailable. Please try again.", retry: "Try again", back: "Back to catalog" },
   productsLoading: { eyebrow: "The product collection", title: "Loading products…", body: "Retrieving product information." },
   notFound: { eyebrow: "Product not found · 404", title: "This product is unavailable", body: "It may have been removed, or the link may be incorrect.", browse: "Browse all products" },
@@ -244,6 +258,7 @@ const en: Dictionary = {
     statusGenerating: "Generating content plan…", statusReady: "Content plan ready.", keySellingPoints: "Key selling points",
     imagePrompt: "Image prompt", shortVideoIdea: "Short video idea", shortVideoPrompt: "Short video prompt",
     liveScript: "Live script", socialCaption: "Social caption",
+    copy: "Copy", copied: "Copied", copyFailed: "Copy failed",
     languages: { en: "English", zh: "Chinese", vi: "Vietnamese", th: "Thai", ms: "Malay", id: "Indonesian" },
   },
   assistant: {
@@ -318,6 +333,10 @@ const vi: Dictionary = {
     visitSeller: "Truy cập website người bán", newTab: "(mở trong tab mới)",
     culturalBackground: "Bối cảnh văn hóa", howToUse: "Cách sử dụng", ingredients: "Thành phần",
   },
+  images: {
+    productAlt: "{name} — hình ảnh sản phẩm {index}", unavailable: "Hình ảnh tạm thời không có", catalogMissing: "Chưa cung cấp hình ảnh",
+    galleryLabel: "Hình ảnh {name}", showImage: "Xem hình {index} trên {total}",
+  },
   productsError: { eyebrow: "Danh mục sản phẩm", title: "Không thể tải sản phẩm", body: "Thông tin sản phẩm tạm thời không khả dụng. Vui lòng thử lại.", retry: "Thử lại", back: "Về danh mục" },
   productsLoading: { eyebrow: "Danh mục sản phẩm", title: "Đang tải sản phẩm…", body: "Đang lấy thông tin sản phẩm." },
   notFound: { eyebrow: "Không tìm thấy sản phẩm · 404", title: "Sản phẩm này không khả dụng", body: "Có thể nó đã bị xóa, hoặc liên kết không đúng.", browse: "Xem tất cả sản phẩm" },
@@ -343,6 +362,7 @@ const vi: Dictionary = {
     statusGenerating: "Đang tạo kế hoạch nội dung…", statusReady: "Kế hoạch nội dung đã sẵn sàng.", keySellingPoints: "Điểm bán hàng chính",
     imagePrompt: "Gợi ý hình ảnh", shortVideoIdea: "Ý tưởng video ngắn", shortVideoPrompt: "Kịch bản video ngắn",
     liveScript: "Kịch bản livestream", socialCaption: "Caption mạng xã hội",
+    copy: "Sao chép", copied: "Đã sao chép", copyFailed: "Không sao chép được",
     languages: { en: "Tiếng Anh", zh: "Tiếng Trung", vi: "Tiếng Việt", th: "Tiếng Thái", ms: "Tiếng Mã Lai", id: "Tiếng Indonesia" },
   },
   assistant: {
@@ -417,6 +437,10 @@ const th: Dictionary = {
     visitSeller: "เยี่ยมชมเว็บไซต์ผู้ขาย", newTab: "(เปิดในแท็บใหม่)",
     culturalBackground: "ภูมิหลังทางวัฒนธรรม", howToUse: "วิธีใช้", ingredients: "ส่วนผสม",
   },
+  images: {
+    productAlt: "{name} — รูปสินค้า {index}", unavailable: "ไม่สามารถแสดงรูปได้", catalogMissing: "ยังไม่มีรูปสินค้า",
+    galleryLabel: "รูปภาพ {name}", showImage: "ดูรูปที่ {index} จาก {total}",
+  },
   productsError: { eyebrow: "แคตตาล็อกสินค้า", title: "โหลดสินค้าไม่ได้", body: "ข้อมูลสินค้าใช้งานไม่ได้ชั่วคราว กรุณาลองอีกครั้ง", retry: "ลองอีกครั้ง", back: "กลับไปแคตตาล็อก" },
   productsLoading: { eyebrow: "แคตตาล็อกสินค้า", title: "กำลังโหลดสินค้า…", body: "กำลังดึงข้อมูลสินค้า" },
   notFound: { eyebrow: "ไม่พบสินค้า · 404", title: "สินค้านี้ใช้งานไม่ได้", body: "อาจถูกลบไปแล้ว หรือลิงก์ไม่ถูกต้อง", browse: "ดูสินค้าทั้งหมด" },
@@ -442,6 +466,7 @@ const th: Dictionary = {
     statusGenerating: "กำลังสร้างแผนเนื้อหา…", statusReady: "แผนเนื้อหาพร้อมแล้ว", keySellingPoints: "จุดขายหลัก",
     imagePrompt: "พรอมป์รูปภาพ", shortVideoIdea: "ไอเดียวิดีโอสั้น", shortVideoPrompt: "สคริปต์วิดีโอสั้น",
     liveScript: "สคริปต์ไลฟ์", socialCaption: "แคปชันโซเชียล",
+    copy: "คัดลอก", copied: "คัดลอกแล้ว", copyFailed: "คัดลอกไม่สำเร็จ",
     languages: { en: "อังกฤษ", zh: "จีน", vi: "เวียดนาม", th: "ไทย", ms: "มาเลย์", id: "อินโดนีเซีย" },
   },
   assistant: {
@@ -516,6 +541,10 @@ const ms: Dictionary = {
     visitSeller: "Lawati laman penjual", newTab: "(buka dalam tab baharu)",
     culturalBackground: "Latar belakang budaya", howToUse: "Cara guna", ingredients: "Bahan",
   },
+  images: {
+    productAlt: "{name} — imej produk {index}", unavailable: "Imej tidak tersedia", catalogMissing: "Imej katalog belum disediakan",
+    galleryLabel: "Imej {name}", showImage: "Tunjuk imej {index} daripada {total}",
+  },
   productsError: { eyebrow: "Koleksi produk", title: "Tidak dapat memuatkan produk", body: "Maklumat produk tidak tersedia sementara. Sila cuba lagi.", retry: "Cuba lagi", back: "Kembali ke katalog" },
   productsLoading: { eyebrow: "Koleksi produk", title: "Memuatkan produk…", body: "Mendapatkan maklumat produk." },
   notFound: { eyebrow: "Produk tidak ditemui · 404", title: "Produk ini tidak tersedia", body: "Ia mungkin telah dialih keluar, atau pautan tidak betul.", browse: "Lihat semua produk" },
@@ -541,6 +570,7 @@ const ms: Dictionary = {
     statusGenerating: "Menjana pelan kandungan…", statusReady: "Pelan kandungan sedia.", keySellingPoints: "Titik jualan utama",
     imagePrompt: "Gesaan imej", shortVideoIdea: "Idea video pendek", shortVideoPrompt: "Skrip video pendek",
     liveScript: "Skrip siaran langsung", socialCaption: "Kapsyen sosial",
+    copy: "Salin", copied: "Disalin", copyFailed: "Gagal menyalin",
     languages: { en: "Inggeris", zh: "Cina", vi: "Vietnam", th: "Thai", ms: "Melayu", id: "Indonesia" },
   },
   assistant: {
@@ -615,6 +645,10 @@ const id: Dictionary = {
     visitSeller: "Kunjungi situs penjual", newTab: "(terbuka di tab baru)",
     culturalBackground: "Latar budaya", howToUse: "Cara pakai", ingredients: "Bahan",
   },
+  images: {
+    productAlt: "{name} — gambar produk {index}", unavailable: "Gambar tidak tersedia", catalogMissing: "Gambar katalog belum disediakan",
+    galleryLabel: "Gambar {name}", showImage: "Tampilkan gambar {index} dari {total}",
+  },
   productsError: { eyebrow: "Koleksi produk", title: "Tidak dapat memuat produk", body: "Informasi produk sementara tidak tersedia. Silakan coba lagi.", retry: "Coba lagi", back: "Kembali ke katalog" },
   productsLoading: { eyebrow: "Koleksi produk", title: "Memuat produk…", body: "Mengambil informasi produk." },
   notFound: { eyebrow: "Produk tidak ditemukan · 404", title: "Produk ini tidak tersedia", body: "Mungkin sudah dihapus, atau tautannya salah.", browse: "Jelajahi semua produk" },
@@ -640,6 +674,7 @@ const id: Dictionary = {
     statusGenerating: "Menghasilkan rencana konten…", statusReady: "Rencana konten siap.", keySellingPoints: "Poin jual utama",
     imagePrompt: "Prompt gambar", shortVideoIdea: "Ide video pendek", shortVideoPrompt: "Skrip video pendek",
     liveScript: "Skrip siaran langsung", socialCaption: "Takarir sosial",
+    copy: "Salin", copied: "Tersalin", copyFailed: "Gagal menyalin",
     languages: { en: "Inggris", zh: "Tionghoa", vi: "Vietnam", th: "Thai", ms: "Melayu", id: "Indonesia" },
   },
   assistant: {

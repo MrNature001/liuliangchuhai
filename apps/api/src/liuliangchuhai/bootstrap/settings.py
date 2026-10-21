@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     deepseek_api_key: SecretStr | None = None
     deepseek_model: str = "deepseek-v4-flash"
     deepseek_timeout_seconds: float = Field(default=20, gt=0)
+    # Content plans produce six long assets from one completion and legitimately
+    # outlast a single market-analysis call; keep the budgets independent.
+    content_plan_timeout_seconds: float = Field(default=60, gt=0)
     digital_human_provider: str = "mock"
     cors_origins: list[str] = ["http://localhost:3000"]
 

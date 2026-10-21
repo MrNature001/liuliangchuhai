@@ -3,6 +3,7 @@
 import { useState } from "react"
 
 import styles from "@/app/page.module.css"
+import { useLocale } from "@/lib/i18n/LocaleProvider"
 import { isUsableImageSource } from "@/features/products/image-source"
 
 export function CatalogImage({ src, name, priority = false }: {
@@ -10,6 +11,7 @@ export function CatalogImage({ src, name, priority = false }: {
   name: string
   priority?: boolean
 }) {
+  const { t } = useLocale()
   const [failedSource, setFailedSource] = useState<string>()
   const usable = isUsableImageSource(src) && failedSource !== src
 
@@ -31,7 +33,9 @@ export function CatalogImage({ src, name, priority = false }: {
         <div className={styles.imageFallback}>
           <span className={styles.originSeal} aria-hidden="true">桂</span>
           <span className={styles.fallbackName}>{name}</span>
-          <span className={styles.imageUnavailable}>{src ? "Product image unavailable" : "Catalog image not provided"}</span>
+          <span className={styles.imageUnavailable}>
+            {src ? t.images.unavailable : t.images.catalogMissing}
+          </span>
         </div>
       )}
     </div>
