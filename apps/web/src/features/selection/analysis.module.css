@@ -62,3 +62,11 @@
 
 .captionRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .captionRow a { text-decoration: none; }
+
+.embedPanel { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+.embedCode {
+  width: 100%; margin: 12px 0; padding: 12px; border: 1px solid var(--line);
+  border-radius: var(--control-radius); background: var(--surface-muted);
+  color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px; line-height: 1.5; resize: vertical;
+}

@@ -38,6 +38,7 @@ export type Dictionary = {
     productAlt: string; unavailable: string; catalogMissing: string
     galleryLabel: string; showImage: string
   }
+  embed: { title: string; intro: string; copy: string; copied: string; open: string }
   productsError: { eyebrow: string; title: string; body: string; retry: string; back: string }
   productsLoading: { eyebrow: string; title: string; body: string }
   notFound: { eyebrow: string; title: string; body: string; browse: string }
@@ -135,6 +136,7 @@ const zh: Dictionary = {
     productAlt: "{name} — 商品图片 {index}", unavailable: "图片暂不可用", catalogMissing: "未提供图片",
     galleryLabel: "{name} 图片", showImage: "查看第 {index} 张，共 {total} 张",
   },
+  embed: { title: "嵌入你的网站", intro: "复制下面的代码，粘贴到任意网页即可嵌入本演示。", copy: "复制嵌入代码", copied: "已复制嵌入代码", open: "单独打开" },
   productsError: { eyebrow: "商品目录", title: "无法加载商品", body: "商品信息暂时不可用，请稍后重试。", retry: "重试", back: "返回目录" },
   productsLoading: { eyebrow: "商品目录", title: "正在加载商品…", body: "正在获取商品信息。" },
   notFound: { eyebrow: "商品未找到 · 404", title: "该商品不可用", body: "它可能已被移除，或者链接有误。", browse: "浏览全部商品" },
@@ -248,6 +250,7 @@ const en: Dictionary = {
     productAlt: "{name} — product image {index}", unavailable: "Image unavailable", catalogMissing: "Catalog image not provided",
     galleryLabel: "{name} images", showImage: "Show image {index} of {total}",
   },
+  embed: { title: "Embed on your site", intro: "Copy the snippet below into any page to embed this demo.", copy: "Copy embed code", copied: "Embed code copied", open: "Open standalone" },
   productsError: { eyebrow: "The product collection", title: "Unable to load products", body: "Product information is temporarily unavailable. Please try again.", retry: "Try again", back: "Back to catalog" },
   productsLoading: { eyebrow: "The product collection", title: "Loading products…", body: "Retrieving product information." },
   notFound: { eyebrow: "Product not found · 404", title: "This product is unavailable", body: "It may have been removed, or the link may be incorrect.", browse: "Browse all products" },
@@ -361,6 +364,7 @@ const vi: Dictionary = {
     productAlt: "{name} — hình ảnh sản phẩm {index}", unavailable: "Hình ảnh tạm thời không có", catalogMissing: "Chưa cung cấp hình ảnh",
     galleryLabel: "Hình ảnh {name}", showImage: "Xem hình {index} trên {total}",
   },
+  embed: { title: "Nhúng vào trang của bạn", intro: "Sao chép mã bên dưới và dán vào bất kỳ trang nào.", copy: "Sao chép mã nhúng", copied: "Đã sao chép mã nhúng", open: "Mở riêng" },
   productsError: { eyebrow: "Danh mục sản phẩm", title: "Không thể tải sản phẩm", body: "Thông tin sản phẩm tạm thời không khả dụng. Vui lòng thử lại.", retry: "Thử lại", back: "Về danh mục" },
   productsLoading: { eyebrow: "Danh mục sản phẩm", title: "Đang tải sản phẩm…", body: "Đang lấy thông tin sản phẩm." },
   notFound: { eyebrow: "Không tìm thấy sản phẩm · 404", title: "Sản phẩm này không khả dụng", body: "Có thể nó đã bị xóa, hoặc liên kết không đúng.", browse: "Xem tất cả sản phẩm" },
@@ -474,6 +478,7 @@ const th: Dictionary = {
     productAlt: "{name} — รูปสินค้า {index}", unavailable: "ไม่สามารถแสดงรูปได้", catalogMissing: "ยังไม่มีรูปสินค้า",
     galleryLabel: "รูปภาพ {name}", showImage: "ดูรูปที่ {index} จาก {total}",
   },
+  embed: { title: "ฝังในเว็บไซต์ของคุณ", intro: "คัดลอกโค้ดด้านล่างไปวางในหน้าเว็บใดก็ได้", copy: "คัดลอกโค้ดฝัง", copied: "คัดลอกโค้ดแล้ว", open: "เปิดแยก" },
   productsError: { eyebrow: "แคตตาล็อกสินค้า", title: "โหลดสินค้าไม่ได้", body: "ข้อมูลสินค้าใช้งานไม่ได้ชั่วคราว กรุณาลองอีกครั้ง", retry: "ลองอีกครั้ง", back: "กลับไปแคตตาล็อก" },
   productsLoading: { eyebrow: "แคตตาล็อกสินค้า", title: "กำลังโหลดสินค้า…", body: "กำลังดึงข้อมูลสินค้า" },
   notFound: { eyebrow: "ไม่พบสินค้า · 404", title: "สินค้านี้ใช้งานไม่ได้", body: "อาจถูกลบไปแล้ว หรือลิงก์ไม่ถูกต้อง", browse: "ดูสินค้าทั้งหมด" },
@@ -587,6 +592,7 @@ const ms: Dictionary = {
     productAlt: "{name} — imej produk {index}", unavailable: "Imej tidak tersedia", catalogMissing: "Imej katalog belum disediakan",
     galleryLabel: "Imej {name}", showImage: "Tunjuk imej {index} daripada {total}",
   },
+  embed: { title: "Benamkan pada laman anda", intro: "Salin coretan di bawah ke mana-mana halaman.", copy: "Salin kod benam", copied: "Kod benam disalin", open: "Buka berasingan" },
   productsError: { eyebrow: "Koleksi produk", title: "Tidak dapat memuatkan produk", body: "Maklumat produk tidak tersedia sementara. Sila cuba lagi.", retry: "Cuba lagi", back: "Kembali ke katalog" },
   productsLoading: { eyebrow: "Koleksi produk", title: "Memuatkan produk…", body: "Mendapatkan maklumat produk." },
   notFound: { eyebrow: "Produk tidak ditemui · 404", title: "Produk ini tidak tersedia", body: "Ia mungkin telah dialih keluar, atau pautan tidak betul.", browse: "Lihat semua produk" },
@@ -701,6 +707,7 @@ const id: Dictionary = {
     productAlt: "{name} — gambar produk {index}", unavailable: "Gambar tidak tersedia", catalogMissing: "Gambar katalog belum disediakan",
     galleryLabel: "Gambar {name}", showImage: "Tampilkan gambar {index} dari {total}",
   },
+  embed: { title: "Sematkan di situs Anda", intro: "Salin potongan kode di bawah ke halaman mana pun.", copy: "Salin kode semat", copied: "Kode semat tersalin", open: "Buka terpisah" },
   productsError: { eyebrow: "Koleksi produk", title: "Tidak dapat memuat produk", body: "Informasi produk sementara tidak tersedia. Silakan coba lagi.", retry: "Coba lagi", back: "Kembali ke katalog" },
   productsLoading: { eyebrow: "Koleksi produk", title: "Memuat produk…", body: "Mengambil informasi produk." },
   notFound: { eyebrow: "Produk tidak ditemukan · 404", title: "Produk ini tidak tersedia", body: "Mungkin sudah dihapus, atau tautannya salah.", browse: "Jelajahi semua produk" },

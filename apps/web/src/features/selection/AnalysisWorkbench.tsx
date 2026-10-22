@@ -14,6 +14,7 @@ import { useProductText } from "@/lib/i18n/use-product-text"
 import { useLocale } from "@/lib/i18n/LocaleProvider"
 
 import ContentPlanSection from "./ContentPlanSection"
+import { EmbedSnippet } from "./EmbedSnippet"
 import { CopyButton } from "./CopyButton"
 import { resolveProductSelection } from "./product-selection"
 import styles from "./analysis.module.css"
@@ -76,7 +77,7 @@ function ProductOption({ product }: { product: ProductListResponse["items"][numb
 }
 
 export default function AnalysisWorkbench({ initialProductId = "" }: { initialProductId?: string }) {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const [catalog, setCatalog] = useState<CatalogState>({ status: "loading" })
   const [catalogAttempt, setCatalogAttempt] = useState(0)
   const [analysis, setAnalysis] = useState<AnalysisState>({ status: "idle" })
@@ -224,6 +225,7 @@ export default function AnalysisWorkbench({ initialProductId = "" }: { initialPr
             <>
               <AnalysisReport result={analysis.result} />
               <ContentPlanSection request={{ ...analysis.request, analysis: analysis.result }} />
+              <EmbedSnippet productId={analysis.request.product_id} locale={locale} />
             </>
           ) : (
             <p className={styles.muted}>
