@@ -17,6 +17,7 @@ export const zh: Dict = {
   'activity.embroideryBall.detail':
     '绣球为壮族姑娘亲手缝制，内装谷物，外绣花纹。抛绣球是壮族青年择偶的传统方式，绣球落向谁，即为心仪之人。',
   'activity.embroideryBall.play': '去玩抛绣球',
+  'activity.embroideryBall.diy': '自己做一个绣球',
 
   'activity.fiveColorRice.name': '五色糯米饭',
   'activity.fiveColorRice.description': '用天然植物染色的糯米饭，五彩缤纷',
@@ -61,6 +62,7 @@ export const en: Dict = {
   'activity.embroideryBall.detail':
     'The embroidery ball is sewn by hand by young Zhuang women, filled with grain and embroidered with patterns. Throwing it is a traditional way for young Zhuang people to choose a partner, and whoever the ball lands on is the one they have set their heart on.',
   'activity.embroideryBall.play': 'Play the toss game',
+  'activity.embroideryBall.diy': 'Make your own ball',
 
   'activity.fiveColorRice.name': 'Five-Colour Glutinous Rice',
   'activity.fiveColorRice.description':
@@ -111,6 +113,7 @@ export const vi: Dict = {
   'activity.embroideryBall.detail':
     'Cầu thêu do chính tay các cô gái dân tộc Tráng khâu nên, bên trong đựng hạt ngũ cốc, bên ngoài thêu hoa văn. Ném cầu thêu là cách chọn bạn đời truyền thống của thanh niên dân tộc Tráng, cầu thêu rơi về phía ai thì người đó chính là người trong lòng.',
   'activity.embroideryBall.play': 'Chơi ném cầu',
+  'activity.embroideryBall.diy': 'Tự làm cầu thêu',
 
   'activity.fiveColorRice.name': 'Xôi ngũ sắc',
   'activity.fiveColorRice.description':
@@ -159,6 +162,7 @@ export const th: Dict = {
   'activity.embroideryBall.detail':
     'ลูกบอลปักทำขึ้นด้วยมือของสาวๆ ชาวจ้วงเอง ภายในบรรจุธัญพืช ภายนอกปักลวดลาย การโยนลูกบอลปักเป็นวิธีเลือกคู่ครองแบบดั้งเดิมของหนุ่มสาวชาวจ้วง ลูกบอลตกไปทางใคร ผู้นั้นก็คือคนที่อยู่ในใจ',
   'activity.embroideryBall.play': 'เล่นเกมโยนลูกบอล',
+  'activity.embroideryBall.diy': 'ทำลูกบอลปักเอง',
 
   'activity.fiveColorRice.name': 'ข้าวเหนียวมูนห้าสี',
   'activity.fiveColorRice.description': 'ข้าวเหนียวที่ย้อมสีด้วยพืชธรรมชาติ ให้สีสันสวยสด',
