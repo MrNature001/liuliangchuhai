@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import HtmlLangSync from '@/components/layout/HtmlLangSync';
 import { APP_CONFIG } from '@/constants/config';
 
 /**
  * 字体策略 | Font Strategy
- * 使用系统字体栈，避免构建时依赖外部网络下载 Google Fonts。
- * 若需使用 Noto Sans SC，可在 public/fonts 放置字体文件并通过 next/font/local 加载，
- * 或在 globals.css 中通过 @font-face 引入 CDN。
+ * 使用系统原生字体栈（见 src/styles/globals.css 的 --font-sans），
+ * 不加载 Noto Sans SC / Source Serif Pro 等外部字体，
+ * 避免构建期依赖网络，也避免千篇一律的「AI 生成站」观感。
  */
 const fontClassName = 'font-sans';
 
@@ -100,10 +101,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#D73C2C" />
       </head>
       <body className={`${fontClassName} antialiased`}>
-        {/* 跳过导航链接（无障碍） */}
-        <a href="#main-content" className="skip-link">
-          跳转到主内容
-        </a>
+        {/* 同步 <html lang> 与跳过导航链接（跟随当前语言） */}
+        <HtmlLangSync />
 
         {children}
       </body>

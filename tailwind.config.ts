@@ -36,8 +36,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'Noto Sans SC', 'system-ui', 'sans-serif'],
-        zhuang: ['var(--font-zhuang)', 'serif'],
+        sans: ['var(--font-sans)'],
+        serif: ['var(--font-serif)'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

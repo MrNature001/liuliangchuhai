@@ -98,3 +98,25 @@ data/sensitive_words/*.txt
 *.key
 *.pem
 *.cert
+
+# 照片原始下载（体积大，可用 scripts/fetch-photos.js 重新抓取）
+public/images/photos/
+
+# 候选图（换图时人工挑选用，体积大）
+_cand/
+
+# 本地临时截图与候选素材（不参与构建）
+/_cand_*.png
+/_check*.jpg
+/_fix_*.png
+/_g[0-9]_*.png
+/_look.png
+/_shot_*.png
+/_verify*.png
+/_zj_*.png
+/check_th.py
+dev3001.log
+
+# 旧版嵌套副本（26046 个文件，与本站无关）
+/liuliangchuhaillch/
+/_final_*.png

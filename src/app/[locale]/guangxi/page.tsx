@@ -1,29 +1,41 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Icon, { CultureImage, HeroImage, type CultureImageName } from '@/components/ui/Icon';
+import FestivalActivities from '@/components/guangxi/FestivalActivities';
+import { getT } from '@/i18n/server';
 
-export const metadata: Metadata = {
-  title: '壮乡之韵 - 广西民族文化展厅',
-  description: '探索广西壮族及少数民族的历史文化、传统工艺与现代传承',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const { t } = getT(params.locale, 'guangxi');
+  return { title: t('meta.title'), description: t('meta.description') };
+}
 
-export default function GuangxiHallPage() {
+export default function GuangxiHallPage({ params }: { params: { locale: string } }) {
+  const { t } = getT(params.locale, 'guangxi');
+  const { locale } = getT(params.locale, 'guangxi');
+
   return (
     <main id="main-content" className="min-h-screen bg-white dark:bg-gray-900">
       {/* 展厅标题 | Hall Title */}
-      <section className="relative h-[60vh] flex items-center justify-center bg-gradient-to-br from-zhuang-red via-zhuang-blue to-zhuang-black overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="border-zhuangjin w-full h-full"></div>
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        {/* 背景：花山岩画·广西实景 */}
+        <div className="absolute inset-0">
+          <HeroImage name="guangxi" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/70"></div>
 
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 animate-fade-in">
-            壮乡之韵
+            {t('hero.title')}
           </h1>
           <p className="text-2xl md:text-3xl mb-2 animate-slide-up animation-delay-200">
-            Zhuang Culture Gallery
+            {t('hero.titleEn')}
           </p>
           <p className="text-lg md:text-xl max-w-2xl mx-auto animate-slide-up animation-delay-300">
-            探索广西壮族及少数民族的历史文化、传统工艺与现代传承
+            {t('hero.subtitle')}
           </p>
         </div>
       </section>
@@ -36,9 +48,10 @@ export default function GuangxiHallPage() {
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="whitespace-nowrap px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-zhuang-red hover:text-white transition-colors text-sm font-medium"
+                className="whitespace-nowrap px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-zhuang-red hover:text-white transition-colors text-sm font-medium flex items-center gap-2"
               >
-                {section.icon} {section.title}
+                <CultureImage name={section.icon} style={{ width: 20, height: 20 }} />
+                {t(section.titleKey)}
               </a>
             ))}
           </div>
@@ -49,45 +62,43 @@ export default function GuangxiHallPage() {
       <section id="huashan" className="py-20">
         <div className="container-custom">
           <SectionHeader
-            icon="🗿"
-            title="左江花山岩画"
-            subtitle="UNESCO World Heritage"
-            description="公元前5世纪至公元2世纪的古骆越人文化遗迹"
+            image="huashan-rock-art"
+            title={t('huashan.title')}
+            subtitle={t('huashan.tag')}
+            description={t('huashan.desc')}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
             <div className="space-y-6">
               <div className="card-cultural p-6">
-                <h3 className="text-2xl font-bold mb-4 text-zhuang-red">历史背景</h3>
+                <h3 className="text-2xl font-bold mb-4 text-zhuang-red">{t('huashan.historyTitle')}</h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  左江花山岩画于2016年被列入UNESCO世界文化遗产名录，包含38处岩画遗址，
-                  是古骆越人在公元前5世纪至公元后2世纪创作的文化瑰宝。岩画展现了古人的生活、
-                  仪式和信仰，体现了稻作文化的深厚底蕴。
+                  {t('huashan.historyBody')}
                 </p>
               </div>
 
               <div className="card-cultural p-6">
-                <h3 className="text-2xl font-bold mb-4 text-zhuang-blue">文化符号</h3>
+                <h3 className="text-2xl font-bold mb-4 text-zhuang-blue">{t('huashan.symbolTitle')}</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
-                    <span className="text-2xl">🐸</span>
+                    <CultureImage name="huashan-rock-art" style={{ width: 32, height: 32 }} />
                     <div>
-                      <strong className="text-gray-900 dark:text-white">蛙形人</strong>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">象征稻作文化中的青蛙崇拜</p>
+                      <strong className="text-gray-900 dark:text-white">{t('huashan.symbol1')}</strong>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('huashan.symbol1Desc')}</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-2xl">🦅</span>
+                    <Icon name="share" size={32} />
                     <div>
-                      <strong className="text-gray-900 dark:text-white">羽饰人物</strong>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">展现古人的装饰与身份标识</p>
+                      <strong className="text-gray-900 dark:text-white">{t('huashan.symbol2')}</strong>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('huashan.symbol2Desc')}</p>
                     </div>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-2xl">☀️</span>
+                    <Icon name="lantern" size={32} />
                     <div>
-                      <strong className="text-gray-900 dark:text-white">日芒纹</strong>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">太阳崇拜的视觉表达</p>
+                      <strong className="text-gray-900 dark:text-white">{t('huashan.symbol3')}</strong>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{t('huashan.symbol3Desc')}</p>
                     </div>
                   </li>
                 </ul>
@@ -97,20 +108,23 @@ export default function GuangxiHallPage() {
             <div className="space-y-6">
               <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-600 rounded-lg flex items-center justify-center text-white">
                 <div className="text-center">
-                  <div className="text-6xl mb-4">🎨</div>
-                  <p className="text-xl">岩画 3D 互动展示</p>
-                  <p className="text-sm opacity-75 mt-2">点击查看详细内容</p>
+                  <CultureImage
+                    name="huashan-rock-art"
+                    style={{ width: 160, height: 100, margin: "0 auto 16px" }}
+                  />
+                  <p className="text-xl">{t('huashan.viewerTitle')}</p>
+                  <p className="text-sm opacity-75 mt-2">{t('huashan.viewerHint')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-zhuang-red/10 dark:bg-zhuang-red/20 p-4 rounded-lg">
                   <div className="text-3xl font-bold text-zhuang-red mb-1">38+</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">岩画遗址数量</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('huashan.stat1')}</div>
                 </div>
                 <div className="bg-zhuang-blue/10 dark:bg-zhuang-blue/20 p-4 rounded-lg">
                   <div className="text-3xl font-bold text-zhuang-blue mb-1">2016</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">列入世界遗产</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('huashan.stat2')}</div>
                 </div>
               </div>
             </div>
@@ -122,26 +136,27 @@ export default function GuangxiHallPage() {
       <section id="zhuangjin" className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="container-custom">
           <SectionHeader
-            icon="🧵"
-            title="壮锦织艺"
-            subtitle="National Intangible Heritage"
-            description="千年传承的壮族传统织造工艺，色彩绚丽的民族瑰宝"
+            image="zhuangjin-diamond"
+            title={t('zhuangjin.title')}
+            subtitle={t('zhuangjin.tag')}
+            description={t('zhuangjin.desc')}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
             {zhuangjinPatterns.map((pattern, index) => (
               <div key={index} className="card-cultural group">
-                <div className="aspect-square bg-gradient-to-br from-zhuang-red to-zhuang-blue flex items-center justify-center">
-                  <div className="text-8xl opacity-80 group-hover:opacity-100 transition-opacity">
-                    {pattern.icon}
-                  </div>
+                <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  <CultureImage
+                    name={pattern.image}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                    {pattern.name}
+                    {t(pattern.nameKey)}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    {pattern.description}
+                    {t(pattern.descKey)}
                   </p>
                   <div className="flex gap-2">
                     {pattern.colors.map((color, idx) => (
@@ -163,49 +178,124 @@ export default function GuangxiHallPage() {
       <section id="tonggu" className="py-20">
         <div className="container-custom">
           <SectionHeader
-            icon="🥁"
-            title="铜鼓文化"
-            subtitle="Cultural Symbol"
-            description="壮族祭祀与庆典的重要文化符号，历史悠久"
+            image="bronze-drum"
+            title={t('tonggu.title')}
+            subtitle={t('tonggu.tag')}
+            description={t('tonggu.desc')}
           />
 
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="aspect-square bg-gradient-to-br from-zhuang-gold to-amber-600 rounded-lg flex items-center justify-center relative overflow-hidden group">
-                <div className="text-9xl animate-[drumRotate_4s_ease-in-out_infinite] group-hover:animate-[drumRotate_2s_ease-in-out_infinite]">
-                  🥁
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              <div className="aspect-square rounded-lg overflow-hidden relative group bg-gray-100 dark:bg-gray-800">
+                <CultureImage
+                  name="bronze-drum"
+                  label={t('tonggu.title')}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+                <p className="absolute bottom-3 inset-x-0 text-center text-xs text-white/90">
+                  {t('tonggu.imageCaption')}
+                </p>
               </div>
             </div>
 
             <div className="space-y-6">
               <div className="card-cultural p-6">
-                <h3 className="text-xl font-bold mb-3 text-zhuang-gold">历史渊源</h3>
+                <h3 className="text-xl font-bold mb-3 text-zhuang-gold">{t('tonggu.historyTitle')}</h3>
                 <p className="text-gray-700 dark:text-gray-300">
-                  铜鼓是壮族最重要的礼器之一，用于祭祀、庆典和战争动员。
-                  铜鼓表面装饰精美的纹样，包括太阳纹、云雷纹、几何图案等，
-                  体现了高超的铸造工艺和深厚的文化内涵。
+                  {t('tonggu.historyBody')}
                 </p>
               </div>
 
               <div className="card-cultural p-6">
-                <h3 className="text-xl font-bold mb-3 text-zhuang-gold">文化意义</h3>
+                <h3 className="text-xl font-bold mb-3 text-zhuang-gold">{t('tonggu.meaningTitle')}</h3>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                   <li className="flex items-center gap-2">
-                    <span className="text-zhuang-gold">▸</span> 权力与地位的象征
+                    <span className="text-zhuang-gold">▸</span> {t('tonggu.meaning1')}
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-zhuang-gold">▸</span> 祭祀仪式的核心器具
+                    <span className="text-zhuang-gold">▸</span> {t('tonggu.meaning2')}
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-zhuang-gold">▸</span> 民族团结的精神纽带
+                    <span className="text-zhuang-gold">▸</span> {t('tonggu.meaning3')}
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-zhuang-gold">▸</span> 艺术与工艺的结晶
+                    <span className="text-zhuang-gold">▸</span> {t('tonggu.meaning4')}
                   </li>
                 </ul>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 干栏式建筑区 | Stilt-house Architecture Section */}
+      <section id="architecture" className="py-20 bg-gray-50 dark:bg-gray-800">
+        <div className="container-custom">
+          <SectionHeader
+            image="stilt-house"
+            title={t('architecture.title')}
+            subtitle={t('architecture.tag')}
+            description={t('architecture.desc')}
+          />
+
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div className="aspect-[4/3] rounded-lg overflow-hidden">
+              <CultureImage
+                name="stilt-house"
+                label={t('architecture.title')}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="space-y-5">
+              <div className="card-cultural p-6">
+                <h3 className="text-xl font-bold mb-3 text-zhuang-red">{t('architecture.whyTitle')}</h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{t('architecture.whyBody')}</p>
+              </div>
+              <ul className="space-y-3 text-gray-700 dark:text-gray-300">
+                {[1, 2, 3, 4].map((i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="text-zhuang-blue" aria-hidden>▸</span>
+                    <span>{t(`architecture.point${i}`)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 刘三姐与歌圩区 | Liu Sanjie & Song Fair Section */}
+      <section id="liusanjie" className="py-20">
+        <div className="container-custom">
+          <SectionHeader
+            image="zhuangjin-wave"
+            title={t('liusanjie.title')}
+            subtitle={t('liusanjie.tag')}
+            description={t('liusanjie.desc')}
+          />
+
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="card-cultural p-6 lg:col-span-2">
+              <h3 className="text-xl font-bold mb-3 text-zhuang-blue">{t('liusanjie.storyTitle')}</h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{t('liusanjie.storyBody')}</p>
+              <div className="mt-5 rounded-lg bg-zhuang-blue/5 dark:bg-zhuang-blue/20 p-4 italic text-gray-700 dark:text-gray-200">
+                {t('liusanjie.quote')}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="card-cultural p-5">
+                <div className="text-sm text-gray-500 mb-1">{t('liusanjie.statLabel')}</div>
+                <div className="text-3xl font-bold text-zhuang-red">1200+</div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">{t('liusanjie.statHint')}</p>
+              </div>
+              <Link
+                href={`/${locale}/interactive#games`}
+                className="card-cultural p-5 block hover:border-zhuang-red"
+              >
+                <div className="font-bold mb-1">{t('liusanjie.ctaTitle')}</div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('liusanjie.ctaBody')}</p>
+              </Link>
             </div>
           </div>
         </div>
@@ -215,32 +305,13 @@ export default function GuangxiHallPage() {
       <section id="sanyuesan" className="py-20 bg-gradient-to-br from-pink-50 to-purple-50 dark:from-gray-800 dark:to-gray-900">
         <div className="container-custom">
           <SectionHeader
-            icon="🎊"
-            title="三月三歌圩节"
-            subtitle="Traditional Festival"
-            description="壮族最重要的传统节日，歌舞相伴，欢庆春天"
+            image="embroidery-ball"
+            title={t('sanyuesan.title')}
+            subtitle={t('sanyuesan.tag')}
+            description={t('sanyuesan.desc')}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-            {festivalActivities.map((activity, index) => (
-              <div key={index} className="card-cultural">
-                <div className="aspect-video bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
-                  <div className="text-7xl">{activity.icon}</div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
-                    {activity.name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    {activity.description}
-                  </p>
-                  <button className="btn-embroidery w-full text-sm py-2">
-                    🎮 互动体验
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FestivalActivities />
         </div>
       </section>
 
@@ -248,10 +319,10 @@ export default function GuangxiHallPage() {
       <section className="py-12 bg-white dark:bg-gray-900">
         <div className="container-custom text-center">
           <Link
-            href="/zh"
+            href={`/${locale}`}
             className="inline-flex items-center gap-2 text-zhuang-blue hover:text-zhuang-red transition-colors font-medium"
           >
-            ← 返回首页
+            ← {t('back')}
           </Link>
         </div>
       </section>
@@ -261,19 +332,21 @@ export default function GuangxiHallPage() {
 
 // 辅助组件 | Helper Components
 function SectionHeader({
-  icon,
+  image,
   title,
   subtitle,
   description,
 }: {
-  icon: string;
+  image: CultureImageName;
   title: string;
   subtitle: string;
   description: string;
 }) {
   return (
     <div className="text-center max-w-3xl mx-auto">
-      <div className="text-6xl mb-4">{icon}</div>
+      <div className="flex justify-center mb-6">
+        <CultureImage name={image} style={{ width: 92, height: 92 }} label={title} />
+      </div>
       <h2 className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">
         {title}
       </h2>
@@ -285,64 +358,32 @@ function SectionHeader({
 
 // 数据定义 | Data Definitions
 const sections = [
-  { id: 'huashan', title: '左江花山岩画', icon: '🗿' },
-  { id: 'zhuangjin', title: '壮锦织艺', icon: '🧵' },
-  { id: 'tonggu', title: '铜鼓文化', icon: '🥁' },
-  { id: 'architecture', title: '干栏式建筑', icon: '🏘️' },
-  { id: 'sanyuesan', title: '三月三节日', icon: '🎊' },
-  { id: 'liusanjie', title: '刘三姐文化', icon: '🎵' },
-];
+  { id: 'huashan', titleKey: 'nav.huashan', icon: 'huashan-rock-art' },
+  { id: 'zhuangjin', titleKey: 'nav.zhuangjin', icon: 'zhuangjin-diamond' },
+  { id: 'tonggu', titleKey: 'nav.tonggu', icon: 'bronze-drum' },
+  { id: 'architecture', titleKey: 'nav.architecture', icon: 'stilt-house' },
+  { id: 'sanyuesan', titleKey: 'nav.sanyuesan', icon: 'embroidery-ball' },
+  { id: 'liusanjie', titleKey: 'nav.liusanjie', icon: 'zhuangjin-wave' },
+] as const;
 
 const zhuangjinPatterns = [
   {
-    name: '菱形纹',
-    icon: '◆',
-    description: '象征团结和谐，最常见的壮锦图案',
+    nameKey: 'zhuangjin.pattern1',
+    descKey: 'zhuangjin.pattern1Desc',
+    image: 'zhuangjin-diamond' as const,
     colors: ['#D73C2C', '#1E5BA8', '#D4AF37'],
   },
   {
-    name: '回纹',
-    icon: '⚡',
-    description: '代表生生不息，连续不断的生命力',
+    nameKey: 'zhuangjin.pattern2',
+    descKey: 'zhuangjin.pattern2Desc',
+    image: 'zhuangjin-fret' as const,
     colors: ['#1E5BA8', '#2E8B57', '#1A1A1A'],
   },
   {
-    name: '波浪纹',
-    icon: '〜',
-    description: '寓意流水潺潺，生活富足安康',
+    nameKey: 'zhuangjin.pattern3',
+    descKey: 'zhuangjin.pattern3Desc',
+    image: 'zhuangjin-wave' as const,
     colors: ['#7FCDCD', '#1E5BA8', '#FFFFFF'],
   },
 ];
 
-const festivalActivities = [
-  {
-    name: '对歌挑战',
-    icon: '🎤',
-    description: '男女对唱山歌，以歌传情，展现歌唱才华',
-  },
-  {
-    name: '抛绣球',
-    icon: '🏀',
-    description: '姑娘抛绣球，小伙接绣球，传统求爱方式',
-  },
-  {
-    name: '五色糯米饭',
-    icon: '🍚',
-    description: '用天然植物染色的糯米饭，五彩缤纷',
-  },
-  {
-    name: '抢花炮',
-    icon: '🎆',
-    description: '竞技活动，象征勇敢和力量',
-  },
-  {
-    name: '碰彩蛋',
-    icon: '🥚',
-    description: '互相碰蛋，未破者为胜，寓意吉祥',
-  },
-  {
-    name: '板鞋竞速',
-    icon: '👟',
-    description: '团队协作竞技，考验默契和配合',
-  },
-];

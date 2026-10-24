@@ -5,14 +5,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=3072 next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
-    "optimize:images": "node scripts/optimize-images.js",
-    "compress:models": "node scripts/compress-models.js",
-    "generate:sitemap": "node scripts/generate-sitemap.js"
+    "images": "node scripts/generate-images.js && node scripts/generate-flags.js",
+    "test": "node --import ./tests/register.mjs --test tests/content.test.mjs",
+    "check:content": "node scripts/check-content.js",
+    "check": "npm run type-check && npm run check:content && npm test"
   },
   "dependencies": {
     "@apollo/client": "^3.9.0",

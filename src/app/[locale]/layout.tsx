@@ -1,17 +1,35 @@
 import type { Metadata } from 'next';
 import Header from '@/components/layout/Header';
-import { SUPPORTED_LOCALES } from '@/constants/config';
+import Footer from '@/components/layout/Footer';
+import VisitTracker from '@/components/layout/VisitTracker';
+import { LocaleProvider } from '@/i18n/client';
+import { LOCALES, normalizeLocale, type Locale } from '@/i18n/config';
+import { getT } from '@/i18n/server';
 
+/** 预生成全部语言路径（保持 SSG） */
 export async function generateStaticParams() {
-  return SUPPORTED_LOCALES.map((locale) => ({
-    locale: locale.code,
-  }));
+  return LOCALES.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-  title: '广西-东盟线上文化展',
-  description: '探索广西壮族文化与东盟十国的文化交流',
-};
+/** 语言化的页面元信息 */
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const { t, locale } = getT(params.locale, 'header');
+  return {
+    title: t('logo'),
+    description: t('logo'),
+    alternates: {
+      languages: Object.fromEntries(LOCALES.map((l) => [l, `/${l}`])),
+    },
+    openGraph: {
+      locale,
+      title: t('logo'),
+    },
+  };
+}
 
 export default function LocaleLayout({
   children,
@@ -20,12 +38,19 @@ export default function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { locale } = params;
+  const locale: Locale = normalizeLocale(params.locale);
 
   return (
-    <>
+    <LocaleProvider locale={locale}>
+      <a href="#main-content" className="skip-link">
+        {getT(locale, 'common').t('a11y.skipToMain')}
+      </a>
       <Header locale={locale} />
-      {children}
-    </>
+      <VisitTracker />
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1">{children}</div>
+        <Footer />
+      </div>
+    </LocaleProvider>
   );
 }

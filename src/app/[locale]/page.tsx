@@ -1,46 +1,77 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { EXHIBITION_ROUTES } from '@/constants/routes';
+import Icon, { HeroImage, CultureImage, type IconName } from '@/components/ui/Icon';
+import { getT } from '@/i18n/server';
+import { LOCALES, LOCALE_META } from '@/i18n/config';
 
-export const metadata: Metadata = {
-  title: '首页 - 广西-东盟线上文化展',
-  description: '欢迎来到广西-东盟线上文化展，探索广西壮族文化与东盟十国的文化交流。',
+/** 首页元信息（跟随语言） */
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
+  const { t } = getT(params.locale, 'home');
+  return { title: t('meta.title'), description: t('meta.description') };
+}
+
+/** 展厅封面图映射 */
+const EXHIBITION_IMAGE: Record<string, string> = {
+  guangxi: 'culture/huashan-rock-art',     // 花山岩画 —— 广西壮族文化标志
+  guilin: 'culture/guilin-landscape',      // 桂林喀斯特
+  asean: 'culture/asean-culture',          // 吴哥窟 —— 东盟文化遗产
+  exchange: 'culture/silk-road-sea',       // 海上丝路帆船
+  archive: 'culture/archives',             // 古籍档案
+  interactive: 'culture/festival',         // 民族节庆
 };
 
-export default function HomePage() {
+/** 展厅顺序与路径（文案走 header 命名空间，与导航栏共用同一批 key） */
+const EXHIBITIONS = [
+  { key: 'guangxi', path: '/guangxi' },
+  { key: 'guilin', path: '/guilin' },
+  { key: 'asean', path: '/asean' },
+  { key: 'exchange', path: '/exchange' },
+  { key: 'archive', path: '/archive' },
+  { key: 'interactive', path: '/interactive' },
+];
+
+export default function HomePage({ params }: { params: { locale: string } }) {
+  const { t } = getT(params.locale, 'home');
+  const { t: th } = getT(params.locale, 'header');
+  const { t: tc } = getT(params.locale, 'common');
+  const { locale } = getT(params.locale, 'home');
+
   return (
     <main id="main-content" className="min-h-screen">
       {/* 英雄区域 | Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-zhuang-red via-zhuang-blue to-zhuang-gold overflow-hidden">
-        {/* 背景装饰 */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-64 h-64 border-zhuangjin"></div>
-          <div className="absolute bottom-10 right-10 w-96 h-96 border-zhuangjin"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <HeroImage name="guangxi" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/60"></div>
 
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            广西-东盟线上文化展
+            {t('hero.title')}
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90 animate-slide-up animation-delay-200">
-            Guangxi-ASEAN Online Cultural Exhibition
+            {t('hero.titleEn')}
           </p>
           <p className="text-lg md:text-xl max-w-3xl mx-auto mb-12 animate-slide-up animation-delay-300">
-            探索广西壮族文化的独特魅力，体验东盟十国的多元文化交融
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up animation-delay-500">
             <Link
-              href="/zh/persona"
+              href={`/${locale}/persona`}
               className="btn-embroidery text-lg px-8 py-4"
             >
-              🎭 测测你的文化人设
+              {t('hero.ctaPersona')}
             </Link>
             <Link
-              href="/zh/guangxi"
+              href={`/${locale}/guangxi`}
               className="glass-effect text-white px-8 py-4 rounded-full text-lg font-medium hover:scale-105 transition-transform"
             >
-              开始探索展厅 🏛️
+              {t('hero.ctaExplore')}
             </Link>
           </div>
         </div>
@@ -55,6 +86,7 @@ export default function HomePage() {
             strokeWidth="2"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
           </svg>
@@ -70,29 +102,36 @@ export default function HomePage() {
 
         <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="text-7xl mb-6 animate-embroidery-bounce">🎭✨</div>
+            <div className="flex justify-center mb-6 animate-embroidery-bounce">
+              <CultureImage
+                name="embroidery-ball"
+                style={{ width: 120, height: 120 }}
+                label={t('persona.tag1')}
+              />
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              你是哪种文化人？
+              {t('persona.title')}
             </h2>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
-              5个问题揭示你的文化DNA，生成专属人设海报
+              {t('persona.subtitle')}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm">🏛️ 传统守护者</span>
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm">🧵 现代壮锦设计师</span>
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm">🎤 山歌说唱家</span>
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm">🗿 花山探险家</span>
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm">🌏 东盟文化使者</span>
+              {['tag1', 'tag2', 'tag3', 'tag4', 'tag5'].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm"
+                >
+                  {t(`persona.${tag}`)}
+                </span>
+              ))}
             </div>
             <Link
-              href="/zh/persona"
+              href={`/${locale}/persona`}
               className="inline-block bg-white text-purple-600 px-10 py-4 rounded-full text-lg font-bold hover:shadow-2xl hover:scale-105 transition-all"
             >
-              🚀 立即测试（仅需30秒）
+              {t('persona.cta')}
             </Link>
-            <p className="text-sm mt-4 opacity-75">
-              已有 <strong>10,245+</strong> 人发现了自己的文化身份
-            </p>
+            <p className="text-sm mt-4 opacity-75">{t('persona.socialProof')}</p>
           </div>
         </div>
       </section>
@@ -101,39 +140,38 @@ export default function HomePage() {
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="container-custom">
           <h2 className="text-4xl font-bold text-center mb-4 text-gradient-zhuang">
-            六大主题展厅
+            {t('exhibitions.title')}
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-16 max-w-2xl mx-auto">
-            穿越时空，感受广西与东盟的文化魅力
+            {t('exhibitions.subtitle')}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {EXHIBITION_ROUTES.map((exhibition, index) => (
+            {EXHIBITIONS.map((exhibition, index) => (
               <Link
                 key={exhibition.key}
-                href={`/zh${exhibition.path}`}
+                href={`/${locale}${exhibition.path}`}
                 className="card-cultural group"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                }}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-50 group-hover:opacity-70 transition-opacity">
-                    {getExhibitionEmoji(exhibition.key)}
-                  </div>
+                <div className="aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/images/${EXHIBITION_IMAGE[exhibition.key]}.jpg`}
+                    alt={th(`exhibition.${exhibition.key}`)}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 to-transparent"></div>
                 </div>
                 <div className="p-6">
                   <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white group-hover:text-zhuang-red transition-colors">
-                    {exhibition.titleZh}
+                    {th(`exhibition.${exhibition.key}`)}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    {exhibition.titleEn}
-                  </p>
                   <p className="text-gray-700 dark:text-gray-300">
-                    {exhibition.descriptionZh}
+                    {th(`exhibition.${exhibition.key}.desc`)}
                   </p>
                   <div className="mt-4 flex items-center text-zhuang-blue font-medium group-hover:translate-x-2 transition-transform">
-                    探索展厅 →
+                    {t('exhibitions.explore')} →
                   </div>
                 </div>
               </Link>
@@ -145,31 +183,13 @@ export default function HomePage() {
       {/* 特色功能 | Features */}
       <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="container-custom">
-          <h2 className="text-4xl font-bold text-center mb-16">
-            沉浸式文化体验
-          </h2>
+          <h2 className="text-4xl font-bold text-center mb-16">{t('features.title')}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureCard
-              icon="🎮"
-              title="3D 虚拟展厅"
-              description="第一人称视角漫游，体验真实的展厅空间"
-            />
-            <FeatureCard
-              icon="📱"
-              title="AR 增强现实"
-              description="将文化元素投射到现实世界，互动体验更真实"
-            />
-            <FeatureCard
-              icon="🌐"
-              title="11 种语言"
-              description="中文、英文及东盟十国语言全面支持"
-            />
-            <FeatureCard
-              icon="♿"
-              title="无障碍访问"
-              description="WCAG 2.2 AA 标准，让每个人都能享受文化"
-            />
+            <FeatureCard icon="gamepad" title={t('features.3d.title')} description={t('features.3d.desc')} />
+            <FeatureCard icon="camera" title={t('features.ar.title')} description={t('features.ar.desc')} />
+            <FeatureCard icon="globe" title={t('features.i18n.title')} description={t('features.i18n.desc')} />
+            <FeatureCard icon="medal" title={t('features.a11y.title')} description={t('features.a11y.desc')} />
           </div>
         </div>
       </section>
@@ -177,31 +197,29 @@ export default function HomePage() {
       {/* 文化亮点 | Cultural Highlights */}
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="container-custom">
-          <h2 className="text-4xl font-bold text-center mb-4">
-            文化瑰宝
-          </h2>
+          <h2 className="text-4xl font-bold text-center mb-4">{t('highlights.title')}</h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-16 max-w-2xl mx-auto">
-            探索 UNESCO 世界遗产与非物质文化遗产
+            {t('highlights.subtitle')}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <HighlightCard
-              title="左江花山岩画"
-              subtitle="UNESCO World Heritage"
-              description="公元前5世纪至公元2世纪的古骆越人文化遗迹"
-              color="from-red-500 to-orange-500"
+              title={t('highlights.huashan.title')}
+              subtitle={t('highlights.huashan.tag')}
+              description={t('highlights.huashan.desc')}
+              image="huashan-rock-art"
             />
             <HighlightCard
-              title="壮锦织艺"
-              subtitle="National Intangible Heritage"
-              description="千年传承的壮族传统织造工艺，色彩绚丽的民族瑰宝"
-              color="from-blue-500 to-purple-500"
+              title={t('highlights.zhuangjin.title')}
+              subtitle={t('highlights.zhuangjin.tag')}
+              description={t('highlights.zhuangjin.desc')}
+              image="zhuangjin-diamond"
             />
             <HighlightCard
-              title="铜鼓文化"
-              subtitle="Cultural Symbol"
-              description="壮族祭祀与庆典的重要文化符号，历史悠久"
-              color="from-yellow-500 to-amber-600"
+              title={t('highlights.tonggu.title')}
+              subtitle={t('highlights.tonggu.tag')}
+              description={t('highlights.tonggu.desc')}
+              image="bronze-drum"
             />
           </div>
         </div>
@@ -212,35 +230,35 @@ export default function HomePage() {
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="text-white font-bold text-lg mb-4">关于我们</h3>
-              <p className="text-sm">
-                广西-东盟线上文化展致力于展现广西壮族文化特色与东盟十国的文化交流。
-              </p>
+              <h3 className="text-white font-bold text-lg mb-4">{tc('footer.aboutUs')}</h3>
+              <p className="text-sm">{tc('footer.aboutDesc')}</p>
             </div>
             <div>
-              <h3 className="text-white font-bold text-lg mb-4">快速链接</h3>
+              <h3 className="text-white font-bold text-lg mb-4">{tc('footer.quickLinks')}</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/zh/about" className="hover:text-white">关于项目</Link></li>
-                <li><Link href="/zh/accessibility" className="hover:text-white">无障碍访问</Link></li>
-                <li><Link href="/zh/privacy" className="hover:text-white">隐私政策</Link></li>
-                <li><Link href="/zh/contact" className="hover:text-white">联系我们</Link></li>
+                <li><Link href={`/${locale}/about`} className="hover:text-white">{tc('footer.about')}</Link></li>
+                <li><Link href={`/${locale}/accessibility`} className="hover:text-white">{tc('footer.accessibility')}</Link></li>
+                <li><Link href={`/${locale}/privacy`} className="hover:text-white">{tc('footer.privacy')}</Link></li>
+                <li><Link href={`/${locale}/contact`} className="hover:text-white">{tc('footer.contact')}</Link></li>
+                <li><Link href={`/${locale}/credits`} className="hover:text-white">{tc('footer.credits')}</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-white font-bold text-lg mb-4">语言 / Languages</h3>
-              <div className="flex flex-wrap gap-2 text-sm">
-                <Link href="/zh" className="hover:text-white">中文</Link>
-                <span>|</span>
-                <Link href="/en" className="hover:text-white">English</Link>
-                <span>|</span>
-                <Link href="/vi" className="hover:text-white">Tiếng Việt</Link>
-                <span>|</span>
-                <Link href="/th" className="hover:text-white">ไทย</Link>
+              <h3 className="text-white font-bold text-lg mb-4">{tc('footer.languages')}</h3>
+              <div className="flex flex-wrap gap-x-2 gap-y-1 text-sm">
+                {LOCALES.map((code, i) => (
+                  <span key={code} className="flex items-center">
+                    {i > 0 && <span className="text-gray-600 mr-2">|</span>}
+                    <Link href={`/${code}`} hrefLang={code} className="hover:text-white">
+                      {LOCALE_META[code].nativeName}
+                    </Link>
+                  </span>
+                ))}
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>© 2024 Guangxi-ASEAN Cultural Exhibition. Built with ❤️ for cultural preservation.</p>
+            <p>{tc('footer.copyright')}</p>
           </div>
         </div>
       </footer>
@@ -249,20 +267,34 @@ export default function HomePage() {
 }
 
 // 辅助组件 | Helper Components
-function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+function FeatureCard({ icon, title, description }: { icon: IconName; title: string; description: string }) {
   return (
     <div className="text-center p-6 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors">
-      <div className="text-5xl mb-4">{icon}</div>
+      <div className="flex justify-center mb-4 text-zhuang-red dark:text-zhuang-gold">
+        <Icon name={icon} size={52} />
+      </div>
       <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">{title}</h3>
       <p className="text-gray-600 dark:text-gray-400 text-sm">{description}</p>
     </div>
   );
 }
 
-function HighlightCard({ title, subtitle, description, color }: { title: string; subtitle: string; description: string; color: string }) {
+function HighlightCard({ title, subtitle, description, image }: {
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+}) {
   return (
     <div className="card-cultural overflow-hidden group">
-      <div className={`h-2 bg-gradient-to-r ${color}`}></div>
+      <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-800">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/images/culture/${image}.jpg`}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
       <div className="p-6">
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{subtitle}</div>
         <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-zhuang-red transition-colors">
@@ -272,16 +304,4 @@ function HighlightCard({ title, subtitle, description, color }: { title: string;
       </div>
     </div>
   );
-}
-
-function getExhibitionEmoji(key: string): string {
-  const emojiMap: Record<string, string> = {
-    guangxi: '🎭',
-    guilin: '🏔️',
-    asean: '🌏',
-    exchange: '🤝',
-    archive: '📚',
-    interactive: '🎮',
-  };
-  return emojiMap[key] || '🏛️';
 }

@@ -21,32 +21,30 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+    // 限制并行 worker 数量。
+    // 本机 16 核、16GB 内存但空闲常不足 5GB，Next 默认按 CPU 核数起 16 个 worker，
+    // 实测会因 "Zone Allocation failed - process out of memory" 导致构建崩溃。
+    //
+    // 注意：这里【不能】设 workerThreads: false。
+    // 那会让 Next 改用 fork 子进程（jest-worker + child_process），
+    // 而本机环境会拦截子进程创建，dev 下每次 getStaticPaths 都抛
+    // "spawn EPERM (errno -4048)"，所有页面 500。
+    // 保持默认（worker 线程）即可避开该限制。
+    cpus: 4,
   },
-
-  // 排除不相关的目录 | Exclude Irrelevant Directories
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 
   // Webpack 配置 | Webpack Configuration
   webpack: (config, { isServer }) => {
-    // 排除不相关的子项目
-    config.module.rules.push({
-      test: /\.(tsx|ts|jsx|js)$/,
-      exclude: [
-        /node_modules/,
-        /liuliangchuhai/,
-        /liuliangchuhaillch/,
-      ],
-    });
     // 3D模型加载器
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
       type: 'asset/resource',
     });
 
-    // SVG 作为 React 组件
+    // SVG 作为静态资源（不依赖未安装的 @svgr/webpack）
     config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
+      test: /\.svg$/i,
+      type: 'asset/resource',
     });
 
     // 音频文件
@@ -54,14 +52,6 @@ const nextConfig = {
       test: /\.(mp3|wav|ogg)$/,
       type: 'asset/resource',
     });
-
-    // Three.js 优化
-    if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'three': 'three/build/three.module.js',
-      };
-    }
 
     return config;
   },

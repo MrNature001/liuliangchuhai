@@ -22,15 +22,19 @@ export interface PersonaOption {
   };
 }
 
+import type { IconName } from '@/components/ui/Icon';
+
 export interface PersonaResult {
   id: string;
   name: string;
   nameEn: string;
   description: string;
   descriptionEn: string;
-  icon: string;
+  icon: IconName;
   color: string;
   traits: string[];
+  /** 英文特质标签（供 /en 使用） */
+  traitsEn: string[];
   matchingExhibitions: string[];
 }
 
@@ -181,9 +185,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Traditional Guardian',
     description: '你深深敬畏传统文化，致力于原汁原味地保护和传承。在你眼中，每一件文物、每一项技艺都是祖先的智慧结晶，值得用一生去守护。',
     descriptionEn: 'You deeply revere traditional culture and dedicate yourself to authentic preservation. Every artifact and craft is ancestral wisdom worth lifelong protection.',
-    icon: '🏛️',
+    icon: 'museum',
     color: 'from-amber-600 to-orange-700',
     traits: ['传统主义', '文化保护', '历史研究'],
+    traitsEn: ['Traditionalist', 'Heritage Preservation', 'Historical Research'],
     matchingExhibitions: ['guangxi', 'archive']
   },
   {
@@ -192,9 +197,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Modern Zhuangjin Designer',
     description: '你将传统壮锦纹样与现代审美完美融合，创造出既有文化底蕴又符合当代品味的作品。你相信传统需要创新才能焕发新生。',
     descriptionEn: 'You blend traditional Zhuangjin patterns with modern aesthetics, creating works with cultural depth and contemporary appeal.',
-    icon: '🧵',
+    icon: 'archive',
     color: 'from-pink-500 to-purple-600',
     traits: ['创新设计', '时尚潮流', '文化融合'],
+    traitsEn: ['Innovative Design', 'Fashion Forward', 'Cultural Fusion'],
     matchingExhibitions: ['guangxi', 'interactive']
   },
   {
@@ -203,9 +209,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Huashan Explorer',
     description: '你对神秘的花山岩画充满好奇，喜欢解谜和探索未知。你相信古人留下的每一个符号都藏着故事，等待被发现。',
     descriptionEn: 'You are fascinated by the mysterious Huashan Rock Art. Every ancient symbol holds a story waiting to be discovered.',
-    icon: '🗿',
+    icon: 'mountain',
     color: 'from-gray-700 to-gray-900',
     traits: ['考古探索', '解谜专家', '历史研究'],
+    traitsEn: ['Archaeological Exploration', 'Puzzle Solver', 'Historical Research'],
     matchingExhibitions: ['guangxi', 'guilin']
   },
   {
@@ -214,9 +221,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Mountain Song Rapper',
     description: '你把壮族山歌与现代说唱结合，用节奏和韵律讲述文化故事。你相信音乐是跨越语言和文化的桥梁。',
     descriptionEn: 'You blend Zhuang mountain songs with modern rap, telling cultural stories through rhythm and rhyme.',
-    icon: '🎤',
+    icon: 'music',
     color: 'from-blue-500 to-cyan-500',
     traits: ['音乐创作', '文化说唱', '社交达人'],
+    traitsEn: ['Music Creation', 'Cultural Rap', 'Social Butterfly'],
     matchingExhibitions: ['guangxi', 'interactive']
   },
   {
@@ -225,9 +233,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'ASEAN Cultural Ambassador',
     description: '你热衷于连接广西与东盟各国文化，发现不同文化间的共同点。你相信文化交流能促进理解与和平。',
     descriptionEn: 'You connect Guangxi with ASEAN cultures, discovering commonalities. Cultural exchange promotes understanding and peace.',
-    icon: '🌏',
+    icon: 'globe',
     color: 'from-green-500 to-teal-600',
     traits: ['跨文化交流', '语言达人', '外交家'],
+    traitsEn: ['Cross-cultural Exchange', 'Linguist', 'Diplomat'],
     matchingExhibitions: ['asean', 'exchange']
   },
   {
@@ -236,9 +245,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Guilin Landscape Poet',
     description: '你被桂林山水的诗意之美深深打动，喜欢用文字和影像捕捉自然与文化的融合。你相信美是治愈心灵的良药。',
     descriptionEn: 'Touched by the poetic beauty of Guilin landscapes, you capture the fusion of nature and culture through words and images.',
-    icon: '🏔️',
+    icon: 'mountain',
     color: 'from-cyan-400 to-blue-500',
     traits: ['诗意表达', '摄影师', '自然爱好者'],
+    traitsEn: ['Poetic Expression', 'Photographer', 'Nature Lover'],
     matchingExhibitions: ['guilin', 'archive']
   },
   {
@@ -247,9 +257,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Sanyuesan Festival Organizer',
     description: '你擅长组织文化活动，让更多人体验壮族节日的欢乐。你相信文化需要活起来，而不是躺在博物馆里。',
     descriptionEn: 'You excel at organizing cultural events, letting people experience the joy of Zhuang festivals. Culture should be alive, not locked in museums.',
-    icon: '🎊',
+    icon: 'lantern',
     color: 'from-pink-400 to-red-500',
     traits: ['活动策划', '社交高手', '文化推广'],
+    traitsEn: ['Event Planning', 'Social Expert', 'Cultural Promotion'],
     matchingExhibitions: ['guangxi', 'interactive']
   },
   {
@@ -258,9 +269,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Digital Curator',
     description: '你精通数字技术，致力于将传统文化以创新方式呈现。VR、AR、3D扫描都是你的工具，让文化跨越时空限制。',
     descriptionEn: 'Proficient in digital technology, you present traditional culture innovatively. VR, AR, 3D scanning help culture transcend time and space.',
-    icon: '💻',
+    icon: 'archive',
     color: 'from-indigo-500 to-purple-600',
     traits: ['科技达人', '数字创新', '虚拟策展'],
+    traitsEn: ['Tech Savvy', 'Digital Innovation', 'Virtual Curation'],
     matchingExhibitions: ['archive', 'interactive']
   },
   {
@@ -269,9 +281,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Bronze Drum Rhythm Master',
     description: '你对铜鼓的节奏情有独钟，能从鼓声中感受到千年的文化脉动。你相信音乐是连接过去与未来的纽带。',
     descriptionEn: 'You love bronze drum rhythms, feeling millennial cultural pulses through drumbeats. Music connects past and future.',
-    icon: '🥁',
+    icon: 'drum',
     color: 'from-yellow-600 to-amber-700',
     traits: ['音乐天赋', '节奏感', '传统乐器'],
+    traitsEn: ['Musical Talent', 'Rhythm', 'Traditional Instruments'],
     matchingExhibitions: ['guangxi', 'interactive']
   },
   {
@@ -280,9 +293,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Cultural Storyteller',
     description: '你善于用生动的故事传递文化内涵，让每个人都能被文化之美打动。你相信好的故事能改变世界。',
     descriptionEn: 'You convey cultural essence through vivid stories, touching everyone with cultural beauty. Good stories can change the world.',
-    icon: '📖',
+    icon: 'archive',
     color: 'from-orange-500 to-red-600',
     traits: ['叙事能力', '教育传播', '写作才华'],
+    traitsEn: ['Storytelling', 'Education', 'Writing Talent'],
     matchingExhibitions: ['exchange', 'archive']
   },
   {
@@ -291,9 +305,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Craftsman',
     description: '你热爱动手创作，从编织、陶艺到木雕，你用双手延续传统技艺。你相信每件手工作品都承载着温度和故事。',
     descriptionEn: 'You love hands-on creation, from weaving to pottery to wood carving. Every handmade piece carries warmth and stories.',
-    icon: '🎨',
+    icon: 'camera',
     color: 'from-brown-500 to-amber-600',
     traits: ['手工技艺', '工匠精神', '创作热情'],
+    traitsEn: ['Craftsmanship', 'Artisan Spirit', 'Creative Passion'],
     matchingExhibitions: ['guangxi', 'interactive']
   },
   {
@@ -302,9 +317,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Cultural Influencer',
     description: '你在社交媒体上分享文化见闻，用短视频、图文让更多人了解广西文化。你相信影响力能带来改变。',
     descriptionEn: 'You share cultural insights on social media through short videos and posts, introducing Guangxi culture to more people.',
-    icon: '📱',
+    icon: 'share',
     color: 'from-pink-500 to-rose-600',
     traits: ['社交媒体', '内容创作', '影响力'],
+    traitsEn: ['Social Media', 'Content Creation', 'Influence'],
     matchingExhibitions: ['interactive', 'asean']
   },
   {
@@ -313,9 +329,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Cultural Scholar',
     description: '你用严谨的学术态度研究民族文化，撰写论文、整理史料。你相信知识是文化传承的基石。',
     descriptionEn: 'You research ethnic culture with academic rigor, writing papers and organizing historical materials. Knowledge is the foundation of cultural heritage.',
-    icon: '🎓',
+    icon: 'medal',
     color: 'from-blue-600 to-indigo-700',
     traits: ['学术研究', '文献整理', '理性分析'],
+    traitsEn: ['Academic Research', 'Archival Work', 'Analytical Thinking'],
     matchingExhibitions: ['archive', 'exchange']
   },
   {
@@ -324,9 +341,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Cultural Traveler',
     description: '你走遍广西和东盟各地，用镜头记录文化之美，分享旅途见闻。你相信行万里路胜读万卷书。',
     descriptionEn: 'You travel across Guangxi and ASEAN, documenting cultural beauty through your lens. Traveling thousands of miles beats reading thousands of books.',
-    icon: '✈️',
+    icon: 'globe',
     color: 'from-sky-400 to-blue-600',
     traits: ['旅行探索', '摄影记录', '见闻分享'],
+    traitsEn: ['Travel Exploration', 'Photo Documentation', 'Story Sharing'],
     matchingExhibitions: ['guilin', 'asean']
   },
   {
@@ -335,9 +353,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Community Builder',
     description: '你致力于建立文化爱好者社区，组织线上线下活动。你相信集体的力量能让文化传承走得更远。',
     descriptionEn: 'You build communities of culture enthusiasts and organize online/offline events. Collective strength makes cultural heritage go further.',
-    icon: '🤝',
+    icon: 'handshake',
     color: 'from-green-400 to-emerald-600',
     traits: ['社区运营', '组织能力', '团队协作'],
+    traitsEn: ['Community Building', 'Organisation', 'Teamwork'],
     matchingExhibitions: ['interactive', 'exchange']
   },
   {
@@ -346,9 +365,10 @@ export const personaResults: PersonaResult[] = [
     nameEn: 'Cultural Innovation Pioneer',
     description: '你用最前沿的技术和理念重新诠释传统文化，从NFT到元宇宙，你总是走在时代前沿。你相信创新是最好的传承。',
     descriptionEn: 'You reinterpret traditional culture with cutting-edge tech and ideas. From NFTs to metaverse, innovation is the best inheritance.',
-    icon: '🚀',
+    icon: 'gamepad',
     color: 'from-purple-500 to-pink-600',
     traits: ['技术前沿', '创新思维', '未来视野'],
+    traitsEn: ['Cutting-edge Tech', 'Innovative Thinking', 'Future Vision'],
     matchingExhibitions: ['interactive', 'archive']
   }
 ];

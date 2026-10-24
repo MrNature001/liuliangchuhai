@@ -17,16 +17,16 @@ export const APP_CONFIG = {
 
 // 支持的语言 | Supported Languages
 export const SUPPORTED_LOCALES = [
-  { code: 'zh', name: '中文', nativeName: '中文（简体）', flag: '🇨🇳' },
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'th', name: 'Thai', nativeName: 'ภาษาไทย', flag: '🇹🇭' },
-  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu', flag: '🇲🇾' },
-  { code: 'my', name: 'Burmese', nativeName: 'ဗမာစာ', flag: '🇲🇲' },
-  { code: 'lo', name: 'Lao', nativeName: 'ພາສາລາວ', flag: '🇱🇦' },
-  { code: 'km', name: 'Khmer', nativeName: 'ភាសាខ្មែរ', flag: '🇰🇭' },
-  { code: 'tl', name: 'Tagalog', nativeName: 'Tagalog', flag: '🇵🇭' },
+  { code: 'zh', name: '中文', nativeName: '中文（简体）' },
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  { code: 'th', name: 'Thai', nativeName: 'ภาษาไทย' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu' },
+  { code: 'my', name: 'Burmese', nativeName: 'ဗမာစာ' },
+  { code: 'lo', name: 'Lao', nativeName: 'ພາສາລາວ' },
+  { code: 'km', name: 'Khmer', nativeName: 'ភាសាខ្មែរ' },
+  { code: 'tl', name: 'Tagalog', nativeName: 'Tagalog' },
 ] as const;
 
 export const DEFAULT_LOCALE = 'zh' as const;
@@ -140,13 +140,9 @@ export const SOCIAL_CONFIG = {
 } as const;
 
 // 联系方式 | Contact Information
+// 只保留真实可用的邮箱：电话与地址此前是 XXXX 占位，已移除。
 export const CONTACT_INFO = {
   email: 'info@guangxi-asean-cultural.com',
-  phone: '+86-771-XXXXXXX',
-  address: {
-    zh: '中国广西壮族自治区南宁市',
-    en: 'Nanning, Guangxi Zhuang Autonomous Region, China',
-  },
 } as const;
 
 // 外部链接 | External Links

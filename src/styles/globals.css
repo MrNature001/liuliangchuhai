@@ -19,9 +19,13 @@
   --color-ink-cyan: #7fcdcd;
   --color-ink-green: #90ee90;
 
-  /* 字体 | Fonts */
-  --font-sans: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-  --font-zhuang: 'Source Serif Pro', serif;
+  /* 字体 | Fonts
+     使用系统原生字体栈，不依赖外部字体（去掉 Noto Sans SC / Source Serif Pro 等
+     通用「AI 生成站」字体），中文优先走系统黑体，保证各平台都是真实本地字体。 */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Source Han Sans SC',
+    'Noto Sans CJK SC', 'WenQuanYi Micro Hei', sans-serif;
+  --font-serif: Georgia, 'Songti SC', 'SimSun', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
 
   /* 间距 | Spacing */
   --spacing-xs: 0.25rem;

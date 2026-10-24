@@ -125,16 +125,16 @@ export const EXHIBITION_ROUTES = [
 
 // 东盟十国路由 | ASEAN Countries Routes
 export const ASEAN_COUNTRIES = [
-  { code: 'thailand', nameZh: '泰国', nameEn: 'Thailand', flag: '🇹🇭' },
-  { code: 'vietnam', nameZh: '越南', nameEn: 'Vietnam', flag: '🇻🇳' },
-  { code: 'indonesia', nameZh: '印度尼西亚', nameEn: 'Indonesia', flag: '🇮🇩' },
-  { code: 'malaysia', nameZh: '马来西亚', nameEn: 'Malaysia', flag: '🇲🇾' },
-  { code: 'singapore', nameZh: '新加坡', nameEn: 'Singapore', flag: '🇸🇬' },
-  { code: 'philippines', nameZh: '菲律宾', nameEn: 'Philippines', flag: '🇵🇭' },
-  { code: 'cambodia', nameZh: '柬埔寨', nameEn: 'Cambodia', flag: '🇰🇭' },
-  { code: 'laos', nameZh: '老挝', nameEn: 'Laos', flag: '🇱🇦' },
-  { code: 'myanmar', nameZh: '缅甸', nameEn: 'Myanmar', flag: '🇲🇲' },
-  { code: 'brunei', nameZh: '文莱', nameEn: 'Brunei', flag: '🇧🇳' },
+  { code: 'thailand', nameZh: '泰国', nameEn: 'Thailand' },
+  { code: 'vietnam', nameZh: '越南', nameEn: 'Vietnam' },
+  { code: 'indonesia', nameZh: '印度尼西亚', nameEn: 'Indonesia' },
+  { code: 'malaysia', nameZh: '马来西亚', nameEn: 'Malaysia' },
+  { code: 'singapore', nameZh: '新加坡', nameEn: 'Singapore' },
+  { code: 'philippines', nameZh: '菲律宾', nameEn: 'Philippines' },
+  { code: 'cambodia', nameZh: '柬埔寨', nameEn: 'Cambodia' },
+  { code: 'laos', nameZh: '老挝', nameEn: 'Laos' },
+  { code: 'myanmar', nameZh: '缅甸', nameEn: 'Myanmar' },
+  { code: 'brunei', nameZh: '文莱', nameEn: 'Brunei' },
 ] as const;
 
 // 面包屑导航辅助函数 | Breadcrumb Helper
