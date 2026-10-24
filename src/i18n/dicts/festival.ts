@@ -139,6 +139,10 @@ export const vi: Dict = {
   'cta.close': 'Thu gọn',
 
   // 点击后的提示弹窗
+  'activity.imageNote.brocade': 'Hình minh hoạ: hoa văn thổ cẩm Tráng',
+  'activity.imageNote.drum': 'Hình minh hoạ: trống đồng',
+  'activity.imageNote.fret': 'Hình minh hoạ: hoa văn hình học thổ cẩm',
+  'activity.imageNote.stilt': 'Hình minh hoạ: nhà sàn',
 };
 
 /** ไทย — ⚠️ คำแปลจากเครื่อง ต้องให้เจ้าของภาษาตรวจทานก่อนเผยแพร่จริง */
@@ -181,4 +185,8 @@ export const th: Dict = {
   'cta.close': 'ย่อ',
 
   // 点击后的提示弹窗
+  'activity.imageNote.brocade': 'ภาพประกอบ: ลายผ้าทอจ้วง',
+  'activity.imageNote.drum': 'ภาพประกอบ: กลองทองสัมฤทธิ์',
+  'activity.imageNote.fret': 'ภาพประกอบ: ลายเรขาคณิตผ้าทอ',
+  'activity.imageNote.stilt': 'ภาพประกอบ: เรือนยกพื้น',
 };
