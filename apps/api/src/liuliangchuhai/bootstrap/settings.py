@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     heygen_avatar_id: str = ""
     heygen_voice_id: str = ""
     digital_human_timeout_seconds: float = Field(default=300, gt=0)
+    # Alibaba Cloud Bailian (DashScope) talking-head renderer. `videoretalk`
+    # re-drives the lips of one source clip, so the clip must be reachable.
+    dashscope_api_key: SecretStr | None = None
+    dashscope_source_video_url: str = ""
     # Where the key-free local presenter writes rendered MP4 files. Relative
     # values resolve against apps/api so the path is independent of the CWD.
     media_dir: str = "media"
@@ -65,5 +69,19 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LIULIANGCHUHAI_HEYGEN_AVATAR_ID and LIULIANGCHUHAI_HEYGEN_VOICE_ID "
                     "are required when the digital-human provider is heygen"
+                )
+        if self.digital_human_provider == "dashscope":
+            if (
+                self.dashscope_api_key is None
+                or not self.dashscope_api_key.get_secret_value().strip()
+            ):
+                raise ValueError(
+                    "LIULIANGCHUHAI_DASHSCOPE_API_KEY is required when the digital-human "
+                    "provider is dashscope"
+                )
+            if not self.dashscope_source_video_url.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_DASHSCOPE_SOURCE_VIDEO_URL is required when the "
+                    "digital-human provider is dashscope"
                 )
         return self

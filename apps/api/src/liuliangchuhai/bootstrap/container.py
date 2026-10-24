@@ -22,6 +22,9 @@ from liuliangchuhai.infrastructure.assistant.deepseek import DeepSeekAssistantAd
 from liuliangchuhai.infrastructure.assistant.mock import MockAssistantAdapter
 from liuliangchuhai.infrastructure.content.deepseek import DeepSeekContentPlannerAdapter
 from liuliangchuhai.infrastructure.content.mock import MockContentPlannerAdapter
+from liuliangchuhai.infrastructure.digital_human.dashscope import (
+    DashScopeDigitalHumanAdapter,
+)
 from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
 from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPresenterAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
@@ -105,6 +108,15 @@ def _build_digital_human(settings: Settings) -> DigitalHumanPort:
             avatar_id=settings.heygen_avatar_id,
             voice_id=settings.heygen_voice_id,
             timeout_seconds=settings.digital_human_timeout_seconds,
+        )
+    if settings.digital_human_provider == "dashscope":
+        assert settings.dashscope_api_key is not None
+        return DashScopeDigitalHumanAdapter(
+            api_key=settings.dashscope_api_key.get_secret_value(),
+            source_video_url=settings.dashscope_source_video_url,
+            timeout_seconds=settings.digital_human_timeout_seconds,
+            media_root=settings.resolved_media_dir,
+            media_url_prefix=settings.media_url_prefix,
         )
     raise ValueError(f"Unsupported digital-human provider: {settings.digital_human_provider!r}")
 

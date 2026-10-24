@@ -156,4 +156,59 @@ async def render(
     return destination
 
 
-__all__ = ["ffmpeg_available", "ffmpeg_path", "probe_duration", "render"]
+async def burn_subtitles(
+    *,
+    video: Path,
+    subtitles: Path,
+    destination: Path,
+    timeout_seconds: float,
+) -> Path:
+    """Burn captions into an existing clip, re-encoding only what changed.
+
+    Used by provider adapters that return a finished talking-head render: the
+    remote service owns the picture, so only the caption overlay happens here.
+    """
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    # libass reads the path out of the filter string, so a Windows drive colon
+    # must be escaped the way ffmpeg's own filter escaping expects.
+    subtitle_arg = str(subtitles).replace("\\", "/").replace(":", r"\:")
+
+    arguments = [
+        ffmpeg_path(),
+        "-y",
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        "-i",
+        str(video),
+        "-vf",
+        (
+            f"subtitles='{subtitle_arg}':force_style="
+            "'FontName=Microsoft YaHei,FontSize=15,PrimaryColour=&H00211E26,"
+            "OutlineColour=&H00ECEFE2,BorderStyle=3,Outline=1,Shadow=0,MarginV=40'"
+        ),
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "copy",
+        "-movflags",
+        "+faststart",
+        str(destination),
+    ]
+    await _run(arguments, timeout_seconds=timeout_seconds)
+    if not destination.is_file() or destination.stat().st_size == 0:
+        raise DigitalHumanUnavailable("ffmpeg produced no captioned video")
+    return destination
+
+
+__all__ = [
+    "burn_subtitles",
+    "ffmpeg_available",
+    "ffmpeg_path",
+    "probe_duration",
+    "render",
+]
