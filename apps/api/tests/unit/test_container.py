@@ -6,6 +6,9 @@ from liuliangchuhai.bootstrap.settings import Settings
 from liuliangchuhai.domain.digital_human import DigitalHumanGenerationInput, GeneratedVideo
 from liuliangchuhai.domain.market_analysis import MarketContext, ProductMarketAnalysis
 from liuliangchuhai.domain.product import Product
+from liuliangchuhai.infrastructure.digital_human.dashscope import (
+    DashScopeDigitalHumanAdapter,
+)
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
@@ -92,3 +95,17 @@ async def test_generation_reuses_the_containers_digital_human(
     generate.assert_awaited_once_with(generation)
     assert generate.await_args.args[0] is generation
     assert result is expected
+
+
+def test_container_wires_the_dashscope_talking_head(tmp_path) -> None:
+    container = build_container(
+        Settings(
+            _env_file=None,
+            digital_human_provider="dashscope",
+            dashscope_api_key="sk-test",
+            dashscope_source_video_url="https://cdn.example/source.mp4",
+            media_dir=str(tmp_path),
+        )
+    )
+
+    assert isinstance(container.digital_human, DashScopeDigitalHumanAdapter)
