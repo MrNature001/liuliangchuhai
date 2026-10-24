@@ -22,6 +22,7 @@ from liuliangchuhai.application.ports.digital_human_errors import (
 )
 from liuliangchuhai.application.ports.status import ProviderStatus
 from liuliangchuhai.domain.digital_human import DigitalHumanGenerationInput, GeneratedVideo
+from liuliangchuhai.infrastructure.digital_human import avatar as avatar_art
 from liuliangchuhai.infrastructure.digital_human import mux, poster, speech, timeline
 
 # Opening card, a push-in during the body, then the end card.
@@ -58,7 +59,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 7
+    _RENDER_VERSION = 8
 
     def __init__(
         self,
@@ -93,11 +94,11 @@ class LocalPresenterAdapter:
 
     async def _render(self, generation: DigitalHumanGenerationInput) -> GeneratedVideo:
         voice = self._voice_hints.get(generation.language.strip().lower())
-        avatar = avatar_clip(self._media_root)
+        supplied = avatar_clip(self._media_root)
         avatar_stamp = "-"
-        if avatar is not None:
-            stat = avatar.stat()
-            avatar_stamp = f"{avatar.name}:{stat.st_size}:{int(stat.st_mtime)}"
+        if supplied is not None:
+            stat = supplied.stat()
+            avatar_stamp = f"{supplied.name}:{stat.st_size}:{int(stat.st_mtime)}"
         # Content-addressed output: an identical script is served without re-rendering.
         digest = hashlib.sha256(
             f"{generation.script}|{generation.language}|{voice or ''}"
@@ -110,7 +111,9 @@ class LocalPresenterAdapter:
         if destination.is_file() and destination.stat().st_size > 0:
             return GeneratedVideo(media_url=f"{self._public_prefix}/{name}")
 
-        with tempfile.TemporaryDirectory(prefix="presenter-") as workspace:
+        with tempfile.TemporaryDirectory(
+            prefix="presenter-", ignore_cleanup_errors=True
+        ) as workspace:
             root = Path(workspace)
             speech_clip = await speech.synthesise(
                 generation.script, generation.language, voice, root / "narration.mp3"
@@ -148,10 +151,18 @@ class LocalPresenterAdapter:
                     variant=variant,
                 )
 
-            if avatar is not None:
-                scenes = [await frame("opening"), avatar, await frame("closing")]
+            if supplied is not None:
+                body = supplied
             else:
-                scenes = [await frame(variant) for variant in _SCENES]
+                try:
+                    body = await avatar_art.build(
+                        audio=speech_clip.audio_path,
+                        destination=root / "avatar.mp4",
+                        duration_seconds=seconds,
+                    )
+                except DigitalHumanUnavailable:
+                    body = await frame("detail")
+            scenes = [await frame("opening"), body, await frame("closing")]
             await mux.render(
                 scenes=scenes,
                 audio=speech_clip.audio_path,

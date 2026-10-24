@@ -168,21 +168,25 @@ A swapped file changes the render fingerprint, so the next run re-renders instea
 of serving the cached clip. Captions are burned from an ASS file that states its
 own 1080×1920 resolution, which keeps their point size independent of the player.
 
-### A recorded virtual-streamer clip
+### The virtual-streamer body shot
 
-A VTuber body shot can be recorded once and reused: export a vertical clip from
-VTube Studio, VSeeFace or VMagicMirror, then drop it in.
+The middle shot is a drawn chibi presenter, animated from the narration itself:
+the mouth opens on loudness and closes in the pauses, the eyes blink, and the
+figure sways. No model file, no GPU and no recording — a new script produces a
+new moving presenter on its own.
+
+To use a real avatar instead, record once and reuse it: export a vertical clip
+from VTube Studio, VSeeFace or VMagicMirror and drop it in.
 
 ```sh
 apps/api/media/avatar.mp4              # .mov, .webm and .m4v also work
 LIULIANGCHUHAI_AVATAR_CLIP=/path/to/clip.mp4   # or point anywhere on disk
 ```
 
-The opening and end cards are still drawn; the clip becomes the middle shot,
-looped to the narration's length, cropped to 1080×1920 and captioned on top. Its
-mouth movement belongs to whatever was recorded, so treat it as a presenter
-cutaway rather than lip sync of the generated script. When the file is absent the
-middle shot falls back to the drawn push-in.
+Either way the opening and end cards are still drawn, the body shot is looped to
+the narration's length, cropped to 1080×1920 and captioned on top. A supplied
+clip's mouth movement belongs to whatever was recorded, so treat it as a
+presenter cutaway rather than lip sync of the generated script.
 
 ### Alibaba Cloud Bailian (`videoretalk`)
 
