@@ -63,6 +63,8 @@ for (const f of files) {
     if (!target || target === '/' || ignore.has(target)) continue;
     if (target.includes('${')) continue;
     if (target.startsWith('/images') || target.startsWith('/icons')) continue;
+    // public/ 下的独立静态页（如绣球 DIY）不是 App Router 路由
+    if (target.startsWith('/diy')) continue;
     const first = '/' + target.split('/')[1];
     if (!KNOWN.has(target) && !KNOWN.has(first)) {
       fail(`死链 ${target}（${path.relative(ROOT, f)}）`);
