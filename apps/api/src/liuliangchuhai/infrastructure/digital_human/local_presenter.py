@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import os
 import tempfile
 from pathlib import Path
 
@@ -27,6 +28,29 @@ from liuliangchuhai.infrastructure.digital_human import mux, poster, speech, tim
 _SCENES = ("opening", "detail", "closing")
 _SCENE_WEIGHTS = (0.34, 0.44, 0.22)
 
+# A virtual-streamer recording that replaces the middle shot when supplied.
+_AVATAR_NAMES = ("avatar.mp4", "avatar.mov", "avatar.webm", "avatar.m4v")
+
+
+def avatar_clip(media_root: Path) -> Path | None:
+    """Find a recorded avatar clip, if one has been dropped in.
+
+    Record once in VTube Studio, VSeeFace or VMagicMirror, export the result,
+    and every generated script reuses it as the body shot. The clip's own mouth
+    movement belongs to whatever was recorded — the narration is the script
+    being generated — so this is a presenter cutaway, not lip sync.
+    """
+    override = os.environ.get("LIULIANGCHUHAI_AVATAR_CLIP", "").strip()
+    if override:
+        path = Path(override).expanduser()
+        if path.is_file():
+            return path
+    for name in _AVATAR_NAMES:
+        candidate = media_root / name
+        if candidate.is_file():
+            return candidate
+    return None
+
 
 class LocalPresenterAdapter:
     """Deterministic, offline-capable presenter used when no vendor is configured."""
@@ -34,7 +58,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 6
+    _RENDER_VERSION = 7
 
     def __init__(
         self,
@@ -69,10 +93,16 @@ class LocalPresenterAdapter:
 
     async def _render(self, generation: DigitalHumanGenerationInput) -> GeneratedVideo:
         voice = self._voice_hints.get(generation.language.strip().lower())
+        avatar = avatar_clip(self._media_root)
+        avatar_stamp = "-"
+        if avatar is not None:
+            stat = avatar.stat()
+            avatar_stamp = f"{avatar.name}:{stat.st_size}:{int(stat.st_mtime)}"
         # Content-addressed output: an identical script is served without re-rendering.
         digest = hashlib.sha256(
             f"{generation.script}|{generation.language}|{voice or ''}"
-            f"|v{self._RENDER_VERSION}|{poster.asset_signature(self._media_root)}".encode()
+            f"|v{self._RENDER_VERSION}|{poster.asset_signature(self._media_root)}"
+            f"|{avatar_stamp}".encode()
         ).hexdigest()[:24]
         name = f"presenter-{digest}.mp4"
         destination = self._media_root / name
@@ -108,18 +138,22 @@ class LocalPresenterAdapter:
                 ),
                 encoding="utf-8",
             )
-            stills = [
-                await poster.draw(
+
+            async def frame(variant: str) -> Path:
+                return await poster.draw(
                     root / f"{variant}.png",
                     title=speech.headline(generation.script),
                     language=generation.language,
                     media_root=self._media_root,
                     variant=variant,
                 )
-                for variant in _SCENES
-            ]
+
+            if avatar is not None:
+                scenes = [await frame("opening"), avatar, await frame("closing")]
+            else:
+                scenes = [await frame(variant) for variant in _SCENES]
             await mux.render(
-                scenes=stills,
+                scenes=scenes,
                 audio=speech_clip.audio_path,
                 subtitles=subtitle_file,
                 destination=destination,
@@ -134,4 +168,4 @@ class LocalPresenterAdapter:
         return GeneratedVideo(media_url=f"{self._public_prefix}/{name}")
 
 
-__all__ = ["LocalPresenterAdapter"]
+__all__ = ["LocalPresenterAdapter", "avatar_clip"]

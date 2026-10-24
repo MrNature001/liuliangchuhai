@@ -1,7 +1,43 @@
+from pathlib import Path
+
 import pytest
-from liuliangchuhai.infrastructure.digital_human.mux import plan_scenes
+from liuliangchuhai.infrastructure.digital_human.local_presenter import avatar_clip
+from liuliangchuhai.infrastructure.digital_human.mux import is_video_clip, plan_scenes
 
 FADE = 0.7
+
+
+def test_footage_suffixes_are_told_apart_from_stills() -> None:
+    assert is_video_clip(Path("avatar.mp4"))
+    assert is_video_clip(Path("AVATAR.MOV"))
+    assert is_video_clip(Path("clip.webm"))
+    assert not is_video_clip(Path("opening.png"))
+    assert not is_video_clip(Path("poster"))
+
+
+def test_avatar_clip_is_found_in_the_media_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("LIULIANGCHUHAI_AVATAR_CLIP", raising=False)
+    assert avatar_clip(tmp_path) is None
+
+    clip = tmp_path / "avatar.mp4"
+    clip.write_bytes(b"not really a video")
+
+    assert avatar_clip(tmp_path) == clip
+
+
+def test_avatar_clip_honours_the_override_but_ignores_a_missing_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("LIULIANGCHUHAI_AVATAR_CLIP", str(tmp_path / "missing.mp4"))
+    assert avatar_clip(tmp_path) is None
+
+    clip = tmp_path / "elsewhere.mp4"
+    clip.write_bytes(b"x")
+    monkeypatch.setenv("LIULIANGCHUHAI_AVATAR_CLIP", str(clip))
+
+    assert avatar_clip(tmp_path) == clip
 
 
 def test_one_scene_uses_the_whole_clip() -> None:

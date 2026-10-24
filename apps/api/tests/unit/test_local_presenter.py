@@ -93,6 +93,48 @@ async def test_status_reports_provider_name_and_local_availability() -> None:
 
 
 @pytest.mark.asyncio
+async def test_a_supplied_avatar_clip_replaces_the_middle_shot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("LIULIANGCHUHAI_AVATAR_CLIP", raising=False)
+    clip = tmp_path / "avatar.mp4"
+    clip.write_bytes(b"pretend footage")
+    captured: dict[str, object] = {}
+
+    async def fake_probe_duration(path: Path) -> float:
+        return 9.0
+
+    async def fake_render(**kwargs: object) -> Path:
+        captured.update(kwargs)
+        destination = kwargs["destination"]
+        assert isinstance(destination, Path)
+        destination.write_bytes(b"video")
+        return destination
+
+    async def fake_synthesise(script, language, voice, destination):
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(b"audio")
+        return speech.Clip(
+            audio_path=destination, cues=(Caption(0.0, 9.0, script),), voice="test-voice"
+        )
+
+    monkeypatch.setattr(mux, "probe_duration", fake_probe_duration)
+    monkeypatch.setattr(mux, "render", fake_render)
+    monkeypatch.setattr(speech, "synthesise", fake_synthesise)
+
+    adapter = LocalPresenterAdapter(media_root=tmp_path, public_prefix="/media", timeout_seconds=30)
+    await adapter.generate(DigitalHumanGenerationInput(script="六堡茶来自梧州。", language="中文"))
+
+    scenes = captured["scenes"]
+    assert isinstance(scenes, list)
+    assert len(scenes) == 3
+    # Opening card, the footage, the end card.
+    assert scenes[1] == clip
+    assert scenes[0].suffix == ".png"
+    assert scenes[2].suffix == ".png"
+
+
+@pytest.mark.asyncio
 async def test_generate_reuses_an_identical_script(tmp_path: Path, offline_speech: None) -> None:
     adapter = LocalPresenterAdapter(
         media_root=tmp_path, public_prefix="/media", timeout_seconds=180

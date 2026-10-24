@@ -95,6 +95,12 @@ async def _run(arguments: list[str], *, timeout_seconds: float) -> None:
 _MAX_ZOOM = 1.08
 _CROSSFADE_SECONDS = 0.7
 _SUBTITLE_FILTER = "subtitles='{subtitles}'"
+_VIDEO_SUFFIXES = frozenset({".mp4", ".mov", ".mkv", ".webm", ".m4v"})
+
+
+def is_video_clip(scene: Path) -> bool:
+    """Whether a scene is moving footage rather than a still frame."""
+    return scene.suffix.lower() in _VIDEO_SUFFIXES
 
 
 def _subtitle_filter(subtitles: Path, font_dir: Path | None) -> str:
@@ -109,8 +115,30 @@ def _subtitle_filter(subtitles: Path, font_dir: Path | None) -> str:
     return argument
 
 
-def _scene_chain(index: int, frames: int, frames_per_second: int) -> str:
-    """Scale one still up, push in, and land on the delivery format."""
+def _scene_input(scene: Path, seconds: float, frames_per_second: int) -> list[str]:
+    """One input per scene; footage loops so it can fill a longer narration."""
+    if is_video_clip(scene):
+        return ["-stream_loop", "-1", "-t", f"{seconds:.3f}", "-i", str(scene)]
+    return [
+        "-loop",
+        "1",
+        "-framerate",
+        str(frames_per_second),
+        "-t",
+        f"{seconds:.3f}",
+        "-i",
+        str(scene),
+    ]
+
+
+def _scene_chain(index: int, scene: Path, frames: int, frames_per_second: int) -> str:
+    """Land one scene on the delivery format, pushing stills in slowly."""
+    if is_video_clip(scene):
+        # Footage already moves; crop it to the vertical frame and match the rate.
+        return (
+            f"[{index}:v]scale=1080:1920:force_original_aspect_ratio=increase,"
+            f"crop=1080:1920,fps={frames_per_second},setsar=1,format=yuv420p[v{index}]"
+        )
     step = (_MAX_ZOOM - 1.0) / max(1, frames)
     return (
         f"[{index}:v]scale=1620:2880:flags=lanczos,"
@@ -154,11 +182,13 @@ async def render(
     weights: Sequence[float] | None = None,
     crossfade_seconds: float = _CROSSFADE_SECONDS,
 ) -> Path:
-    """Mux the stills, the narration and the burned-in captions.
+    """Mux the scenes, the narration and the burned-in captions.
 
-    Each still gets a slow push-in, and consecutive stills cross-fade, so the
-    clip reads as edited shots rather than one frozen slide. The zoom and the
-    transitions are applied before the captions, so the text never softens.
+    Each still gets a slow push-in, and consecutive scenes cross-fade, so the
+    clip reads as edited shots rather than one frozen slide. A scene may also be
+    a video clip — an avatar recorded elsewhere — which is looped and cropped to
+    the vertical frame instead. Transitions are applied before the captions, so
+    the text never softens.
     """
     destination.parent.mkdir(parents=True, exist_ok=True)
     plan, fade = plan_scenes(
@@ -167,21 +197,12 @@ async def render(
     stills = list(scenes)[: len(plan)]
 
     arguments = [ffmpeg_path(), "-y", "-hide_banner", "-loglevel", "error"]
-    for still, on_screen in zip(stills, plan, strict=True):
-        arguments += [
-            "-loop",
-            "1",
-            "-framerate",
-            str(frames_per_second),
-            "-t",
-            f"{on_screen:.3f}",
-            "-i",
-            str(still),
-        ]
+    for scene, on_screen in zip(stills, plan, strict=True):
+        arguments += _scene_input(scene, on_screen, frames_per_second)
     arguments += ["-i", str(audio)]
 
     graph = [
-        _scene_chain(index, round(on_screen * frames_per_second), frames_per_second)
+        _scene_chain(index, stills[index], round(on_screen * frames_per_second), frames_per_second)
         for index, on_screen in enumerate(plan)
     ]
     previous = "v0"
@@ -274,6 +295,7 @@ __all__ = [
     "burn_subtitles",
     "ffmpeg_available",
     "ffmpeg_path",
+    "is_video_clip",
     "plan_scenes",
     "probe_duration",
     "render",
