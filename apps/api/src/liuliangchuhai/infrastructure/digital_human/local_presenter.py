@@ -34,7 +34,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 5
+    _RENDER_VERSION = 6
 
     def __init__(
         self,
@@ -91,6 +91,11 @@ class LocalPresenterAdapter:
             cues = timeline.rescale(speech_clip.cues, seconds) or timeline.build_timeline(
                 generation.script, seconds
             )
+
+            def wrap(text: str) -> tuple[str, ...]:
+                return poster.caption_lines(text, max_width=poster.caption_max_width())
+
+            cues = timeline.split_cues(cues, wrap=wrap)
             family, font_dir = poster.caption_font(generation.script)
             subtitle_file = root / "captions.ass"
             subtitle_file.write_text(
@@ -99,9 +104,7 @@ class LocalPresenterAdapter:
                     font=family,
                     size=poster.caption_size(),
                     margin_v=poster.caption_margin_v(),
-                    wrap=lambda text: poster.caption_lines(
-                        text, max_width=poster.caption_max_width()
-                    ),
+                    wrap=wrap,
                 ),
                 encoding="utf-8",
             )

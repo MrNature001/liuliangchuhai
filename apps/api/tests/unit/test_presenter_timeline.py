@@ -7,6 +7,7 @@ from liuliangchuhai.infrastructure.digital_human.timeline import (
     build_timeline,
     estimate_seconds,
     rescale,
+    split_cues,
     split_sentences,
     srt_timestamp,
     to_ass,
@@ -87,6 +88,49 @@ def test_ass_timestamp_uses_centiseconds() -> None:
 def dialogue_text(document: str) -> str:
     """The Text field is everything after the last empty Split field."""
     return document.splitlines()[-1].split(",,")[-1]
+
+
+def fake_wrap(text: str) -> tuple[str, ...]:
+    """Ten characters per line, so a two-line cue holds twenty."""
+    return tuple(text[index : index + 10] for index in range(0, len(text), 10))
+
+
+def test_split_cues_leaves_a_short_cue_alone() -> None:
+    cue = Caption(0.0, 2.0, "六堡茶")
+
+    assert split_cues((cue,), wrap=fake_wrap, max_lines=2) == (cue,)
+
+
+def test_split_cues_keeps_every_character_and_the_original_span() -> None:
+    original = Caption(
+        0.0, 6.0, "梧州六堡茶来自广西梧州，茶汤红浓明亮，滋味醇厚回甘，适合作为日常饮品。"
+    )
+
+    cues = split_cues((original,), wrap=fake_wrap, max_lines=2)
+
+    assert len(cues) > 1
+    assert "".join(cue.text for cue in cues) == original.text
+    assert cues[0].start == 0.0
+    assert cues[-1].end == pytest.approx(6.0)
+    for earlier, later in itertools.pairwise(cues):
+        assert earlier.end == later.start
+
+
+def test_split_cues_keeps_a_space_between_latin_clauses() -> None:
+    original = Caption(
+        0.0, 6.0, "Hello, and welcome to a quiet moment, and we are glad you are here."
+    )
+
+    cues = split_cues((original,), wrap=fake_wrap, max_lines=2)
+
+    assert len(cues) > 1
+    assert " ".join(cue.text for cue in cues) == original.text
+
+
+def test_split_cues_cannot_help_a_single_long_clause() -> None:
+    original = Caption(0.0, 4.0, "ThisClauseHasNoPunctuationAtAllAndKeepsGoingAndGoing")
+
+    assert split_cues((original,), wrap=fake_wrap, max_lines=2) == (original,)
 
 
 def test_ass_style_pins_the_resolution_so_captions_keep_their_pixel_size() -> None:

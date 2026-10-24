@@ -12,6 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 _SENTENCE = re.compile(r"[^.!?。！？\n]+[.!?。！？]?", re.UNICODE)
+_CLAUSE = re.compile(r"[^，,、;；:：]+[，,、;；:：]?", re.UNICODE)
 _CJK = re.compile(r"[㐀-鿿豈-﫿]")
 _THAI = re.compile(r"[฀-๿]")
 
@@ -93,6 +94,63 @@ def rescale(captions: tuple[Caption, ...], total_seconds: float) -> tuple[Captio
         Caption(start=round(cue.start * factor, 3), end=round(cue.end * factor, 3), text=cue.text)
         for cue in captions
     )
+
+
+def _clauses(text: str) -> list[str]:
+    """Split on commas and semicolons, which is where a reader would pause."""
+    return [match.group(0).strip() for match in _CLAUSE.finditer(text) if match.group(0).strip()]
+
+
+def _join(left: str, right: str) -> str:
+    """Join two clauses the way the script writes them."""
+    if not left:
+        return right
+    if left[-1] in "，、；：":
+        return left + right
+    return f"{left} {right}"
+
+
+def split_cues(
+    captions: tuple[Caption, ...],
+    *,
+    wrap: Callable[[str], tuple[str, ...]],
+    max_lines: int = 2,
+) -> tuple[Caption, ...]:
+    """Break any cue that would overflow the caption band into shorter ones.
+
+    Cues are sentences, and a long sentence can wrap to four lines, which eats
+    the frame. Splitting at clause boundaries keeps every caption inside the
+    band; the original cue's time is shared out by estimated reading length, so
+    the last cue still ends exactly where the old one did.
+    """
+    result: list[Caption] = []
+    for cue in captions:
+        if len(wrap(cue.text)) <= max_lines:
+            result.append(cue)
+            continue
+        groups: list[str] = []
+        current = ""
+        for clause in _clauses(cue.text):
+            candidate = _join(current, clause)
+            if current and len(wrap(candidate)) > max_lines:
+                groups.append(current)
+                current = clause
+            else:
+                current = candidate
+        if current:
+            groups.append(current)
+        if len(groups) <= 1:
+            result.append(cue)
+            continue
+        weights = [estimate_seconds(group) for group in groups]
+        total = sum(weights) or 1.0
+        span = cue.end - cue.start
+        cursor = cue.start
+        for group, weight in zip(groups, weights, strict=True):
+            end = min(cue.end, cursor + span * weight / total)
+            result.append(Caption(round(cursor, 3), round(end, 3), group))
+            cursor = end
+    return tuple(result)
 
 
 def srt_timestamp(seconds: float) -> str:
@@ -191,6 +249,7 @@ __all__ = [
     "build_timeline",
     "estimate_seconds",
     "rescale",
+    "split_cues",
     "split_sentences",
     "srt_timestamp",
     "to_ass",
