@@ -130,6 +130,52 @@ selected, the same six sections now contain localized marketing assets.
 
 ![Completed content plan with all six planning fields](.github/screenshots/readme/content-plan.jpg)
 
+## Digital-human video
+
+The analysis page turns a finished live script into a presenter video. Three
+renderers are available behind one port; the default needs no account at all.
+
+| `LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER` | What it produces | Needs |
+|---|---|---|
+| `local` (default) | Branded 1080×1920 clip: neural narration, burned captions, drawn presenter card | Nothing — runs on any laptop |
+| `dashscope` | Photoreal talking head: your own source clip re-driven with the narration | A personal Alibaba Cloud account and one recorded clip |
+| `heygen` | Photoreal talking head from HeyGen avatars | HeyGen key, avatar and voice ids |
+| `mock` | Fixed placeholder URL | Nothing |
+
+### Alibaba Cloud Bailian (`videoretalk`)
+
+This is the option a solo developer in mainland China can open without a company
+entity: personal real-name verification, a self-serve API key, plain HTTPS and no
+GPU. The trade-off is that you record one short clip of yourself and reuse it.
+
+```dotenv
+LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER=dashscope
+LIULIANGCHUHAI_DASHSCOPE_API_KEY=sk-...
+LIULIANGCHUHAI_DASHSCOPE_SOURCE_VIDEO_URL=https://<reachable>/my-clip.mp4
+```
+
+The adapter speaks the script with Edge TTS, uploads the audio through
+DashScope's own upload endpoint (so no public server is needed), submits the
+render, then copies the finished MP4 into `apps/api/media` before its 24-hour
+signed URL expires. `GET /health` reports `available: true` once the key is
+accepted.
+
+Pricing and quota are set by Alibaba Cloud and change; see their console.
+
+### Embedding on another site
+
+`/embed` is a chrome-free variant of the analysis page that any site can frame:
+
+```html
+<iframe src="https://<this-demo>/embed?product_id=wuzhou-liubao-tea&lang=en"
+  style="border:0;width:100%" height="900" loading="lazy" title="liuliangchuhai"></iframe>
+```
+
+After a report is generated the analysis page shows the exact snippet, generated
+from the origin the visitor actually reached the page through. The embed reports
+its own height with `postMessage` so the host page can size the frame. Framing
+is allowed for `/embed` only; every other route sends `frame-ancestors 'none'`.
+
 ## Development checks
 
 Run `make check`, or `uv run python scripts/dev.py check` without Make.
