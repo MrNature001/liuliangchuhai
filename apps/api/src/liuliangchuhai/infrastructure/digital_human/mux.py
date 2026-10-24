@@ -91,6 +91,22 @@ async def _run(arguments: list[str], *, timeout_seconds: float) -> None:
     await asyncio.to_thread(_run_blocking, arguments, timeout_seconds)
 
 
+_MAX_ZOOM = 1.08
+_SUBTITLE_FILTER = "subtitles='{subtitles}'"
+
+
+def _subtitle_filter(subtitles: Path, font_dir: Path | None) -> str:
+    """Build the libass filter argument with Windows-safe escaping."""
+    # libass reads the path out of the filter string; a drive colon must be
+    # escaped the way ffmpeg's own filter escaping expects.
+    escaped = str(subtitles).replace("\\", "/").replace(":", r"\:")
+    argument = _SUBTITLE_FILTER.format(subtitles=escaped)
+    if font_dir is not None:
+        font_path = str(font_dir).replace("\\", "/").replace(":", r"\:")
+        argument += f":fontsdir='{font_path}'"
+    return argument
+
+
 async def render(
     *,
     poster: Path,
@@ -99,13 +115,17 @@ async def render(
     destination: Path,
     duration_seconds: float,
     timeout_seconds: float,
-    frames_per_second: int = 2,
+    font_dir: Path | None = None,
+    frames_per_second: int = 25,
 ) -> Path:
-    """Mux the still poster, the narration and the burned-in captions."""
+    """Mux the poster, the narration and the burned-in captions.
+
+    A slow push-in keeps the clip from reading as a frozen slide; the zoom is
+    applied to the art only, before the captions, so the text never softens.
+    """
     destination.parent.mkdir(parents=True, exist_ok=True)
-    # Paths reach ffmpeg through the filter string; escape the Windows drive colon
-    # the way libass expects (forward slashes plus an escaped colon).
-    subtitle_arg = str(subtitles).replace("\\", "/").replace(":", r"\:")
+    frames = max(1, round(duration_seconds * frames_per_second))
+    step = (_MAX_ZOOM - 1.0) / frames
 
     arguments = [
         ffmpeg_path(),
@@ -123,18 +143,16 @@ async def render(
         str(audio),
         "-vf",
         (
-            f"scale=1080:1920:force_original_aspect_ratio=decrease,"
-            f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=0xf7f5ee,"
-            f"subtitles='{subtitle_arg}':force_style="
-            "'FontName=Microsoft YaHei,FontSize=15,PrimaryColour=&H00211E26,"
-            "OutlineColour=&H00ECEFE2,BorderStyle=3,Outline=1,Shadow=0,MarginV=40'"
+            f"scale=1620:2880:flags=lanczos,"
+            f"zoompan=z='min(1+{step:.8f}*on,{_MAX_ZOOM})':"
+            "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+            f"d=1:s=1080x1920:fps={frames_per_second},"
+            f"{_subtitle_filter(subtitles, font_dir)}"
         ),
         "-c:v",
         "libx264",
         "-preset",
         "veryfast",
-        "-tune",
-        "stillimage",
         "-pix_fmt",
         "yuv420p",
         "-r",
@@ -162,6 +180,7 @@ async def burn_subtitles(
     subtitles: Path,
     destination: Path,
     timeout_seconds: float,
+    font_dir: Path | None = None,
 ) -> Path:
     """Burn captions into an existing clip, re-encoding only what changed.
 
@@ -169,9 +188,6 @@ async def burn_subtitles(
     remote service owns the picture, so only the caption overlay happens here.
     """
     destination.parent.mkdir(parents=True, exist_ok=True)
-    # libass reads the path out of the filter string, so a Windows drive colon
-    # must be escaped the way ffmpeg's own filter escaping expects.
-    subtitle_arg = str(subtitles).replace("\\", "/").replace(":", r"\:")
 
     arguments = [
         ffmpeg_path(),
@@ -182,11 +198,7 @@ async def burn_subtitles(
         "-i",
         str(video),
         "-vf",
-        (
-            f"subtitles='{subtitle_arg}':force_style="
-            "'FontName=Microsoft YaHei,FontSize=15,PrimaryColour=&H00211E26,"
-            "OutlineColour=&H00ECEFE2,BorderStyle=3,Outline=1,Shadow=0,MarginV=40'"
-        ),
+        _subtitle_filter(subtitles, font_dir),
         "-c:v",
         "libx264",
         "-preset",

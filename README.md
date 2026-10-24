@@ -137,10 +137,27 @@ renderers are available behind one port; the default needs no account at all.
 
 | `LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER` | What it produces | Needs |
 |---|---|---|
-| `local` (default) | Branded 1080×1920 clip: neural narration, burned captions, drawn presenter card | Nothing — runs on any laptop |
+| `local` (default) | 1080×1920 clip: neural narration, burned captions, an illustrated presenter over a drawn Southeast Asian scene | Nothing — runs on any laptop |
 | `dashscope` | Photoreal talking head: your own source clip re-driven with the narration | A personal Alibaba Cloud account and one recorded clip |
 | `heygen` | Photoreal talking head from HeyGen avatars | HeyGen key, avatar and voice ids |
 | `mock` | Fixed placeholder URL | Nothing |
+
+### Replacing the drawn art
+
+The default frame is drawn in code so the demo needs no image assets and no
+stock-photo licence. The presenter is an illustration, not photoreal footage;
+use `dashscope` when you need a real face. Operators can swap in their own
+material without touching code:
+
+```dotenv
+LIULIANGCHUHAI_VIDEO_BACKGROUND=/path/to/scene.jpg    # full-bleed photo
+LIULIANGCHUHAI_VIDEO_PRESENTER=/path/to/cutout.png    # replaces the illustrated figure
+LIULIANGCHUHAI_VIDEO_FONT=/path/to/Unicode.ttf        # font for every drawn glyph
+```
+
+A swapped file changes the render fingerprint, so the next run re-renders instead
+of serving the cached clip. Captions are burned from an ASS file that states its
+own 1080×1920 resolution, which keeps their point size independent of the player.
 
 ### Alibaba Cloud Bailian (`videoretalk`)
 

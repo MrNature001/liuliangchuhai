@@ -3,11 +3,13 @@ import itertools
 import pytest
 from liuliangchuhai.infrastructure.digital_human.timeline import (
     Caption,
+    ass_timestamp,
     build_timeline,
     estimate_seconds,
     rescale,
     split_sentences,
     srt_timestamp,
+    to_ass,
     to_srt,
 )
 
@@ -74,3 +76,41 @@ def test_srt_timestamp_handles_zero_and_large_values() -> None:
     assert srt_timestamp(0) == "00:00:00,000"
     assert srt_timestamp(3661.5) == "01:01:01,500"
     assert srt_timestamp(-3) == "00:00:00,000"
+
+
+def test_ass_timestamp_uses_centiseconds() -> None:
+    assert ass_timestamp(0) == "0:00:00.00"
+    assert ass_timestamp(3661.5) == "1:01:01.50"
+    assert ass_timestamp(-3) == "0:00:00.00"
+
+
+def dialogue_text(document: str) -> str:
+    """The Text field is everything after the last empty Split field."""
+    return document.splitlines()[-1].split(",,")[-1]
+
+
+def test_ass_style_pins_the_resolution_so_captions_keep_their_pixel_size() -> None:
+    text = to_ass((Caption(0.0, 1.0, "茶"),), font="Microsoft YaHei", size=54, margin_v=168)
+
+    assert "PlayResX: 1080" in text
+    assert "PlayResY: 1920" in text
+    assert "Style: Presenter,Microsoft YaHei,54," in text
+    assert ",90,90,168,1" in text
+
+
+def test_ass_escapes_text_that_could_inject_an_override_block() -> None:
+    text = to_ass((Caption(0.0, 1.0, r"{\an8} cheap \N trick"),), font="F", size=54, margin_v=168)
+
+    assert dialogue_text(text) == r"\{an8\} cheap N trick"
+
+
+def test_ass_joins_wrapped_lines_with_a_hard_break() -> None:
+    text = to_ass(
+        (Caption(0.0, 1.0, "一种很长的说法"),),
+        font="F",
+        size=54,
+        margin_v=168,
+        wrap=lambda cue: ("一种很长", "的说法"),
+    )
+
+    assert dialogue_text(text) == r"一种很长\N的说法"

@@ -8,6 +8,7 @@ testable without a network or a media toolchain.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 
 _SENTENCE = re.compile(r"[^.!?。！？\n]+[.!?。！？]?", re.UNICODE)
@@ -111,12 +112,87 @@ def to_srt(captions: tuple[Caption, ...]) -> str:
     return "\n".join(blocks)
 
 
+def ass_timestamp(seconds: float) -> str:
+    """ASS uses centiseconds and a single-digit hour."""
+    centiseconds = round(max(0.0, seconds) * 100)
+    hours, rest = divmod(centiseconds, 360_000)
+    minutes, rest = divmod(rest, 6_000)
+    secs, centis = divmod(rest, 100)
+    return f"{hours:d}:{minutes:02d}:{secs:02d}.{centis:02d}"
+
+
+def _ass_text(line: str) -> str:
+    """Neutralise override blocks so caption text can never inject styling."""
+    return line.replace("\\", "").replace("{", "\\{").replace("}", "\\}")
+
+
+_ASS_STYLE_FORMAT = (
+    "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, "
+    "BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, "
+    "BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding"
+)
+# Cream text with a deep-jade outline: readable over both paper and the jacket.
+_ASS_STYLE = (
+    "Style: Presenter,{font},{size},&H00ECF6FA,&H000000FF,&H00343E1C,&H96000000,"
+    "0,0,0,0,100,100,0,0,1,4,0,2,{margin_lr},{margin_lr},{margin_v},1"
+)
+
+_ASS_HEADER = f"""[Script Info]
+ScriptType: v4.00+
+PlayResX: {{width}}
+PlayResY: {{height}}
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+YCbCr Matrix: TV.709
+
+[V4+ Styles]
+{_ASS_STYLE_FORMAT}
+{_ASS_STYLE}
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+"""
+
+
+def to_ass(
+    captions: tuple[Caption, ...],
+    *,
+    font: str,
+    size: int,
+    margin_v: int,
+    width: int = 1080,
+    height: int = 1920,
+    margin_lr: int = 90,
+    wrap: Callable[[str], tuple[str, ...]] | None = None,
+) -> str:
+    """Serialise cues as Advanced SubStation Alpha.
+
+    Unlike SubRip, an ASS file states its own pixel resolution, so libass renders
+    the requested point size verbatim instead of assuming a 288-line canvas and
+    scaling captions up into the picture.
+    """
+    header = _ASS_HEADER.format(
+        width=width, height=height, font=font, size=size, margin_v=margin_v, margin_lr=margin_lr
+    )
+    events = []
+    for cue in captions:
+        lines = wrap(cue.text) if wrap is not None else (cue.text,)
+        text = "\\N".join(_ass_text(line) for line in lines)
+        events.append(
+            f"Dialogue: 0,{ass_timestamp(cue.start)},{ass_timestamp(cue.end)},Presenter,,"
+            f"0,0,0,,{text}"
+        )
+    return header + "\n".join(events) + "\n"
+
+
 __all__ = [
     "Caption",
+    "ass_timestamp",
     "build_timeline",
     "estimate_seconds",
     "rescale",
     "split_sentences",
     "srt_timestamp",
+    "to_ass",
     "to_srt",
 ]

@@ -53,6 +53,8 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 # Caption splitting and voice routing are defined over CJK/Thai punctuation.
 "**/digital_human/timeline.py" = ["RUF001", "RUF002", "RUF003"]
 "**/digital_human/speech.py" = ["RUF001", "RUF002", "RUF003"]
+# Line breaking is defined over CJK/Thai punctuation too.
+"**/digital_human/poster.py" = ["RUF001", "RUF002", "RUF003"]
 "**/tests/unit/test_presenter_*.py" = ["RUF001", "RUF002", "RUF003"]
 
 [tool.mypy]

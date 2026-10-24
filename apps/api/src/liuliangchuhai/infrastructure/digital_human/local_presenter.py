@@ -28,6 +28,9 @@ class LocalPresenterAdapter:
     """Deterministic, offline-capable presenter used when no vendor is configured."""
 
     _PROVIDER = "local-presenter"
+    # Bumped whenever the frame design changes, so a cached clip from an older
+    # layout is re-rendered instead of being served forever.
+    _RENDER_VERSION = 2
 
     def __init__(
         self,
@@ -64,7 +67,8 @@ class LocalPresenterAdapter:
         voice = self._voice_hints.get(generation.language.strip().lower())
         # Content-addressed output: an identical script is served without re-rendering.
         digest = hashlib.sha256(
-            f"{generation.script}|{generation.language}|{voice or ''}".encode()
+            f"{generation.script}|{generation.language}|{voice or ''}"
+            f"|v{self._RENDER_VERSION}|{poster.asset_signature()}".encode()
         ).hexdigest()[:24]
         name = f"presenter-{digest}.mp4"
         destination = self._media_root / name
@@ -83,12 +87,23 @@ class LocalPresenterAdapter:
             cues = timeline.rescale(speech_clip.cues, seconds) or timeline.build_timeline(
                 generation.script, seconds
             )
-            subtitle_file = root / "captions.srt"
-            subtitle_file.write_text(timeline.to_srt(cues), encoding="utf-8")
+            family, font_dir = poster.caption_font(generation.script)
+            subtitle_file = root / "captions.ass"
+            subtitle_file.write_text(
+                timeline.to_ass(
+                    cues,
+                    font=family,
+                    size=poster.caption_size(),
+                    margin_v=poster.caption_margin_v(),
+                    wrap=lambda text: poster.caption_lines(
+                        text, max_width=poster.caption_max_width()
+                    ),
+                ),
+                encoding="utf-8",
+            )
             still = await poster.draw(
                 root / "poster.png",
                 title=speech.headline(generation.script),
-                script=generation.script,
                 language=generation.language,
             )
             await mux.render(
@@ -98,6 +113,7 @@ class LocalPresenterAdapter:
                 destination=destination,
                 duration_seconds=seconds,
                 timeout_seconds=self._timeout_seconds,
+                font_dir=Path(font_dir),
             )
 
         if not destination.is_file() or destination.stat().st_size == 0:
