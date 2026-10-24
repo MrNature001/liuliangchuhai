@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import shutil
 import subprocess
+from collections.abc import Sequence
 from pathlib import Path
 
 from liuliangchuhai.application.ports.digital_human_errors import (
@@ -92,6 +93,7 @@ async def _run(arguments: list[str], *, timeout_seconds: float) -> None:
 
 
 _MAX_ZOOM = 1.08
+_CROSSFADE_SECONDS = 0.7
 _SUBTITLE_FILTER = "subtitles='{subtitles}'"
 
 
@@ -107,9 +109,41 @@ def _subtitle_filter(subtitles: Path, font_dir: Path | None) -> str:
     return argument
 
 
+def _scene_chain(index: int, frames: int, frames_per_second: int) -> str:
+    """Scale one still up, push in, and land on the delivery format."""
+    step = (_MAX_ZOOM - 1.0) / max(1, frames)
+    return (
+        f"[{index}:v]scale=1620:2880:flags=lanczos,"
+        f"zoompan=z='min(1+{step:.8f}*on,{_MAX_ZOOM})':"
+        "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
+        f"d=1:s=1080x1920:fps={frames_per_second},setsar=1,format=yuv420p[v{index}]"
+    )
+
+
+def plan_scenes(
+    scene_count: int, duration_seconds: float, fade: float, weights: list[float] | None
+) -> tuple[list[float], float]:
+    """Split the clip across scenes so the cross-fades still sum to the audio.
+
+    Returns the on-screen duration of each scene and the fade length actually
+    used. A clip too short for the requested cuts collapses to one scene.
+    """
+    if scene_count <= 1 or duration_seconds <= 0:
+        return [duration_seconds], 0.0
+    shares = list(weights or []) or [1.0] * scene_count
+    if len(shares) != scene_count:
+        shares = [1.0] * scene_count
+    usable = duration_seconds + fade * (scene_count - 1)
+    total = sum(shares)
+    durations = [usable * share / total for share in shares]
+    if any(duration <= fade + 0.25 for duration in durations):
+        return [duration_seconds], 0.0
+    return durations, fade
+
+
 async def render(
     *,
-    poster: Path,
+    scenes: Sequence[Path],
     audio: Path,
     subtitles: Path,
     destination: Path,
@@ -117,38 +151,57 @@ async def render(
     timeout_seconds: float,
     font_dir: Path | None = None,
     frames_per_second: int = 25,
+    weights: Sequence[float] | None = None,
+    crossfade_seconds: float = _CROSSFADE_SECONDS,
 ) -> Path:
-    """Mux the poster, the narration and the burned-in captions.
+    """Mux the stills, the narration and the burned-in captions.
 
-    A slow push-in keeps the clip from reading as a frozen slide; the zoom is
-    applied to the art only, before the captions, so the text never softens.
+    Each still gets a slow push-in, and consecutive stills cross-fade, so the
+    clip reads as edited shots rather than one frozen slide. The zoom and the
+    transitions are applied before the captions, so the text never softens.
     """
     destination.parent.mkdir(parents=True, exist_ok=True)
-    frames = max(1, round(duration_seconds * frames_per_second))
-    step = (_MAX_ZOOM - 1.0) / frames
+    plan, fade = plan_scenes(
+        len(scenes), duration_seconds, crossfade_seconds, list(weights) if weights else None
+    )
+    stills = list(scenes)[: len(plan)]
 
-    arguments = [
-        ffmpeg_path(),
-        "-y",
-        "-hide_banner",
-        "-loglevel",
-        "error",
-        "-loop",
-        "1",
-        "-framerate",
-        str(frames_per_second),
-        "-i",
-        str(poster),
-        "-i",
-        str(audio),
-        "-vf",
-        (
-            f"scale=1620:2880:flags=lanczos,"
-            f"zoompan=z='min(1+{step:.8f}*on,{_MAX_ZOOM})':"
-            "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
-            f"d=1:s=1080x1920:fps={frames_per_second},"
-            f"{_subtitle_filter(subtitles, font_dir)}"
-        ),
+    arguments = [ffmpeg_path(), "-y", "-hide_banner", "-loglevel", "error"]
+    for still, on_screen in zip(stills, plan, strict=True):
+        arguments += [
+            "-loop",
+            "1",
+            "-framerate",
+            str(frames_per_second),
+            "-t",
+            f"{on_screen:.3f}",
+            "-i",
+            str(still),
+        ]
+    arguments += ["-i", str(audio)]
+
+    graph = [
+        _scene_chain(index, round(on_screen * frames_per_second), frames_per_second)
+        for index, on_screen in enumerate(plan)
+    ]
+    previous = "v0"
+    offset = 0.0
+    for index in range(1, len(plan)):
+        offset += plan[index - 1] - fade
+        graph.append(
+            f"[{previous}][v{index}]xfade=transition=fade:duration={fade:.3f}"
+            f":offset={offset:.3f}[x{index}]"
+        )
+        previous = f"x{index}"
+    graph.append(f"[{previous}]{_subtitle_filter(subtitles, font_dir)}[vout]")
+
+    arguments += [
+        "-filter_complex",
+        ";".join(graph),
+        "-map",
+        "[vout]",
+        "-map",
+        f"{len(stills)}:a",
         "-c:v",
         "libx264",
         "-preset",
@@ -221,6 +274,7 @@ __all__ = [
     "burn_subtitles",
     "ffmpeg_available",
     "ffmpeg_path",
+    "plan_scenes",
     "probe_duration",
     "render",
 ]

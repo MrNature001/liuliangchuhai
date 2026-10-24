@@ -137,7 +137,7 @@ renderers are available behind one port; the default needs no account at all.
 
 | `LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER` | What it produces | Needs |
 |---|---|---|
-| `local` (default) | 1080×1920 clip: neural narration, burned captions, a drawn Southeast Asian scene | Nothing — runs on any laptop |
+| `local` (default) | 1080×1920 clip: neural narration, burned captions, a drawn Southeast Asian scene cut into three cross-faded shots | Nothing — runs on any laptop |
 | `dashscope` | Photoreal talking head: your own source clip re-driven with the narration | A personal Alibaba Cloud account and one recorded clip |
 | `heygen` | Photoreal talking head from HeyGen avatars | HeyGen key, avatar and voice ids |
 | `mock` | Fixed placeholder URL | Nothing |

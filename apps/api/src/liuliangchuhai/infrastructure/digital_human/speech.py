@@ -117,26 +117,18 @@ def voice_candidates(language: str, text: str) -> tuple[str, ...]:
     return tuple(ordered)
 
 
-_HEADLINE_LIMIT = 58
 _HEADLINE_TAIL = "，,。.、;；:：!！?？ "
 
 
 def headline(script: str) -> str:
-    """First sentence, trimmed on a word boundary for a poster title.
+    """First sentence, without its terminal punctuation.
 
-    Cutting at a fixed character count used to slice words in half ("for a
-    fam"), which reads as a rendering bug rather than a shortened title.
+    Deliberately uncapped: the frame decides whether the sentence fits, and
+    drops the headline entirely rather than showing a half sentence.
     """
     sentences = timeline.split_sentences(script)
-    title = (sentences[0] if sentences else script.strip()).strip().rstrip(_HEADLINE_TAIL)
-    if not title:
-        return script.strip()[:_HEADLINE_LIMIT]
-    if len(title) <= _HEADLINE_LIMIT:
-        return title
-    cut = title[:_HEADLINE_LIMIT]
-    if " " in cut:
-        cut = cut[: cut.rfind(" ")]
-    return cut.rstrip(_HEADLINE_TAIL) + "…"
+    title = (sentences[0] if sentences else script.strip()).strip()
+    return title.rstrip(_HEADLINE_TAIL) or script.strip().rstrip(_HEADLINE_TAIL)
 
 
 async def available_voices() -> tuple[str, ...]:

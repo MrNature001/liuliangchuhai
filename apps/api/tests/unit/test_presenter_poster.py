@@ -112,6 +112,26 @@ async def test_a_presenter_photo_is_picked_up_from_the_media_directory(
     assert green < 120
 
 
+def test_fit_title_keeps_the_whole_sentence() -> None:
+    font, lines = poster.fit_title(
+        "Here is a tea from Wuzhou, in Guangxi—Liubao tea, a leaf that is pressed",
+        poster.find_font(bold=True),
+    )
+
+    assert font is not None
+    assert " ".join(lines) == (
+        "Here is a tea from Wuzhou, in Guangxi—Liubao tea, a leaf that is pressed"
+    )
+
+
+def test_fit_title_drops_a_headline_that_cannot_fit() -> None:
+    font, lines = poster.fit_title("六堡茶" * 400, poster.find_font(bold=True))
+
+    # Better no headline than a chopped one.
+    assert font is None
+    assert lines == []
+
+
 def test_caption_font_resolves_a_family_name() -> None:
     family, directory = poster.caption_font("六堡茶来自梧州")
 

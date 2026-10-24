@@ -23,6 +23,10 @@ from liuliangchuhai.application.ports.status import ProviderStatus
 from liuliangchuhai.domain.digital_human import DigitalHumanGenerationInput, GeneratedVideo
 from liuliangchuhai.infrastructure.digital_human import mux, poster, speech, timeline
 
+# Opening card, a push-in during the body, then the end card.
+_SCENES = ("opening", "detail", "closing")
+_SCENE_WEIGHTS = (0.34, 0.44, 0.22)
+
 
 class LocalPresenterAdapter:
     """Deterministic, offline-capable presenter used when no vendor is configured."""
@@ -30,7 +34,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 4
+    _RENDER_VERSION = 5
 
     def __init__(
         self,
@@ -101,20 +105,25 @@ class LocalPresenterAdapter:
                 ),
                 encoding="utf-8",
             )
-            still = await poster.draw(
-                root / "poster.png",
-                title=speech.headline(generation.script),
-                language=generation.language,
-                media_root=self._media_root,
-            )
+            stills = [
+                await poster.draw(
+                    root / f"{variant}.png",
+                    title=speech.headline(generation.script),
+                    language=generation.language,
+                    media_root=self._media_root,
+                    variant=variant,
+                )
+                for variant in _SCENES
+            ]
             await mux.render(
-                poster=still,
+                scenes=stills,
                 audio=speech_clip.audio_path,
                 subtitles=subtitle_file,
                 destination=destination,
                 duration_seconds=seconds,
                 timeout_seconds=self._timeout_seconds,
                 font_dir=Path(font_dir),
+                weights=_SCENE_WEIGHTS,
             )
 
         if not destination.is_file() or destination.stat().st_size == 0:

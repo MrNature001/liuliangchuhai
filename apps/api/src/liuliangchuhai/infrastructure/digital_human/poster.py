@@ -45,12 +45,15 @@ _TERRACOTTA = (196, 108, 74)
 
 _TITLE_MAX_WIDTH = WIDTH - 192
 _TITLE_TOP = 292
+_TITLE_BOTTOM = 604
 _CAPTION_SIZE = 54
 _CAPTION_MARGIN_V = 168
 
 # The sun sits high so a portrait medallion can hang inside it.
 _SUN = (540, 812, 330)
 _MEDALLION = (540, 812, 208)
+# The middle scene pushes in on the temples while the narration continues.
+_DETAIL_BOX = (170, 330, 910, 1614)
 _PRESENTER_NAMES = ("presenter.png", "presenter.jpg", "presenter.jpeg", "presenter.webp")
 
 _FONT_CANDIDATES: tuple[str, ...] = (
@@ -176,13 +179,6 @@ def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[s
         if current.strip():
             lines.append(current.rstrip())
     return lines
-
-
-def _ellipsize(line: str, font: ImageFont.FreeTypeFont, max_width: int) -> str:
-    trimmed = line.rstrip()
-    while trimmed and font.getlength(trimmed + "…") > max_width:
-        trimmed = trimmed[:-1].rstrip()
-    return trimmed + "…"
 
 
 def caption_max_width() -> int:
@@ -432,53 +428,36 @@ def _scrim(scene: Image.Image) -> None:
 # ------------------------------------------------------------------- layout
 
 
-def _fit_title(text: str, bold_path: str) -> tuple[ImageFont.FreeTypeFont, list[str]]:
-    """Shrink the headline until it fits two lines, then ellipsize."""
-    lines: list[str] = []
-    font = ImageFont.truetype(bold_path, 54)
-    for size in (88, 80, 72, 66, 60, 54):
+def fit_title(text: str, bold_path: str) -> tuple[ImageFont.FreeTypeFont | None, list[str]]:
+    """Shrink the headline until the whole sentence fits, or return none.
+
+    A chopped title with an ellipsis reads as a rendering bug, so this never
+    truncates. It tries smaller sizes and more lines, and if the sentence still
+    will not sit in the block the frame is drawn without a headline at all.
+    """
+    for size, room in ((88, 2), (80, 2), (72, 2), (64, 2), (58, 3), (52, 3), (46, 3)):
         font = ImageFont.truetype(bold_path, size)
         lines = wrap_text(text, font, _TITLE_MAX_WIDTH)
-        if len(lines) <= 2:
+        height = len(lines) * round(size * 1.32)
+        if len(lines) <= room and _TITLE_TOP + height <= _TITLE_BOTTOM:
             return font, lines
-    lines = lines[:2]
-    if lines:
-        lines[-1] = _ellipsize(lines[-1], font, _TITLE_MAX_WIDTH)
-    return font, lines
+    return None, []
 
 
-def _draw_blocking(spec: PosterSpec, destination: Path, media_root: Path | None) -> Path:
-    scene = _background()
-    _vignette(scene)
-    _figure(scene, media_root)
-    _scrim(scene)
-
-    draw = ImageDraw.Draw(scene, "RGBA")
-    bold_path = find_font(bold=True)
-    try:
-        title_font, title_lines = _fit_title(spec.title, bold_path)
-        foot_font = ImageFont.truetype(find_font(), 34)
-        seal_font = ImageFont.truetype(bold_path, 56)
-    except OSError as error:
-        raise DigitalHumanUnavailable("unreadable font for video rendering") from error
-
-    # Seal, top-left, echoing the paper chop on the site.
-    draw.rounded_rectangle([72, 88, 216, 232], radius=28, fill=(*_JADE, 255))
-    draw.text((144, 160), "桂", font=seal_font, fill=(*_PAPER, 255), anchor="mm")
-
+def _draw_title(draw: ImageDraw.ImageDraw, font: ImageFont.FreeTypeFont, lines: list[str]) -> None:
     cursor = _TITLE_TOP
-    for line in title_lines:
-        draw.text((WIDTH // 2, cursor), line, font=title_font, fill=(*_INK, 255), anchor="ma")
-        cursor += round(title_font.size * 1.32)
-
+    for line in lines:
+        draw.text((WIDTH // 2, cursor), line, font=font, fill=(*_INK, 255), anchor="ma")
+        cursor += round(font.size * 1.32)
     rule_y = cursor + 28
     draw.rounded_rectangle(
         [WIDTH // 2 - 54, rule_y, WIDTH // 2 + 54, rule_y + 6], radius=3, fill=(*_TERRACOTTA, 255)
     )
 
-    # Footer sits on its own chip so it survives any background, drawn or photo.
+
+def _draw_footer(draw: ImageDraw.ImageDraw, spec: PosterSpec, font: ImageFont.FreeTypeFont) -> None:
     footer = f"{spec.brand} · {spec.subtitle}"
-    footer_width = round(foot_font.getlength(footer))
+    footer_width = round(font.getlength(footer))
     draw.rounded_rectangle(
         [
             WIDTH // 2 - footer_width // 2 - 30,
@@ -489,7 +468,84 @@ def _draw_blocking(spec: PosterSpec, destination: Path, media_root: Path | None)
         radius=37,
         fill=(*_PAPER, 255),
     )
-    draw.text((WIDTH // 2, HEIGHT - 60), footer, font=foot_font, fill=(*_MUTED, 255), anchor="ms")
+    draw.text((WIDTH // 2, HEIGHT - 60), footer, font=font, fill=(*_MUTED, 255), anchor="ms")
+
+
+def _opening(media_root: Path | None) -> Image.Image:
+    """The full composition: sun, skyline, optional portrait, headline."""
+    scene = _background()
+    _vignette(scene)
+    _figure(scene, media_root)
+    _scrim(scene)
+    return scene
+
+
+def _detail() -> Image.Image:
+    """Push in on the temples; the headline has already been read aloud."""
+    scene = _background()
+    _vignette(scene)
+    _scrim(scene)
+    return scene.crop(_DETAIL_BOX).resize((WIDTH, HEIGHT), Image.Resampling.LANCZOS)
+
+
+def _closing() -> Image.Image:
+    """An end card: paper, a small sun and the marks, with no body copy."""
+    scene = _vertical_gradient([(0.00, _PAPER), (0.62, _PAPER), (1.00, _PAPER_DEEP)]).convert(
+        "RGBA"
+    )
+    disc = (540, 742, 214)
+    _translucent(
+        scene,
+        lambda draw: draw.ellipse(
+            [disc[0] - disc[2], disc[1] - disc[2], disc[0] + disc[2], disc[1] + disc[2]],
+            fill=(*_TERRACOTTA, 104),
+        ),
+    )
+    _vignette(scene)
+    return scene
+
+
+def _draw_blocking(
+    spec: PosterSpec,
+    destination: Path,
+    media_root: Path | None,
+    variant: str,
+) -> Path:
+    if variant == "closing":
+        scene = _closing()
+    elif variant == "detail":
+        scene = _detail()
+    else:
+        scene = _opening(media_root)
+
+    draw = ImageDraw.Draw(scene, "RGBA")
+    bold_path = find_font(bold=True)
+    try:
+        title_font, title_lines = fit_title(spec.title, bold_path)
+        foot_font = ImageFont.truetype(find_font(), 34)
+        seal_font = ImageFont.truetype(bold_path, 56)
+        brand_font = ImageFont.truetype(bold_path, 96)
+        subtitle_font = ImageFont.truetype(find_font(), 44)
+    except OSError as error:
+        raise DigitalHumanUnavailable("unreadable font for video rendering") from error
+
+    # Seal, top-left, echoing the paper chop on the site.
+    draw.rounded_rectangle([72, 88, 216, 232], radius=28, fill=(*_JADE, 255))
+    draw.text((144, 160), "桂", font=seal_font, fill=(*_PAPER, 255), anchor="mm")
+
+    if variant == "closing":
+        draw.text((WIDTH // 2, 1092), spec.brand, font=brand_font, fill=(*_INK, 255), anchor="ma")
+        draw.rounded_rectangle(
+            [WIDTH // 2 - 54, 1236, WIDTH // 2 + 54, 1242], radius=3, fill=(*_TERRACOTTA, 255)
+        )
+        draw.text(
+            (WIDTH // 2, 1302), spec.subtitle, font=subtitle_font, fill=(*_MUTED, 255), anchor="ma"
+        )
+    elif variant != "detail" and title_font is not None:
+        _draw_title(draw, title_font, title_lines)
+
+    if variant != "closing":
+        _draw_footer(draw, spec, foot_font)
 
     destination.parent.mkdir(parents=True, exist_ok=True)
     scene.convert("RGB").save(destination, format="PNG", optimize=True)
@@ -497,11 +553,16 @@ def _draw_blocking(spec: PosterSpec, destination: Path, media_root: Path | None)
 
 
 async def draw(
-    destination: Path, *, title: str, language: str, media_root: Path | None = None
+    destination: Path,
+    *,
+    title: str,
+    language: str,
+    media_root: Path | None = None,
+    variant: str = "opening",
 ) -> Path:
-    """Render the frame off the event loop so a long script cannot block it."""
+    """Render one frame off the event loop so a long script cannot block it."""
     spec = _spec(title=title, language=language)
-    return await asyncio.to_thread(_draw_blocking, spec, destination, media_root)
+    return await asyncio.to_thread(_draw_blocking, spec, destination, media_root, variant)
 
 
 def _spec(*, title: str, language: str) -> PosterSpec:
