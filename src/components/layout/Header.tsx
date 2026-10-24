@@ -55,7 +55,7 @@ export default function Header({ locale: localeProp = 'zh' }: { locale?: string 
   return (
     <header className="sticky top-0 z-[1100] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
       <div className="container-custom">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between gap-3 h-16">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-2 flex-shrink-0">
             <Icon
@@ -70,12 +70,12 @@ export default function Header({ locale: localeProp = 'zh' }: { locale?: string 
           </Link>
 
           {/* 桌面导航 | Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-0.5 min-w-0 overflow-x-auto scrollbar-hidden">
             {EXHIBITIONS.map((ex) => (
               <Link
                 key={ex.key}
                 href={`/${locale}${ex.path}`}
-                className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-zhuang-red hover:text-white transition-colors"
+                className="px-2.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 text-gray-700 dark:text-gray-300 hover:bg-zhuang-red hover:text-white transition-colors"
               >
                 {t(`exhibition.${ex.key}`)}
               </Link>
@@ -84,7 +84,7 @@ export default function Header({ locale: localeProp = 'zh' }: { locale?: string 
             <span aria-hidden className="mx-1 h-5 w-px bg-gray-200 dark:bg-gray-700" />
             <Link
               href={`/${locale}/persona`}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-purple-600 hover:text-white transition-colors"
+              className="px-2.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap shrink-0 text-gray-700 dark:text-gray-300 hover:bg-purple-600 hover:text-white transition-colors"
             >
               {t('nav.persona')}
             </Link>

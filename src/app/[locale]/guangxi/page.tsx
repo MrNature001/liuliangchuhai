@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Icon, { CultureImage, HeroImage, type CultureImageName } from '@/components/ui/Icon';
 import FestivalActivities from '@/components/guangxi/FestivalActivities';
+import RockArtViewer from './RockArtViewer';
 import { getT } from '@/i18n/server';
 
 export async function generateMetadata({
@@ -106,16 +107,7 @@ export default function GuangxiHallPage({ params }: { params: { locale: string }
             </div>
 
             <div className="space-y-6">
-              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-600 rounded-lg flex items-center justify-center text-white">
-                <div className="text-center">
-                  <CultureImage
-                    name="huashan-rock-art"
-                    style={{ width: 160, height: 100, margin: "0 auto 16px" }}
-                  />
-                  <p className="text-xl">{t('huashan.viewerTitle')}</p>
-                  <p className="text-sm opacity-75 mt-2">{t('huashan.viewerHint')}</p>
-                </div>
-              </div>
+              <RockArtViewer />
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-zhuang-red/10 dark:bg-zhuang-red/20 p-4 rounded-lg">

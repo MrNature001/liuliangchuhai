@@ -81,7 +81,7 @@ export default function JiumaGame() {
       >
         {/* 崖壁实拍：与展厅同源的桂林峰林照片，用滤镜压成岩壁质感 */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/hero/guilin.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover contrast-110 saturate-90" />
+        <img src="/images/culture/guilin-jiuma.jpg" alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover contrast-110 saturate-90" />
         <span className="absolute inset-0 bg-ink-black/25" />
 
         {HORSES.map((h, i) =>

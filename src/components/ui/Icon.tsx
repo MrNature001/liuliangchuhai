@@ -70,7 +70,8 @@ export type CultureImageName =
   | 'embroidery-ball' | 'guilin-landscape'
   | 'ink-painting' | 'rice-terraces' | 'festival'
   | 'asean-culture' | 'silk-road-sea' | 'guangxi-city' | 'archives'
-  | 'five-color-rice';
+  | 'five-color-rice'
+  | 'guilin-lijiang' | 'guilin-elephant' | 'guilin-karst' | 'guilin-jiuma';
 
 export function CultureImage({
   name,

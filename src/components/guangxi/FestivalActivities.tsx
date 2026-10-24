@@ -24,6 +24,8 @@ interface FestivalActivity {
   /** 有对应小游戏时给出跳转目标 */
   playPath?: string;
   playKey?: string;
+  /** 独立的静态 DIY 页面 */
+  diyPath?: string;
 }
 
 const ACTIVITIES: FestivalActivity[] = [
@@ -43,6 +45,7 @@ const ACTIVITIES: FestivalActivity[] = [
     detailKey: 'activity.embroideryBall.detail',
     playPath: '/interactive#games',
     playKey: 'activity.embroideryBall.play',
+    diyPath: '/diy/embroidery-ball/index.html',
   },
   {
     key: 'fiveColorRice',
@@ -134,6 +137,16 @@ export default function FestivalActivities() {
                   </Link>
                 )}
               </div>
+              {activity.diyPath && (
+                <a
+                  href={activity.diyPath}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-purple-600 dark:text-purple-300 hover:underline"
+                >
+                  {t('activity.embroideryBall.diy')} ↗
+                </a>
+              )}
             </div>
           </div>
         );

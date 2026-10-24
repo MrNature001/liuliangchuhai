@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Icon, { CultureImage, HeroImage, type CultureImageName } from '@/components/ui/Icon';
 import { getT } from '@/i18n/server';
 import JiumaGame from './JiumaGame';
+import PanZoomPhoto from './PanZoomPhoto';
 
 export async function generateMetadata({
   params,
@@ -97,15 +98,12 @@ export default function GuilinHallPage({ params }: { params: { locale: string } 
             </div>
 
             <div className="space-y-6">
-              <div className="aspect-video bg-gradient-to-br from-ink-gray to-ink-cyan rounded-lg overflow-hidden relative group">
-                <div className="absolute inset-0 flex items-center justify-center text-white">
-                  <div className="text-center">
-                    <HeroImage name="guilin" style={{ position: "absolute", inset: 0, opacity: 0.55 }} />
-                    <p className="text-xl font-bold relative">{t('lijiang.panoramaTitle')}</p>
-                    <p className="text-sm opacity-75 mt-2">{t('lijiang.panoramaHint')}</p>
-                  </div>
-                </div>
-              </div>
+              <PanZoomPhoto
+                src="/images/culture/guilin-lijiang.jpg"
+                alt={t('lijiang.panoramaTitle')}
+                title={t('lijiang.panoramaTitle')}
+                hint={t('lijiang.panoramaHint')}
+              />
 
               <div className="card-cultural p-6">
                 <h4 className="font-bold mb-3">{t('lijiang.poemsTitle')}</h4>
@@ -134,14 +132,14 @@ export default function GuilinHallPage({ params }: { params: { locale: string } 
           />
 
           <div className="mt-12">
-            <div className="aspect-[21/9] rounded-2xl overflow-hidden relative">
-              <HeroImage name="guilin" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
-                <p className="text-2xl font-bold mb-2">{t('karst.viewerTitle')}</p>
-                <p className="text-sm opacity-85">{t('karst.viewerHint')}</p>
-              </div>
-            </div>
+            <PanZoomPhoto
+              src="/images/culture/guilin-karst.jpg"
+              alt={t('karst.viewerTitle')}
+              title={t('karst.viewerTitle')}
+              hint={t('karst.viewerHint')}
+              aspect="aspect-[21/9]"
+              className="rounded-2xl"
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               {karstFeatures.map((feature, idx) => (
@@ -169,7 +167,7 @@ export default function GuilinHallPage({ params }: { params: { locale: string } 
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-5 gap-8">
             <div className="lg:col-span-3">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden relative group">
-                <HeroImage name="guilin" />
+                <CultureImage name="guilin-elephant" label={t('elephant.modelTitle')} className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-6 text-white">
                   <p className="text-2xl font-bold mb-1">{t('elephant.modelTitle')}</p>

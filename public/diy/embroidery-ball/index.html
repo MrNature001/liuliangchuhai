@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>绣球DIY · 云上非遗创作</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+
+  <!-- 启动页 -->
+  <div id="splash">
+    <canvas id="splashCanvas" width="300" height="360"></canvas>
+    <h1>绣球DIY</h1>
+    <div class="sub">指尖做绣球 · 云上传壮韵</div>
+    <div class="badge">广西绣球 · 国家级非物质文化遗产</div>
+  </div>
+
+  <!-- ========== 页面1：首页 ========== -->
+  <div class="page active" id="page-home">
+    <div class="page-scroll">
+      <header class="home-hero">
+        <span class="kicker">绣球DIY · 云上非遗创作</span>
+        <h1>指尖做绣球<br><em>云上传壮韵</em></h1>
+        <p>广西绣球是国家级非遗。无需针线，自由配色、贴纹、配饰，三分钟做出你的专属数字绣球。</p>
+      </header>
+
+      <h3 class="section-title">非遗之窗</h3>
+      <div class="banner" id="bannerList"></div>
+
+      <h3 class="section-title">开始创作</h3>
+      <div class="entry-grid">
+        <div class="entry-card main" data-nav="diy">
+          <div class="ic" style="background:rgba(194,67,43,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#C2432B" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="10" r="6"/><path d="M12 4v-2M9 22c1-2 5-2 6 0M12 16v2"/></svg>
+          </div>
+          <div>
+            <h4>开始 DIY</h4>
+            <p>十二瓣绣球随心设计 · 配色贴纹一步完成</p>
+          </div>
+        </div>
+        <div class="entry-card" data-nav="culture">
+          <div class="ic" style="background:rgba(46,110,94,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2E6E5E" stroke-width="1.8" stroke-linecap="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+          </div>
+          <h4>文化科普</h4>
+          <p>绣球源流 · 民俗礼俗 · 纹样寓意</p>
+        </div>
+        <div class="entry-card" data-nav="tutorial">
+          <div class="ic" style="background:rgba(201,162,39,0.16)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.8" stroke-linecap="round"><path d="M3 21l9-9M13 4l7 7-3 3-7-7z"/></svg>
+          </div>
+          <h4>手工教程</h4>
+          <p>六道工序 · 线下实操指南</p>
+        </div>
+        <div class="entry-card" data-nav="works">
+          <div class="ic" style="background:rgba(108,78,140,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6B4E8C" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+          </div>
+          <h4>我的作品</h4>
+          <p>数字绣球藏品 · 可生成海报</p>
+        </div>
+      </div>
+
+      <h3 class="section-title">精选作品</h3>
+      <div class="works-strip" id="homeWorksStrip"></div>
+      <div style="height:12px"></div>
+    </div>
+  </div>
+
+  <!-- ========== 页面2：DIY创作工作台 ========== -->
+  <div class="page" id="page-diy">
+    <div class="page-scroll" style="padding-bottom:12px">
+      <div class="topbar">
+        <div class="back" data-nav="home">&#8592;</div>
+        <h2>绣球创作台</h2>
+      </div>
+      <div id="diyCanvasWrap">
+        <canvas id="diyCanvas" width="720" height="780"></canvas>
+        <div class="diy-hint">左右滑动可旋转绣球 · 修改实时预览</div>
+      </div>
+      <div class="diy-actions">
+        <button class="btn btn-primary" id="btnSaveWork">保存作品</button>
+        <button class="btn btn-gold" id="btnPoster">生成海报</button>
+        <button class="btn btn-ghost" id="btnResetWork">重新创作</button>
+      </div>
+
+      <div class="diy-tabs">
+        <div class="dt on" data-diytab="color">配色</div>
+        <div class="dt" data-diytab="pattern">纹样</div>
+        <div class="dt" data-diytab="decor">配饰</div>
+      </div>
+
+      <!-- 配色面板 -->
+      <div class="diy-panel" id="panel-color">
+        <h5>配色模式</h5>
+        <div class="mode-switch">
+          <div class="chip on" data-mode="solid">纯色模式</div>
+          <div class="chip" data-mode="gradient">渐变模式</div>
+        </div>
+        <h5>选择配色对象</h5>
+        <div class="petal-row">
+          <label>当前瓣面</label>
+          <select class="petal-select" id="petalSelect"></select>
+        </div>
+        <h5>主色（瓣尖色）</h5>
+        <div class="swatches" id="swatchC1"></div>
+        <h5>渐变副色（瓣根色，仅渐变模式生效）</h5>
+        <div class="swatches" id="swatchC2"></div>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn btn-ghost" id="btnApplyAllColor" style="flex:1; padding:10px 0; font-size:13px;">将此配色应用到全部十二瓣</button>
+        </div>
+      </div>
+
+      <!-- 纹样面板 -->
+      <div class="diy-panel" id="panel-pattern" style="display:none">
+        <h5>传统纹样库（点击 i 查看民俗释义）</h5>
+        <div class="pattern-grid" id="patternGrid"></div>
+        <div class="petal-row" style="margin-top:12px">
+          <label>贴纹对象</label>
+          <select class="petal-select" id="patternTarget"></select>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn btn-ghost" id="btnClearPattern" style="flex:1; padding:10px 0; font-size:13px;">清除所选纹面</button>
+        </div>
+      </div>
+
+      <!-- 配饰面板 -->
+      <div class="diy-panel" id="panel-decor" style="display:none">
+        <h5>流苏颜色</h5>
+        <div class="swatches" id="tasselColors"></div>
+        <h5>流苏长度</h5>
+        <div class="opt-row" id="tasselLengths"></div>
+        <h5>流苏款式</h5>
+        <div class="opt-row" id="tasselStyles"></div>
+        <h5>吊坠</h5>
+        <div class="opt-row" id="pendantOpts"></div>
+        <h5>挂绳样式</h5>
+        <div class="opt-row" id="cordOpts"></div>
+      </div>
+      <div style="height:76px"></div>
+    </div>
+  </div>
+
+  <!-- ========== 页面3：文化科普 ========== -->
+  <div class="page" id="page-culture">
+    <div class="page-scroll">
+      <div class="topbar" style="padding-top:22px">
+        <h2>非遗文化科普</h2>
+      </div>
+      <div class="chip-scroll" id="cultureTabs"></div>
+      <div id="cultureList"></div>
+      <div style="height:10px"></div>
+    </div>
+  </div>
+
+  <!-- ========== 页面4：手工教程 ========== -->
+  <div class="page" id="page-tutorial">
+    <div class="page-scroll">
+      <div class="topbar" style="padding-top:22px">
+        <h2>实体绣球制作教程</h2>
+      </div>
+      <div style="margin:0 18px 12px; font-size:12.5px; color:var(--ink-soft); line-height:1.7;">
+        把数字设计变成真的绣球。裁布、贴样、缝制、填充、收口、流苏，六道工序完成一颗属于你的实体绣球。
+      </div>
+      <h3 class="section-title" style="margin-top:6px">材料清单</h3>
+      <div class="material-grid" id="materialList"></div>
+      <h3 class="section-title">六道工序</h3>
+      <div id="stepList"></div>
+      <div style="height:10px"></div>
+    </div>
+  </div>
+
+  <!-- ========== 页面5：我的作品 ========== -->
+  <div class="page" id="page-works">
+    <div class="page-scroll">
+      <div class="topbar" style="padding-top:22px">
+        <div class="back" data-nav="profile">&#8592;</div>
+        <h2>我的作品</h2>
+      </div>
+      <div id="worksEmpty" class="empty-box" style="display:none">
+        <div class="big">绣</div>
+        <p>还没有保存过作品<br>去创作你的第一颗数字绣球吧</p>
+        <button class="btn btn-primary" data-nav="diy">开始 DIY</button>
+      </div>
+      <div class="works-grid" id="worksGrid"></div>
+      <div style="height:14px"></div>
+    </div>
+  </div>
+
+  <!-- ========== 页面6：个人中心 ========== -->
+  <div class="page" id="page-profile">
+    <div class="page-scroll">
+      <div class="profile-head">
+        <div class="avatar">绣</div>
+        <div>
+          <h3>壮乡小绣娘</h3>
+          <p>指尖做绣球 · 云上传壮韵</p>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><b id="statWorks">0</b><span>我的作品</span></div>
+        <div class="stat-box"><b>5</b><span>已解锁纹样</span></div>
+        <div class="stat-box"><b>12</b><span>瓣定制</span></div>
+      </div>
+      <div class="menu-list">
+        <div class="menu-item" data-nav="works">
+          <div class="mi-ic" style="background:rgba(108,78,140,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6B4E8C" stroke-width="1.8"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M5 10h14"/></svg>
+          </div>
+          我的作品 <span class="arrow">&#8250;</span>
+        </div>
+        <div class="menu-item" id="menuAbout">
+          <div class="mi-ic" style="background:rgba(46,110,94,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2E6E5E" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8v.01" stroke-linecap="round"/></svg>
+          </div>
+          关于我们 <span class="arrow">&#8250;</span>
+        </div>
+        <div class="menu-item" id="menuNotice">
+          <div class="mi-ic" style="background:rgba(201,162,39,0.16)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6" stroke-linecap="round"/></svg>
+          </div>
+          使用须知 <span class="arrow">&#8250;</span>
+        </div>
+        <div class="menu-item" id="menuProject">
+          <div class="mi-ic" style="background:rgba(194,67,43,0.12)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#C2432B" stroke-width="1.8"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/></svg>
+          </div>
+          非遗项目说明 <span class="arrow">&#8250;</span>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:11px; color:var(--ink-soft); margin-top:22px; letter-spacing:1px;">
+        绣球DIY原型 v1.0 · 非遗公益文创 · 学生创新项目
+      </div>
+      <div style="height:16px"></div>
+    </div>
+  </div>
+
+  <!-- 底部 Tab -->
+  <nav class="tabbar">
+    <div class="tab on" data-nav="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg>
+      首页
+    </div>
+    <div class="tab" data-nav="culture">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+      科普
+    </div>
+    <div class="tab" data-nav="tutorial">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 21l9-9M13 4l7 7-3 3-7-7z"/></svg>
+      教程
+    </div>
+    <div class="tab" data-nav="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+      我的
+    </div>
+  </nav>
+
+  <!-- 弹层 -->
+  <div class="modal-mask" id="modalMask">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/ball.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

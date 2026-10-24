@@ -79,65 +79,125 @@ export default function DrumModel({
 
     const drum = new THREE.Group();
 
-    // 鼓面（略呈浅穹顶）
-    const face = new THREE.Mesh(new THREE.CylinderGeometry(1.55, 1.55, 0.12, 96), bronze);
-    face.position.y = 0.62;
-    drum.add(face);
+    // ── 铜鼓形制 ────────────────────────────────────────────────
+    // 参照北流型/冷水冲型铜鼓的比例：面径约为通高的 1.5 倍，
+    // 鼓身自面沿收束至束腰，再向外撇出圈足，鼓面边缘立四只蛙饰。
+    const R_FACE = 1.0;
+    const H_TOP = 0.60;
+    const H_BOTTOM = -0.58;
 
-    // 鼓身：上宽下窄的收腰
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.15, 1.18, 96, 1, true), bronze);
-    body.position.y = 0;
+    // 鼓身：用旋转体（Lathe）沿侧剖面成型，比堆叠圆柱更接近实物
+    const profile = [
+      new THREE.Vector2(0.74, H_BOTTOM),        // 圈足内沿
+      new THREE.Vector2(0.86, H_BOTTOM + 0.04), // 圈足外撇
+      new THREE.Vector2(0.80, H_BOTTOM + 0.16),
+      new THREE.Vector2(0.74, -0.20),           // 下腹
+      new THREE.Vector2(0.70, 0.02),            // 束腰
+      new THREE.Vector2(0.78, 0.24),            // 上腹
+      new THREE.Vector2(0.90, 0.42),            // 肩部外扩
+      new THREE.Vector2(0.98, 0.54),            // 面沿
+      new THREE.Vector2(R_FACE, H_TOP),
+    ];
+    const bodyGeo = new THREE.LatheGeometry(profile, 96);
+    const body = new THREE.Mesh(bodyGeo, bronze);
+    body.castShadow = true;
     drum.add(body);
 
-    // 鼓底
-    const base = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.1, 96), bronze);
-    base.position.y = -0.62;
-    drum.add(base);
+    // 鼓面：铜鼓的面基本是平的，只有中心一处隆起。
+    // 用圆盘做面，避免球面盖住纹饰（上一版穹顶就把太阳纹埋进了面里）。
+    const face = new THREE.Mesh(new THREE.CircleGeometry(R_FACE, 96), bronze);
+    face.rotation.x = -Math.PI / 2;
+    face.position.y = H_TOP + 0.002;
+    drum.add(face);
 
-    // 太阳芒纹：中心圆 + 12 道芒线
-    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.04, 48), gold);
-    hub.position.y = 0.69;
+    // 纹饰贴在鼓面之上
+    const FACE_Y = H_TOP + 0.03;
+
+    // 面沿凸棱
+    const rimRing = new THREE.Mesh(new THREE.TorusGeometry(R_FACE, 0.028, 12, 96), gold);
+    rimRing.rotation.x = Math.PI / 2;
+    rimRing.position.y = FACE_Y;
+    drum.add(rimRing);
+
+    // 太阳纹：中心凸起的圆饼 + 十二道芒线
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.23, 0.05, 48), gold);
+    hub.position.y = FACE_Y + 0.02;
     drum.add(hub);
-
-    for (let i = 0; i < 12; i += 1) {
-      const ray = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.02, 0.62), gold);
-      ray.position.set(0, 0.69, 0);
-      ray.rotation.y = (i * Math.PI) / 6;
-      ray.position.x = Math.sin((i * Math.PI) / 6) * 0.62;
-      ray.position.z = Math.cos((i * Math.PI) / 6) * 0.62;
+    for (let i = 0; i < 12; i++) {
+      const ray = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.022, 0.46), gold);
+      const a = (i * Math.PI) / 6;
+      ray.position.set(Math.sin(a) * 0.46, FACE_Y + 0.01, Math.cos(a) * 0.46);
+      ray.rotation.y = a;
       drum.add(ray);
     }
 
-    // 同心弦纹
-    [0.85, 1.05, 1.25, 1.45].forEach((r) => {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.012, 8, 96), gold);
+    // 同心弦纹（三道）+ 云雷纹带（用细密短棱示意）
+    [0.52, 0.68, 0.84].forEach((r) => {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.014, 10, 128), gold);
       ring.rotation.x = Math.PI / 2;
-      ring.position.y = 0.69;
+      ring.position.y = FACE_Y;
       drum.add(ring);
     });
+    for (let i = 0; i < 72; i++) {
+      const a = (i * Math.PI) / 36;
+      const stud = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.014, 0.026), gold);
+      stud.position.set(Math.sin(a) * 0.76, FACE_Y, Math.cos(a) * 0.76);
+      stud.rotation.y = a;
+      drum.add(stud);
+    }
 
-    // 鼓面边缘四只蛙饰（示意：简化几何体）
-    for (let i = 0; i < 4; i += 1) {
+    // 四只立蛙：蛙身 + 蛙头 + 四肢
+    for (let i = 0; i < 4; i++) {
       const frog = new THREE.Group();
-      const bodyF = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20, 14), bronze);
-      bodyF.scale.set(1.4, 0.7, 1);
-      frog.add(bodyF);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 12), bronze);
-      head.position.set(0, 0.03, 0.14);
+      const torso = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 14), bronze);
+      torso.scale.set(1.5, 0.55, 1.0);
+      frog.add(torso);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.062, 16, 12), bronze);
+      head.position.set(0, 0.03, 0.15);
       frog.add(head);
-      const angle = (i * Math.PI) / 2 + Math.PI / 4;
-      frog.position.set(Math.sin(angle) * 1.42, 0.7, Math.cos(angle) * 1.42);
-      frog.rotation.y = angle;
+      [-1, 1].forEach((s) => {
+        const hind = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.16), bronze);
+        hind.position.set(s * 0.11, -0.01, -0.10);
+        hind.rotation.y = s * 0.5;
+        frog.add(hind);
+        const fore = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.026, 0.10), bronze);
+        fore.position.set(s * 0.10, -0.012, 0.12);
+        fore.rotation.y = s * -0.4;
+        frog.add(fore);
+      });
+      const a = (i * Math.PI) / 2 + Math.PI / 4;
+      frog.position.set(Math.sin(a) * 0.86, FACE_Y + 0.01, Math.cos(a) * 0.86);
+      frog.rotation.y = a;
       drum.add(frog);
     }
 
-    // 鼓身腰线
-    [-0.42, 0, 0.42].forEach((y) => {
-      const ring = new THREE.Mesh(new THREE.TorusGeometry(1.34, 0.02, 8, 96), gold);
+    // 鼓身两侧的扁耳（两对）
+    for (let i = 0; i < 2; i++) {
+      const a = i * Math.PI;
+      const ear = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.028, 10, 32, Math.PI), gold);
+      ear.position.set(Math.sin(a) * 0.80, 0.10, Math.cos(a) * 0.80);
+      ear.rotation.set(0, a, Math.PI / 2);
+      drum.add(ear);
+    }
+
+    // 身部弦纹
+    [-0.34, -0.05, 0.26].forEach((y, i) => {
+      const r = [0.77, 0.71, 0.85][i];
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.018, 10, 96), gold);
       ring.rotation.x = Math.PI / 2;
       ring.position.y = y;
       drum.add(ring);
     });
+
+    // 鼓身纵向的纹带（用细棱示意云雷纹分格）
+    for (let i = 0; i < 36; i++) {
+      const a = (i * Math.PI) / 18;
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.5, 0.02), gold);
+      strip.position.set(Math.sin(a) * 0.735, -0.05, Math.cos(a) * 0.735);
+      strip.rotation.y = a;
+      strip.rotation.x = 0.02;
+      drum.add(strip);
+    }
 
     drum.rotation.x = 0.22;
     scene.add(drum);
