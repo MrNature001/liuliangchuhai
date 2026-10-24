@@ -129,6 +129,13 @@ export default function InteractiveClient() {
                   {isOpen && (
                     <div id={`game-${game.key}`} className="border-t border-gray-200 dark:border-gray-700 p-6 bg-gray-50 dark:bg-gray-900/40">
                       {game.key === 'embroidery' && (
+                        <div className="mb-3 flex justify-end">
+                          <a href="/diy/embroidery-ball/index.html" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-purple-600 dark:text-purple-300 hover:underline">
+                            {t('play.diyBall')} ↗
+                          </a>
+                        </div>
+                      )}
+                      {game.key === 'embroidery' && (
                         <EmbroideryToss onComplete={(s) => setBest((b) => ({ ...b, embroidery: Math.max(b.embroidery ?? 0, s) }))} />
                       )}
                       {game.key === 'quiz' && (
