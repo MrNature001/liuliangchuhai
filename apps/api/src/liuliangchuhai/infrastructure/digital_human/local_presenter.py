@@ -30,7 +30,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 3
+    _RENDER_VERSION = 4
 
     def __init__(
         self,
@@ -68,7 +68,7 @@ class LocalPresenterAdapter:
         # Content-addressed output: an identical script is served without re-rendering.
         digest = hashlib.sha256(
             f"{generation.script}|{generation.language}|{voice or ''}"
-            f"|v{self._RENDER_VERSION}|{poster.asset_signature()}".encode()
+            f"|v{self._RENDER_VERSION}|{poster.asset_signature(self._media_root)}".encode()
         ).hexdigest()[:24]
         name = f"presenter-{digest}.mp4"
         destination = self._media_root / name
@@ -105,6 +105,7 @@ class LocalPresenterAdapter:
                 root / "poster.png",
                 title=speech.headline(generation.script),
                 language=generation.language,
+                media_root=self._media_root,
             )
             await mux.render(
                 poster=still,

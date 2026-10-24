@@ -48,6 +48,11 @@ _TITLE_TOP = 292
 _CAPTION_SIZE = 54
 _CAPTION_MARGIN_V = 168
 
+# The sun sits high so a portrait medallion can hang inside it.
+_SUN = (540, 812, 330)
+_MEDALLION = (540, 812, 208)
+_PRESENTER_NAMES = ("presenter.png", "presenter.jpg", "presenter.jpeg", "presenter.webp")
+
 _FONT_CANDIDATES: tuple[str, ...] = (
     "C:/Windows/Fonts/msyh.ttc",
     "C:/Windows/Fonts/simhei.ttf",
@@ -115,17 +120,36 @@ def _asset(name: str) -> Path | None:
     return path if path.is_file() else None
 
 
-def asset_signature() -> str:
+def asset_signature(media_root: Path | None = None) -> str:
     """Fingerprint the art inputs so a swapped photo invalidates the cache."""
     parts = []
-    for name in ("LIULIANGCHUHAI_VIDEO_BACKGROUND", "LIULIANGCHUHAI_VIDEO_PRESENTER"):
-        path = _asset(name)
+    for path in (_asset("LIULIANGCHUHAI_VIDEO_BACKGROUND"), _presenter_photo(media_root)):
         if path is None:
             parts.append("-")
         else:
             stat = path.stat()
             parts.append(f"{path.name}:{stat.st_size}:{int(stat.st_mtime)}")
     return hashlib.sha256("|".join(parts).encode()).hexdigest()[:12]
+
+
+def _presenter_photo(media_root: Path | None) -> Path | None:
+    """Find a portrait to place in the frame, if one has been supplied.
+
+    The demo ships no photo of its own: a face has to be one you have the right
+    to use. Drop any picture into the media directory (or point
+    ``LIULIANGCHUHAI_VIDEO_PRESENTER`` at one) and it is cropped into the
+    medallion on the next render.
+    """
+    override = _asset("LIULIANGCHUHAI_VIDEO_PRESENTER")
+    if override is not None:
+        return override
+    if media_root is None:
+        return None
+    for name in _PRESENTER_NAMES:
+        candidate = media_root / name
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
@@ -260,7 +284,7 @@ def _translucent(scene: Image.Image, paint: Callable[[ImageDraw.ImageDraw], None
 
 def _scene(scene: Image.Image) -> None:
     """A temple complex on a low hill, held inside a setting sun."""
-    disc_x, disc_y, disc_r = 540, 986, 348
+    disc_x, disc_y, disc_r = _SUN
     box = [disc_x - disc_r, disc_y - disc_r, disc_x + disc_r, disc_y + disc_r]
 
     _translucent(scene, lambda draw: draw.ellipse(box, fill=(*_TERRACOTTA, 112)))
@@ -272,15 +296,15 @@ def _scene(scene: Image.Image) -> None:
     def far_hills(draw: ImageDraw.ImageDraw) -> None:
         draw.polygon(
             [
-                (-20, 1242),
-                (150, 1198),
-                (360, 1234),
-                (540, 1190),
-                (760, 1236),
-                (960, 1202),
-                (WIDTH + 20, 1240),
-                (WIDTH + 20, 1330),
-                (-20, 1330),
+                (-20, 1312),
+                (150, 1268),
+                (360, 1304),
+                (540, 1260),
+                (760, 1306),
+                (960, 1272),
+                (WIDTH + 20, 1310),
+                (WIDTH + 20, 1400),
+                (-20, 1400),
             ],
             fill=(*_JADE, 38),
         )
@@ -288,9 +312,9 @@ def _scene(scene: Image.Image) -> None:
     _translucent(scene, far_hills)
 
     def temples(draw: ImageDraw.ImageDraw) -> None:
-        _pagoda(draw, 232, 1268, 0.62, (*_JADE, 168))
-        _pagoda(draw, 848, 1278, 0.58, (*_JADE, 168))
-        _pagoda(draw, 540, 1300, 0.92, (*_JADE, 168))
+        _pagoda(draw, 232, 1338, 0.62, (*_JADE, 168))
+        _pagoda(draw, 848, 1348, 0.58, (*_JADE, 168))
+        _pagoda(draw, 540, 1372, 0.82, (*_JADE, 168))
 
     _translucent(scene, temples)
 
@@ -328,18 +352,65 @@ def _background() -> Image.Image:
     return scene
 
 
-def _figure(scene: Image.Image) -> None:
-    """Composite an operator-supplied cut-out; never invent a face."""
-    override = _asset("LIULIANGCHUHAI_VIDEO_PRESENTER")
-    if override is None:
-        return
-    cutout = Image.open(override).convert("RGBA")
-    target_width = int(WIDTH * 0.86)
-    ratio = target_width / cutout.width
-    cutout = cutout.resize(
-        (target_width, max(1, round(cutout.height * ratio))), Image.Resampling.LANCZOS
+def _square_crop(portrait: Image.Image) -> Image.Image:
+    """Take a square from the upper middle of a portrait.
+
+    Faces sit above the centre line in almost every portrait, so a plain centre
+    crop cuts foreheads off. Biasing the window upward keeps the face in frame
+    without needing a face detector.
+    """
+    width, height = portrait.size
+    side = min(width, height)
+    top = round((height - side) * 0.18)
+    left = round((width - side) / 2)
+    return portrait.crop((left, top, left + side, top + side))
+
+
+def _medallion(scene: Image.Image, portrait: Image.Image) -> None:
+    """Paste a portrait into a circular frame inside the sun."""
+    centre_x, centre_y, radius = _MEDALLION
+    size = radius * 2
+
+    photo = _square_crop(portrait.convert("RGB")).resize((size, size), Image.Resampling.LANCZOS)
+    mask = Image.new("L", (size * 4, size * 4), 0)
+    ImageDraw.Draw(mask).ellipse([0, 0, size * 4 - 1, size * 4 - 1], fill=255)
+    mask = mask.resize((size, size), Image.Resampling.LANCZOS)
+
+    draw = ImageDraw.Draw(scene, "RGBA")
+    # A paper halo separates the portrait from the temples behind it.
+    draw.ellipse(
+        [
+            centre_x - radius - 14,
+            centre_y - radius - 14,
+            centre_x + radius + 14,
+            centre_y + radius + 14,
+        ],
+        fill=(*_PAPER, 255),
     )
-    scene.alpha_composite(cutout, ((WIDTH - cutout.width) // 2, HEIGHT - cutout.height))
+    scene.paste(photo, (centre_x - radius, centre_y - radius), mask)
+    draw.ellipse(
+        [
+            centre_x - radius - 8,
+            centre_y - radius - 8,
+            centre_x + radius + 8,
+            centre_y + radius + 8,
+        ],
+        outline=(*_TERRACOTTA, 255),
+        width=5,
+    )
+
+
+def _figure(scene: Image.Image, media_root: Path | None) -> None:
+    """Place the supplied portrait, or leave the frame without a face."""
+    photo = _presenter_photo(media_root)
+    if photo is None:
+        return
+    try:
+        portrait = Image.open(photo)
+    except OSError as error:
+        raise DigitalHumanUnavailable("unreadable presenter photo") from error
+    with portrait:
+        _medallion(scene, portrait)
 
 
 def _vignette(scene: Image.Image) -> None:
@@ -376,10 +447,10 @@ def _fit_title(text: str, bold_path: str) -> tuple[ImageFont.FreeTypeFont, list[
     return font, lines
 
 
-def _draw_blocking(spec: PosterSpec, destination: Path) -> Path:
+def _draw_blocking(spec: PosterSpec, destination: Path, media_root: Path | None) -> Path:
     scene = _background()
     _vignette(scene)
-    _figure(scene)
+    _figure(scene, media_root)
     _scrim(scene)
 
     draw = ImageDraw.Draw(scene, "RGBA")
@@ -425,10 +496,12 @@ def _draw_blocking(spec: PosterSpec, destination: Path) -> Path:
     return destination
 
 
-async def draw(destination: Path, *, title: str, language: str) -> Path:
+async def draw(
+    destination: Path, *, title: str, language: str, media_root: Path | None = None
+) -> Path:
     """Render the frame off the event loop so a long script cannot block it."""
     spec = _spec(title=title, language=language)
-    return await asyncio.to_thread(_draw_blocking, spec, destination)
+    return await asyncio.to_thread(_draw_blocking, spec, destination, media_root)
 
 
 def _spec(*, title: str, language: str) -> PosterSpec:

@@ -87,6 +87,31 @@ def test_asset_signature_notices_a_new_photo(
     assert poster.asset_signature() != baseline
 
 
+@pytest.mark.asyncio
+async def test_a_presenter_photo_is_picked_up_from_the_media_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("LIULIANGCHUHAI_VIDEO_PRESENTER", raising=False)
+    monkeypatch.delenv("LIULIANGCHUHAI_VIDEO_BACKGROUND", raising=False)
+    without = await poster.draw(
+        tmp_path / "plain.png", title="六堡茶", language="中文", media_root=tmp_path
+    )
+
+    Image.new("RGB", (900, 1200), (20, 60, 200)).save(tmp_path / "presenter.png")
+    with_photo = await poster.draw(
+        tmp_path / "face.png", title="六堡茶", language="中文", media_root=tmp_path
+    )
+
+    centre_x, centre_y, _ = poster._MEDALLION
+    with Image.open(without).convert("RGB") as plain, Image.open(with_photo).convert("RGB") as face:
+        assert plain.getpixel((centre_x, centre_y)) != face.getpixel((centre_x, centre_y))
+        # The crop is blue, so the middle of the medallion must be too.
+        red, green, blue = face.getpixel((centre_x, centre_y))
+    assert blue > 150
+    assert red < 90
+    assert green < 120
+
+
 def test_caption_font_resolves_a_family_name() -> None:
     family, directory = poster.caption_font("六堡茶来自梧州")
 

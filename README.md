@@ -145,14 +145,22 @@ renderers are available behind one port; the default needs no account at all.
 ### Replacing the drawn art
 
 The default frame is drawn in code so the demo needs no image assets and no
-stock-photo licence. It carries no figure of its own: a face drawn from
-primitives reads as clip art, so a real presenter comes either from your own
-cut-out below or from `dashscope`. Operators can swap in their own material
-without touching code:
+stock-photo licence. It carries no photo of its own: a face has to be one you
+have the right to use. Supply a portrait and it is cropped into a circular
+medallion on the sun, with a paper halo and a lacquer ring:
+
+```sh
+# either drop a file in the ignored media directory…
+apps/api/media/presenter.png        # .jpg, .jpeg and .webp also work
+# …or point at one anywhere on disk
+LIULIANGCHUHAI_VIDEO_PRESENTER=/path/to/portrait.jpg
+```
+
+The square crop is biased to the upper part of the image, because faces sit
+above the centre line in almost every portrait. Two further overrides:
 
 ```dotenv
 LIULIANGCHUHAI_VIDEO_BACKGROUND=/path/to/scene.jpg    # full-bleed photo
-LIULIANGCHUHAI_VIDEO_PRESENTER=/path/to/cutout.png    # replaces the illustrated figure
 LIULIANGCHUHAI_VIDEO_FONT=/path/to/Unicode.ttf        # font for every drawn glyph
 ```
 
