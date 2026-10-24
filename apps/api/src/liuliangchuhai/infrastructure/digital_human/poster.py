@@ -1,16 +1,20 @@
 """Frame art for the local presenter.
 
 A vendor digital-human render needs a paid avatar service. This module composes
-the same vertical-video frame with Pillow instead: warm paper, a terracotta sun,
-a pagoda skyline, and an illustrated presenter standing in front of them.
+the frame with Pillow instead: warm paper, a terracotta sun, and a pagoda
+skyline drawn from the Southeast Asian vocabulary the demo sells into.
 Everything is drawn locally, so the demo still ships a real, playable video with
 no account, no network and no stock-photo licence.
 
-Three environment variables let an operator replace the drawn art without
-touching code:
+The frame deliberately contains no figure of its own. Drawing a person with
+primitives reads as clip art, and a real face has to come from real footage —
+`LIULIANGCHUHAI_VIDEO_PRESENTER` composites your own cut-out, and the
+``dashscope`` provider produces a photoreal talking head from a recorded clip.
+
+Environment overrides:
 
 ``LIULIANGCHUHAI_VIDEO_BACKGROUND``  a photo used full-bleed behind the scene
-``LIULIANGCHUHAI_VIDEO_PRESENTER``   a cut-out PNG used in place of the avatar
+``LIULIANGCHUHAI_VIDEO_PRESENTER``   a cut-out PNG composited over the scene
 ``LIULIANGCHUHAI_VIDEO_FONT``        a Unicode font path for every drawn glyph
 """
 
@@ -19,11 +23,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from liuliangchuhai.application.ports.digital_human_errors import DigitalHumanUnavailable
 
@@ -36,14 +41,7 @@ _PAPER_DEEP = (240, 232, 214)
 _INK = (38, 44, 38)
 _MUTED = (108, 112, 98)
 _JADE = (45, 92, 74)
-_JADE_DEEP = (28, 62, 52)
 _TERRACOTTA = (196, 108, 74)
-_SKIN = (232, 190, 158)
-_SKIN_SHADE = (204, 156, 124)
-_HAIR = (58, 44, 38)
-_BLAZER = (40, 86, 72)
-_BLAZER_DEEP = (26, 60, 50)
-_SHIRT = (249, 245, 234)
 
 _TITLE_MAX_WIDTH = WIDTH - 192
 _TITLE_TOP = 292
@@ -248,26 +246,70 @@ def _pagoda(
     )
 
 
-def _skyline(draw: ImageDraw.ImageDraw) -> None:
-    """Three temple towers along a low hill, read as one cultural backdrop."""
-    draw.polygon(
-        [
-            (-20, 1206),
-            (140, 1150),
-            (330, 1192),
-            (520, 1146),
-            (760, 1196),
-            (960, 1154),
-            (WIDTH + 20, 1200),
-            (WIDTH + 20, 1920),
-            (-20, 1920),
-        ],
-        fill=(*_JADE, 20),
+def _translucent(scene: Image.Image, paint: Callable[[ImageDraw.ImageDraw], None]) -> None:
+    """Draw one translucent element.
+
+    Pillow's ``ImageDraw`` only blends alpha for RGB canvases; on an RGBA canvas
+    it writes the colour verbatim, which renders a 30%-alpha sun as solid paint.
+    Painting into a transparent layer and compositing that layer blends properly.
+    """
+    overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    paint(ImageDraw.Draw(overlay, "RGBA"))
+    scene.alpha_composite(overlay)
+
+
+def _scene(scene: Image.Image) -> None:
+    """A temple complex on a low hill, held inside a setting sun."""
+    disc_x, disc_y, disc_r = 540, 986, 348
+    box = [disc_x - disc_r, disc_y - disc_r, disc_x + disc_r, disc_y + disc_r]
+
+    _translucent(scene, lambda draw: draw.ellipse(box, fill=(*_TERRACOTTA, 112)))
+    _translucent(
+        scene,
+        lambda draw: draw.ellipse(box, outline=(*_TERRACOTTA, 150), width=3),
     )
-    fill = (*_JADE, 34)
-    _pagoda(draw, 176, 1214, 0.54, fill)
-    _pagoda(draw, 906, 1224, 0.46, fill)
-    _pagoda(draw, 540, 1230, 0.68, fill)
+
+    def far_hills(draw: ImageDraw.ImageDraw) -> None:
+        draw.polygon(
+            [
+                (-20, 1242),
+                (150, 1198),
+                (360, 1234),
+                (540, 1190),
+                (760, 1236),
+                (960, 1202),
+                (WIDTH + 20, 1240),
+                (WIDTH + 20, 1330),
+                (-20, 1330),
+            ],
+            fill=(*_JADE, 38),
+        )
+
+    _translucent(scene, far_hills)
+
+    def temples(draw: ImageDraw.ImageDraw) -> None:
+        _pagoda(draw, 232, 1268, 0.62, (*_JADE, 168))
+        _pagoda(draw, 848, 1278, 0.58, (*_JADE, 168))
+        _pagoda(draw, 540, 1300, 0.92, (*_JADE, 168))
+
+    _translucent(scene, temples)
+
+    def ground(draw: ImageDraw.ImageDraw) -> None:
+        draw.polygon(
+            [
+                (-20, 1334),
+                (200, 1312),
+                (420, 1328),
+                (640, 1310),
+                (860, 1330),
+                (WIDTH + 20, 1316),
+                (WIDTH + 20, HEIGHT + 20),
+                (-20, HEIGHT + 20),
+            ],
+            fill=(*_JADE, 26),
+        )
+
+    _translucent(scene, ground)
 
 
 def _background() -> Image.Image:
@@ -280,100 +322,40 @@ def _background() -> Image.Image:
         ).convert("RGBA")
 
     scene = _vertical_gradient(
-        [(0.00, _PAPER), (0.58, _PAPER), (0.88, _PAPER_DEEP), (1.00, _PAPER_DEEP)]
+        [(0.00, _PAPER), (0.60, _PAPER), (0.90, _PAPER_DEEP), (1.00, _PAPER_DEEP)]
     ).convert("RGBA")
-    draw = ImageDraw.Draw(scene, "RGBA")
-    draw.ellipse([540 - 344, 906 - 344, 540 + 344, 906 + 344], fill=(*_TERRACOTTA, 44))
-    _skyline(draw)
+    _scene(scene)
     return scene
 
 
-def _collar_and_torso(draw: ImageDraw.ImageDraw) -> None:
-    """Shoulders that fill the frame without reading as a pyramid."""
-    draw.polygon(
-        [
-            (10, 1920),
-            (74, 1560),
-            (186, 1320),
-            (330, 1196),
-            (452, 1128),
-            (628, 1128),
-            (750, 1196),
-            (894, 1320),
-            (1006, 1560),
-            (1070, 1920),
-        ],
-        fill=(*_BLAZER, 255),
-    )
-    draw.polygon([(456, 1124), (540, 1348), (624, 1124)], fill=(*_SHIRT, 255))
-    draw.polygon([(456, 1124), (540, 1348), (512, 1360), (438, 1218)], fill=(*_BLAZER_DEEP, 255))
-    draw.polygon([(624, 1124), (540, 1348), (568, 1360), (642, 1218)], fill=(*_BLAZER_DEEP, 255))
-
-
-def _head_and_hair(layer: Image.Image) -> None:
-    draw = ImageDraw.Draw(layer, "RGBA")
-    draw.rounded_rectangle([378, 618, 702, 1046], radius=162, fill=_HAIR)
-    draw.rounded_rectangle([498, 972, 582, 1140], radius=40, fill=_SKIN_SHADE)
-    draw.ellipse([392, 646, 688, 1042], fill=_SKIN)
-    draw.pieslice([390, 642, 690, 950], 180, 360, fill=_HAIR)
-
-
-def _face(draw: ImageDraw.ImageDraw) -> None:
-    """Open, level eyes and a soft smile: someone speaking to the viewer."""
-    draw.arc([452, 758, 534, 800], 200, 340, fill=_HAIR, width=7)
-    draw.arc([546, 758, 628, 800], 200, 340, fill=_HAIR, width=7)
-    for left in (458, 552):
-        draw.ellipse([left, 812, left + 70, 858], fill=_PAPER)
-        draw.arc([left, 812, left + 70, 858], 180, 360, fill=_HAIR, width=6)
-        draw.ellipse([left + 23, 820, left + 49, 846], fill=_INK)
-    draw.arc([516, 866, 564, 898], 200, 340, fill=_SKIN_SHADE, width=5)
-    draw.arc([486, 902, 594, 958], 20, 160, fill=(158, 78, 70), width=7)
-    draw.ellipse([426, 866, 486, 904], fill=(212, 124, 108, 56))
-    draw.ellipse([594, 866, 654, 904], fill=(212, 124, 108, 56))
-
-
-def _presenter(scene: Image.Image) -> None:
-    """An illustrated presenter, lit from the sun behind them."""
+def _figure(scene: Image.Image) -> None:
+    """Composite an operator-supplied cut-out; never invent a face."""
     override = _asset("LIULIANGCHUHAI_VIDEO_PRESENTER")
-    if override is not None:
-        cutout = Image.open(override).convert("RGBA")
-        target_width = int(WIDTH * 0.82)
-        ratio = target_width / cutout.width
-        cutout = cutout.resize(
-            (target_width, max(1, round(cutout.height * ratio))), Image.Resampling.LANCZOS
-        )
-        scene.alpha_composite(cutout, ((WIDTH - cutout.width) // 2, HEIGHT - cutout.height))
+    if override is None:
         return
-
-    shadow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).ellipse([190, 1100, 890, 1500], fill=(*_JADE_DEEP, 38))
-    scene.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(48)))
-
-    body = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    _collar_and_torso(ImageDraw.Draw(body, "RGBA"))
-    # Depth: the jacket falls into shadow towards the bottom of the frame.
-    ramp = Image.new("RGBA", (1, 760), (0, 0, 0, 0))
-    ramp.putdata([(18, 46, 38, int(105 * (index / 759) ** 1.3)) for index in range(760)])
-    shade = Image.new("RGBA", (WIDTH, 760), (0, 0, 0, 0))
-    shade.paste(ramp.resize((WIDTH, 760)), (0, 0))
-    torso_alpha = body.crop((0, 1160, WIDTH, 1920)).getchannel("A")
-    shade.putalpha(ImageChops.multiply(shade.getchannel("A"), torso_alpha))
-    body.alpha_composite(shade, (0, 1160))
-    scene.alpha_composite(body)
-
-    head = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    _head_and_hair(head)
-    _face(ImageDraw.Draw(head, "RGBA"))
-    scene.alpha_composite(head)
+    cutout = Image.open(override).convert("RGBA")
+    target_width = int(WIDTH * 0.86)
+    ratio = target_width / cutout.width
+    cutout = cutout.resize(
+        (target_width, max(1, round(cutout.height * ratio))), Image.Resampling.LANCZOS
+    )
+    scene.alpha_composite(cutout, ((WIDTH - cutout.width) // 2, HEIGHT - cutout.height))
 
 
 def _vignette(scene: Image.Image) -> None:
-    """Warm the corners so the presenter and the title hold focus."""
+    """Warm the corners so the title and the skyline hold focus."""
     mask = Image.radial_gradient("L").resize((WIDTH, HEIGHT))
-    mask = mask.point(lambda value: int(value * 0.26))
+    mask = mask.point(lambda value: int(value * 0.22))
     shade = Image.new("RGBA", (WIDTH, HEIGHT), (112, 84, 58, 0))
     shade.putalpha(mask)
     scene.alpha_composite(shade)
+
+
+def _scrim(scene: Image.Image) -> None:
+    """Clean paper behind the caption band, whatever sits under it."""
+    band = Image.new("RGBA", (1, 460))
+    band.putdata([(250, 246, 236, int(215 * (index / 459) ** 1.5)) for index in range(460)])
+    scene.alpha_composite(band.resize((WIDTH, 460)), (0, HEIGHT - 460))
 
 
 # ------------------------------------------------------------------- layout
@@ -397,7 +379,8 @@ def _fit_title(text: str, bold_path: str) -> tuple[ImageFont.FreeTypeFont, list[
 def _draw_blocking(spec: PosterSpec, destination: Path) -> Path:
     scene = _background()
     _vignette(scene)
-    _presenter(scene)
+    _figure(scene)
+    _scrim(scene)
 
     draw = ImageDraw.Draw(scene, "RGBA")
     bold_path = find_font(bold=True)
@@ -419,7 +402,7 @@ def _draw_blocking(spec: PosterSpec, destination: Path) -> Path:
 
     rule_y = cursor + 28
     draw.rounded_rectangle(
-        [WIDTH // 2 - 54, rule_y, WIDTH // 2 + 54, rule_y + 6], radius=3, fill=(*_TERRACOTTA, 215)
+        [WIDTH // 2 - 54, rule_y, WIDTH // 2 + 54, rule_y + 6], radius=3, fill=(*_TERRACOTTA, 255)
     )
 
     # Footer sits on its own chip so it survives any background, drawn or photo.
@@ -433,7 +416,7 @@ def _draw_blocking(spec: PosterSpec, destination: Path) -> Path:
             HEIGHT - 44,
         ],
         radius=37,
-        fill=(*_PAPER, 228),
+        fill=(*_PAPER, 255),
     )
     draw.text((WIDTH // 2, HEIGHT - 60), footer, font=foot_font, fill=(*_MUTED, 255), anchor="ms")
 

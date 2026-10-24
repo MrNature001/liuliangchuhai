@@ -30,7 +30,7 @@ class LocalPresenterAdapter:
     _PROVIDER = "local-presenter"
     # Bumped whenever the frame design changes, so a cached clip from an older
     # layout is re-rendered instead of being served forever.
-    _RENDER_VERSION = 2
+    _RENDER_VERSION = 3
 
     def __init__(
         self,

@@ -137,7 +137,7 @@ renderers are available behind one port; the default needs no account at all.
 
 | `LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER` | What it produces | Needs |
 |---|---|---|
-| `local` (default) | 1080×1920 clip: neural narration, burned captions, an illustrated presenter over a drawn Southeast Asian scene | Nothing — runs on any laptop |
+| `local` (default) | 1080×1920 clip: neural narration, burned captions, a drawn Southeast Asian scene | Nothing — runs on any laptop |
 | `dashscope` | Photoreal talking head: your own source clip re-driven with the narration | A personal Alibaba Cloud account and one recorded clip |
 | `heygen` | Photoreal talking head from HeyGen avatars | HeyGen key, avatar and voice ids |
 | `mock` | Fixed placeholder URL | Nothing |
@@ -145,9 +145,10 @@ renderers are available behind one port; the default needs no account at all.
 ### Replacing the drawn art
 
 The default frame is drawn in code so the demo needs no image assets and no
-stock-photo licence. The presenter is an illustration, not photoreal footage;
-use `dashscope` when you need a real face. Operators can swap in their own
-material without touching code:
+stock-photo licence. It carries no figure of its own: a face drawn from
+primitives reads as clip art, so a real presenter comes either from your own
+cut-out below or from `dashscope`. Operators can swap in their own material
+without touching code:
 
 ```dotenv
 LIULIANGCHUHAI_VIDEO_BACKGROUND=/path/to/scene.jpg    # full-bleed photo

@@ -108,7 +108,9 @@ export default function ContentPlanSection({
           ))}
         </div>
       )}
-      {plan.status === "success" && <DigitalHumanSection script={plan.result.live_script} />}
+      {plan.status === "success" && (
+        <DigitalHumanSection script={plan.result.live_script} defaultLanguage={language} />
+      )}
     </section>
   )
 }

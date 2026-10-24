@@ -21,9 +21,16 @@ type VideoState =
  * bounded long-running call, so the control stays disabled until it settles and
  * a failure leaves the previous result untouched.
  */
-export function DigitalHumanSection({ script }: { script: string }) {
+export function DigitalHumanSection({
+  script,
+  defaultLanguage,
+}: {
+  script: string
+  /** The content plan's target language; the narration should match it. */
+  defaultLanguage: string
+}) {
   const { t } = useLocale()
-  const [language, setLanguage] = useState<string>(t.digitalHuman.language)
+  const [language, setLanguage] = useState<string>(defaultLanguage)
   const [video, setVideo] = useState<VideoState>({ status: "ready" })
   const inFlight = useRef(false)
   const generating = video.status === "generating"

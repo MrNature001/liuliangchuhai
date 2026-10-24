@@ -131,9 +131,9 @@ _ASS_STYLE_FORMAT = (
     "BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, "
     "BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding"
 )
-# Cream text with a deep-jade outline: readable over both paper and the jacket.
+# Ink text with a paper halo: readable over the caption band and over a photo.
 _ASS_STYLE = (
-    "Style: Presenter,{font},{size},&H00ECF6FA,&H000000FF,&H00343E1C,&H96000000,"
+    "Style: Presenter,{font},{size},&H00262C26,&H000000FF,&H00ECF6FA,&H96000000,"
     "0,0,0,0,100,100,0,0,1,4,0,2,{margin_lr},{margin_lr},{margin_v},1"
 )
 
