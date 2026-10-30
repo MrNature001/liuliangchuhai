@@ -1246,6 +1246,19 @@
       "VideoRequest": {
         "additionalProperties": false,
         "properties": {
+          "image_path": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Path"
+          },
           "image_url": {
             "anyOf": [
               {

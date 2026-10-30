@@ -34,7 +34,9 @@ def create_video_router(generate_video: GenerateVideoUseCase) -> APIRouter:
         },
     )
     async def generate_short_clip(request: VideoRequest) -> VideoResponse | JSONResponse:
-        generation = VideoGenerationInput(prompt=request.prompt, image_url=request.image_url)
+        generation = VideoGenerationInput(
+            prompt=request.prompt, image_url=request.image_url, image_path=request.image_path
+        )
         try:
             clip = await generate_video.execute(generation)
         except VideoRejected:

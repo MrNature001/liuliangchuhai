@@ -184,11 +184,14 @@ LIULIANGCHUHAI_VIDEO_STILL_BASE_URL=https://<workspace>.cn-beijing.maas.aliyuncs
 LIULIANGCHUHAI_VIDEO_STILL_MODEL=qwen-image-3.0-pro
 ```
 
-The model fetches its input by URL, so the still must be publicly reachable.
-A file on this machine will not do: DashScope's upload endpoint issues private
-objects the video service is not authorised to read. With no `image_url` the
-adapter draws one through the still endpoint, which returns a signed URL — that
-is the path the demo uses.
+Send `image_path` for a file already in the media directory — it is inlined as a
+base64 data URI, so a local picture needs no hosting. Send `image_url` for a
+public link. With neither, the adapter draws a still through the still endpoint
+and animates that.
+
+DashScope's own upload endpoint is deliberately not used here: it issues private
+objects the video service is not authorised to read, which surfaced as a 403 on
+the signed URL and as `DataInspection` errors on submit.
 
 ## Digital-human video
 

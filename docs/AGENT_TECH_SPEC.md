@@ -355,11 +355,23 @@ sha256(话术 | 语言 | 声线 | 渲染器版本 | 素材指纹 | 虚拟主播�
 
 `wan2.2-i2v-flash` 吃「图片 URL + 提示词」，出 5 秒左右的短片，480P / 720P 可选。
 
-一个绕不开的约束：**模型是按 URL 去取图的**。本机文件不行——DashScope 的上传接口
-签发的是私有对象，视频服务没有读取权限（实测直链返回
-`Don't have authorization to access the media`）。所以只给了提示词时，
-适配器会先用百炼的图像接口画一张（它返回的是签名 URL，不是字节），再拿这个 URL 去渲染。
-这条链路是自洽的：提示词 → 图 → 视频，全部在同一个账号内完成。
+模型按 URL 取图，所以输入有三种形态，适配器统一处理：
+
+| 输入 | 处理方式 |
+|---|---|
+| `image_url`（公网链接） | 原样提交 |
+| `image_path`（媒体目录内的文件） | 读出来转成 base64 data URI 内联提交 |
+| 只给 `prompt` | 先用百炼图像接口画一张，拿签名 URL 去渲染 |
+
+第三条是 demo 的默认路径：提示词 → 图 → 视频，全在同一账号内完成。
+
+**为什么不用 DashScope 的上传接口。** 它签发的对象 ACL 固定为 `private`，
+策略文档里写死了这条条件，改不了；视频服务随后读不到，直链返回
+`Don't have authorization to access the media`，提交时报 `DataInspection`。
+data URI 绕开了整件事——图片不落到任何第三方，也不产生公开链接。
+
+另外，所有 DashScope 客户端都设为 `trust_env=False`：国内端点走系统代理
+（Clash 之类）经常直接失败，实测过一次 `ConnectError`。
 
 ### 4.7 失败语义
 

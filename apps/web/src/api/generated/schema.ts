@@ -513,6 +513,8 @@ export interface components {
         };
         /** VideoRequest */
         VideoRequest: {
+            /** Image Path */
+            image_path?: string | null;
             /** Image Url */
             image_url?: string | null;
             /** Prompt */

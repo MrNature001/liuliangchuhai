@@ -13,7 +13,9 @@ can go from a prompt to a moving shot without any other setup.
 from __future__ import annotations
 
 import asyncio
+import base64
 import hashlib
+import io
 from pathlib import Path
 from typing import Final
 
@@ -89,7 +91,10 @@ class WanImageToVideoAdapter:
     async def status(self) -> ProviderStatus:
         try:
             async with httpx.AsyncClient(
-                base_url=_BASE_URL, timeout=httpx.Timeout(10.0), transport=self._transport
+                base_url=_BASE_URL,
+                timeout=httpx.Timeout(10.0),
+                transport=self._transport,
+                trust_env=False,
             ) as client:
                 response = await client.get(
                     _TASK_PATH.format(task_id="probe"),
@@ -101,8 +106,15 @@ class WanImageToVideoAdapter:
 
     async def generate(self, request: VideoGenerationInput) -> GeneratedClip:
         image_url = request.image_url.strip() if request.image_url else ""
+        if not image_url and request.image_path:
+            image_url = self._inline(request.image_path)
+        # DashScope is a domestic endpoint; a system-wide proxy setting (common
+        # on machines running Clash or similar) routinely breaks the call.
         async with httpx.AsyncClient(
-            base_url=_BASE_URL, timeout=httpx.Timeout(60.0), transport=self._transport
+            base_url=_BASE_URL,
+            timeout=httpx.Timeout(60.0),
+            transport=self._transport,
+            trust_env=False,
         ) as client:
             if not image_url:
                 image_url = await self._draw_still(client, request.prompt)
@@ -120,6 +132,33 @@ class WanImageToVideoAdapter:
         self._media_root.mkdir(parents=True, exist_ok=True)
         (self._media_root / name).write_bytes(content)
         return GeneratedClip(media_url=f"{self._public_prefix}/{name}", provider=self._PROVIDER)
+
+    def _inline(self, image_path: str) -> str:
+        """Read a local picture and hand it over as a data URI.
+
+        DashScope's upload endpoint issues private objects that the video
+        service cannot read, so inlining is the only way a file on this machine
+        can be animated without publishing it anywhere.
+        """
+        from PIL import Image, ImageOps
+
+        root = self._media_root.resolve()
+        requested = Path(image_path)
+        candidate = (requested if requested.is_absolute() else root / requested).resolve()
+        if root not in candidate.parents and candidate != root:
+            raise VideoRejected("image_path must stay inside the media directory")
+        if not candidate.is_file():
+            raise VideoRejected("image_path does not point at a readable file")
+
+        try:
+            with Image.open(candidate) as opened:
+                picture = ImageOps.exif_transpose(opened).convert("RGB")
+        except OSError:
+            raise VideoRejected("image_path is not a readable picture") from None
+        picture.thumbnail((1280, 1280))
+        buffer = io.BytesIO()
+        picture.save(buffer, format="JPEG", quality=88)
+        return "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode()
 
     async def _draw_still(self, client: httpx.AsyncClient, prompt: str) -> str:
         """Mint a publicly reachable still, because a local file will not do."""

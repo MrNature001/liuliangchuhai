@@ -16,7 +16,14 @@ type VideoState =
  * Renders a short clip from the plan's visual prompt. The request is one
  * bounded long-running call, so the control stays disabled until it settles.
  */
-export function VideoSection({ prompt }: { prompt: string }) {
+export function VideoSection({
+  prompt,
+  imagePath,
+}: {
+  prompt: string
+  /** The key visual already on screen; animating it beats redrawing one. */
+  imagePath?: string | null
+}) {
   const { t } = useLocale()
   const [clip, setClip] = useState<VideoState>({ status: "ready" })
   const inFlight = useRef(false)
@@ -37,7 +44,7 @@ export function VideoSection({ prompt }: { prompt: string }) {
     inFlight.current = true
     setClip({ status: "generating" })
     try {
-      const result = await generateVideo({ prompt })
+      const result = await generateVideo({ prompt, image_path: imagePath ?? undefined })
       setClip({ status: "success", result })
     } catch (error) {
       setClip({

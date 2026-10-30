@@ -12,11 +12,18 @@ class VideoGenerationInput:
 
     prompt: str
     image_url: str | None = None
+    # A file under the media directory. The adapter inlines it as a data URI,
+    # so a local picture needs no hosting at all.
+    image_path: str | None = None
 
     def __post_init__(self) -> None:
         _require_nonblank_string(self.prompt, "prompt")
         if self.image_url is not None:
             _require_nonblank_string(self.image_url, "image_url")
+        if self.image_path is not None:
+            _require_nonblank_string(self.image_path, "image_path")
+        if self.image_url and self.image_path:
+            raise ValueError("send either image_url or image_path, not both")
 
 
 @dataclass(frozen=True, slots=True)

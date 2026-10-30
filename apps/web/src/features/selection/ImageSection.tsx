@@ -20,10 +20,12 @@ export function ImageSection({
   prompt,
   headline,
   language,
+  onGenerated,
 }: {
   prompt: string
   headline: string
   language: string
+  onGenerated?: (mediaUrl: string) => void
 }) {
   const { t } = useLocale()
   const [image, setImage] = useState<ImageState>({ status: "ready" })
@@ -47,6 +49,7 @@ export function ImageSection({
     try {
       const result = await generateImage({ prompt, headline, language })
       setImage({ status: "success", result })
+      onGenerated?.(result.media_url)
     } catch (error) {
       setImage({
         status: "error",

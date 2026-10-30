@@ -137,3 +137,48 @@ async def test_status_is_false_when_the_transport_fails(tmp_path: Path) -> None:
 def test_resolution_is_validated(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="resolution"):
         WanImageToVideoAdapter(api_key="k", media_root=tmp_path, resolution="1080P")
+
+
+def _picture(tmp_path: Path) -> Path:
+    from PIL import Image
+
+    path = tmp_path / "portrait.png"
+    Image.new("RGB", (60, 80), (200, 120, 80)).save(path)
+    return path
+
+
+@pytest.mark.asyncio
+async def test_a_local_picture_is_inlined_as_a_data_uri(tmp_path: Path) -> None:
+    seen: dict[str, object] = {}
+    _picture(tmp_path)
+
+    await _adapter(_happy_path(seen), tmp_path).generate(
+        VideoGenerationInput(prompt="gentle breeze", image_path="portrait.png")
+    )
+
+    img = seen["submit"]["input"]["img_url"]
+    assert img.startswith("data:image/jpeg;base64,")
+
+
+@pytest.mark.asyncio
+async def test_a_path_outside_the_media_directory_is_rejected(tmp_path: Path) -> None:
+    outside = tmp_path.parent / "elsewhere.png"
+    outside.write_bytes(b"x")
+
+    with pytest.raises(VideoRejected, match="media directory"):
+        await _adapter(_happy_path({}), tmp_path).generate(
+            VideoGenerationInput(prompt="x", image_path=str(outside))
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_missing_local_picture_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(VideoRejected, match="readable file"):
+        await _adapter(_happy_path({}), tmp_path).generate(
+            VideoGenerationInput(prompt="x", image_path="nope.png")
+        )
+
+
+def test_url_and_path_together_are_rejected() -> None:
+    with pytest.raises(ValueError, match="either"):
+        VideoGenerationInput(prompt="x", image_url="https://a/b.png", image_path="c.png")

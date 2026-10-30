@@ -31,6 +31,8 @@ export default function ContentPlanSection({
   const [languageOverride, setLanguageOverride] = useState<string | null>(null)
   const language = languageOverride ?? t.contentPlan.languages.en
   const [plan, setPlan] = useState<ContentPlanState>({ status: "ready" })
+  // The still the visitor just generated, so the clip can animate that one.
+  const [keyVisual, setKeyVisual] = useState<string | null>(null)
   const inFlight = useRef(false)
   const generating = plan.status === "generating"
 
@@ -116,8 +118,9 @@ export default function ContentPlanSection({
             prompt={plan.result.image_prompt}
             headline={plan.result.key_selling_points[0] ?? plan.result.image_prompt}
             language={language}
+            onGenerated={setKeyVisual}
           />
-          <VideoSection prompt={plan.result.short_video_prompt} />
+          <VideoSection prompt={plan.result.short_video_prompt} imagePath={keyVisual} />
           <DigitalHumanSection script={plan.result.live_script} defaultLanguage={language} />
         </>
       )}

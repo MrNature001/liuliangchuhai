@@ -10,6 +10,7 @@ class VideoRequest(BaseModel):
 
     prompt: NonBlankString
     image_url: NonBlankString | None = None
+    image_path: NonBlankString | None = None
 
 
 class VideoResponse(BaseModel):
