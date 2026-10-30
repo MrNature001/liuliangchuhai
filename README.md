@@ -139,6 +139,7 @@ into one finished still; two providers sit behind the same port.
 |---|---|---|
 | `drawn` (default) | A designed 1080×1920 backdrop from the site's own palette, titled with the first selling point | Nothing — runs on any laptop |
 | `openai` | A generated photograph from any endpoint that speaks `/images/generations` | A key, and optionally a relay base URL |
+| `dashscope` | A generated photograph from Alibaba Cloud (`wanx2.1-t2i-turbo`) | A Bailian key — the same one the video providers use |
 | `mock` | Fixed placeholder URL | Nothing |
 
 `drawn` is a poster, not a product photograph — the panel says so under the
@@ -155,6 +156,16 @@ LIULIANGCHUHAI_IMAGE_SIZE=1024x1536
 
 Both `b64_json` and `url` responses are accepted, and the bytes are always copied
 into local media so an expiring signed URL cannot break the page later.
+
+If you already have a Bailian key for the video providers, reuse it instead of
+opening a second vendor:
+
+```dotenv
+LIULIANGCHUHAI_IMAGE_PROVIDER=dashscope
+LIULIANGCHUHAI_DASHSCOPE_API_KEY=sk-...
+LIULIANGCHUHAI_DASHSCOPE_IMAGE_MODEL=wanx2.1-t2i-turbo
+LIULIANGCHUHAI_DASHSCOPE_IMAGE_SIZE=720*1280
+```
 
 ## Digital-human video
 

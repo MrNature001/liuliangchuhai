@@ -1,5 +1,6 @@
 import base64
 import io
+import json
 from pathlib import Path
 
 import httpx
@@ -10,6 +11,7 @@ from liuliangchuhai.application.ports.image_errors import (
     InvalidImageResponse,
 )
 from liuliangchuhai.domain.image import GeneratedImage, ImageGenerationInput
+from liuliangchuhai.infrastructure.images.dashscope import DashScopeImageAdapter
 from liuliangchuhai.infrastructure.images.drawn import DrawnImageAdapter
 from liuliangchuhai.infrastructure.images.mock import MockImageAdapter
 from liuliangchuhai.infrastructure.images.openai_compatible import (
@@ -134,3 +136,84 @@ async def test_openai_status_is_false_when_the_transport_fails(tmp_path: Path) -
 def test_openai_requires_a_key(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="api_key"):
         OpenAICompatibleImageAdapter(api_key=" ", model="gpt-image-1", media_root=tmp_path)
+
+
+def _dashscope(handler, tmp_path: Path, **kwargs) -> DashScopeImageAdapter:
+    return DashScopeImageAdapter(
+        api_key="sk-test",
+        model="wanx2.1-t2i-turbo",
+        media_root=tmp_path,
+        poll_interval_seconds=0,
+        transport=httpx.MockTransport(handler),
+        **kwargs,
+    )
+
+
+@pytest.mark.asyncio
+async def test_dashscope_submits_polls_and_saves(tmp_path: Path) -> None:
+    submitted: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            submitted.append(json.loads(request.content))
+            return httpx.Response(200, json={"output": {"task_id": "t1"}})
+        if request.url.path.endswith("/tasks/t1"):
+            return httpx.Response(
+                200,
+                json={
+                    "output": {
+                        "task_status": "SUCCEEDED",
+                        "results": [{"url": "https://cdn.example/a.png"}],
+                    }
+                },
+            )
+        return httpx.Response(200, content=PNG)
+
+    image = await _dashscope(handler, tmp_path).generate(REQUEST)
+
+    assert image.provider == "dashscope-image"
+    assert (tmp_path / Path(image.media_url).name).read_bytes() == PNG
+    assert submitted[0]["input"]["prompt"].startswith("A tea gift box")
+    assert submitted[0]["parameters"]["size"] == "720*1280"
+
+
+@pytest.mark.asyncio
+async def test_dashscope_waits_while_the_task_runs(tmp_path: Path) -> None:
+    states = iter(["PENDING", "RUNNING", "SUCCEEDED"])
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            return httpx.Response(200, json={"output": {"task_id": "t1"}})
+        if request.url.path.endswith("/tasks/t1"):
+            state = next(states)
+            body: dict[str, object] = {"task_status": state}
+            if state == "SUCCEEDED":
+                body["results"] = [{"url": "https://cdn.example/a.png"}]
+            return httpx.Response(200, json={"output": body})
+        return httpx.Response(200, content=PNG)
+
+    image = await _dashscope(handler, tmp_path).generate(REQUEST)
+
+    assert image.media_url.startswith("/media/keyvisual-")
+
+
+@pytest.mark.asyncio
+async def test_dashscope_maps_failures(tmp_path: Path) -> None:
+    with pytest.raises(ImageRejected):
+        await _dashscope(lambda request: httpx.Response(400), tmp_path).generate(REQUEST)
+
+    def failed(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            return httpx.Response(200, json={"output": {"task_id": "t1"}})
+        return httpx.Response(200, json={"output": {"task_status": "FAILED"}})
+
+    with pytest.raises(ImageUnavailable):
+        await _dashscope(failed, tmp_path).generate(REQUEST)
+
+    def empty(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            return httpx.Response(200, json={"output": {"task_id": "t1"}})
+        return httpx.Response(200, json={"output": {"task_status": "SUCCEEDED", "results": []}})
+
+    with pytest.raises(InvalidImageResponse):
+        await _dashscope(empty, tmp_path).generate(REQUEST)

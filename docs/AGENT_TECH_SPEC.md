@@ -223,6 +223,7 @@ bootstrap         唯一选择具体实现的地方（容器与配置）
 |---|---|---|
 | `drawn`（默认） | 用站内调色板排一张 1080×1920 版式底图，标题取第一条卖点 | 无 |
 | `openai` | 走 `/images/generations` 的真实配图，兼容第三方中转站 | 一个 key |
+| `dashscope` | 走阿里云百炼 `wanx2.1-t2i-turbo` 的真实配图 | 百炼 key（与视频供应商同一个） |
 | `mock` | 占位地址 | 无 |
 
 两处工程细节值得写下来：
@@ -443,6 +444,8 @@ CI 里有一道 **drift 检查**：手改生成文件或忘记重新生成，构
 | `IMAGE_API_KEY` | 空 | 配图密钥 |
 | `IMAGE_MODEL` | `gpt-image-1` | 图像模型 id |
 | `IMAGE_SIZE` | `1024x1536` | 输出尺寸 |
+| `DASHSCOPE_IMAGE_MODEL` | `wanx2.1-t2i-turbo` | 百炼图像模型 |
+| `DASHSCOPE_IMAGE_SIZE` | `720*1280` | 百炼输出尺寸 |
 | `DASHSCOPE_API_KEY` | 空 | 阿里云百炼密钥 |
 | `DASHSCOPE_SOURCE_VIDEO_URL` | 空 | 形象源视频公网地址 |
 | `MEDIA_DIR` | `media` | 成片落盘目录 |

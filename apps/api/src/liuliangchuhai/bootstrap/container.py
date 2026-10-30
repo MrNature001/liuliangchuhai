@@ -33,6 +33,7 @@ from liuliangchuhai.infrastructure.digital_human.dashscope_s2v import (
 from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
 from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPresenterAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
+from liuliangchuhai.infrastructure.images.dashscope import DashScopeImageAdapter
 from liuliangchuhai.infrastructure.images.drawn import DrawnImageAdapter
 from liuliangchuhai.infrastructure.images.mock import MockImageAdapter
 from liuliangchuhai.infrastructure.images.openai_compatible import (
@@ -150,6 +151,16 @@ def _build_images(settings: Settings) -> ImagePort:
         return DrawnImageAdapter(
             media_root=settings.resolved_media_dir,
             public_prefix=settings.media_url_prefix,
+        )
+    if settings.image_provider == "dashscope":
+        assert settings.dashscope_api_key is not None
+        return DashScopeImageAdapter(
+            api_key=settings.dashscope_api_key.get_secret_value(),
+            model=settings.dashscope_image_model,
+            size=settings.dashscope_image_size,
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+            timeout_seconds=settings.image_timeout_seconds,
         )
     if settings.image_provider == "openai":
         assert settings.image_api_key is not None

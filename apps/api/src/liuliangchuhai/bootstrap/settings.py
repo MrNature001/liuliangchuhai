@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     image_model: str = "gpt-image-1"
     image_size: str = "1024x1536"
     image_timeout_seconds: float = Field(default=120, gt=0)
+    # Reuses the Bailian key above, so one account covers images and video.
+    dashscope_image_model: str = "wanx2.1-t2i-turbo"
+    dashscope_image_size: str = "720*1280"
     # Alibaba Cloud Bailian (DashScope) talking-head renderer. `videoretalk`
     # re-drives the lips of one source clip, so the clip must be reachable.
     dashscope_api_key: SecretStr | None = None
@@ -111,6 +114,12 @@ class Settings(BaseSettings):
                     "LIULIANGCHUHAI_DASHSCOPE_AVATAR_PORTRAIT is required when the "
                     "digital-human provider is wan_s2v"
                 )
+        if self.image_provider == "dashscope" and (
+            self.dashscope_api_key is None or not self.dashscope_api_key.get_secret_value().strip()
+        ):
+            raise ValueError(
+                "LIULIANGCHUHAI_DASHSCOPE_API_KEY is required when the image provider is dashscope"
+            )
         if self.image_provider == "openai" and (
             self.image_api_key is None or not self.image_api_key.get_secret_value().strip()
         ):
