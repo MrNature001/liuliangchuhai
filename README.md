@@ -157,6 +157,11 @@ LIULIANGCHUHAI_IMAGE_SIZE=1024x1536
 Both `b64_json` and `url` responses are accepted, and the bytes are always copied
 into local media so an expiring signed URL cannot break the page later.
 
+One caveat with relay stations: a key issued to a chat group will answer
+`Images API is not supported for this platform`. The key has to come from the
+relay's image group — ask the operator which group serves image models before
+pasting it here.
+
 If you already have a Bailian key for the video providers, reuse it instead of
 opening a second vendor:
 
