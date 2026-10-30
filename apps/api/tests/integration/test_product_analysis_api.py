@@ -50,6 +50,7 @@ class FakeGetSystemStatus:
         return SystemStatus(
             llm=ProviderStatus(provider="mock", available=True),
             digital_human=ProviderStatus(provider="mock", available=True),
+            image=ProviderStatus(provider="mock", available=True),
         )
 
 
@@ -73,6 +74,9 @@ def analysis_app(
         create_content_plan_by_id=SimpleNamespace(execute=AsyncMock()),
         generate_digital_human=SimpleNamespace(
             execute=AsyncMock(side_effect=AssertionError("Analysis must not generate video"))
+        ),
+        generate_image=SimpleNamespace(
+            execute=AsyncMock(side_effect=AssertionError("Analysis must not generate images"))
         ),
         list_products=SimpleNamespace(
             execute=AsyncMock(side_effect=AssertionError("Analysis must not list products"))
@@ -243,6 +247,7 @@ async def test_health_remains_unchanged(
         "providers": {
             "llm": {"provider": "mock", "available": True},
             "digital_human": {"provider": "mock", "available": True},
+            "image": {"provider": "mock", "available": True},
         },
     }
     assert analysis_use_case.calls == []

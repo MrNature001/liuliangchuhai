@@ -418,6 +418,81 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "ImageErrorResponse": {
+        "properties": {
+          "code": {
+            "enum": [
+              "image_unavailable",
+              "image_rejected",
+              "invalid_image_response"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ImageErrorResponse",
+        "type": "object"
+      },
+      "ImageRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "headline": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Headline",
+            "type": "string"
+          },
+          "language": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Language",
+            "type": "string"
+          },
+          "prompt": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "language",
+          "headline"
+        ],
+        "title": "ImageRequest",
+        "type": "object"
+      },
+      "ImageResponse": {
+        "properties": {
+          "media_url": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Media Url",
+            "type": "string"
+          },
+          "provider": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media_url",
+          "provider"
+        ],
+        "title": "ImageResponse",
+        "type": "object"
+      },
       "ProductAnalysisErrorResponse": {
         "properties": {
           "code": {
@@ -1079,13 +1154,17 @@
           "digital_human": {
             "$ref": "#/components/schemas/ProviderStatusResponse"
           },
+          "image": {
+            "$ref": "#/components/schemas/ProviderStatusResponse"
+          },
           "llm": {
             "$ref": "#/components/schemas/ProviderStatusResponse"
           }
         },
         "required": [
           "llm",
-          "digital_human"
+          "digital_human",
+          "image"
         ],
         "title": "ProvidersResponse",
         "type": "object"
@@ -1358,6 +1437,64 @@
           }
         },
         "summary": "Get Health"
+      }
+    },
+    "/image": {
+      "post": {
+        "operationId": "generate_image",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageErrorResponse"
+                }
+              }
+            },
+            "description": "Provider rejected the prompt"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageErrorResponse"
+                }
+              }
+            },
+            "description": "Provider returned an unreadable result"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageErrorResponse"
+                }
+              }
+            },
+            "description": "Provider is temporarily unavailable"
+          }
+        },
+        "summary": "Generate Key Visual"
       }
     },
     "/product-analysis": {

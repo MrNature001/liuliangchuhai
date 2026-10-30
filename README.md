@@ -130,6 +130,32 @@ selected, the same six sections now contain localized marketing assets.
 
 ![Completed content plan with all six planning fields](.github/screenshots/readme/content-plan.jpg)
 
+## Key visual
+
+The content plan produces an image prompt. The analysis page can turn that prompt
+into one finished still; two providers sit behind the same port.
+
+| `LIULIANGCHUHAI_IMAGE_PROVIDER` | What it produces | Needs |
+|---|---|---|
+| `drawn` (default) | A designed 1080×1920 backdrop from the site's own palette, titled with the first selling point | Nothing — runs on any laptop |
+| `openai` | A generated photograph from any endpoint that speaks `/images/generations` | A key, and optionally a relay base URL |
+| `mock` | Fixed placeholder URL | Nothing |
+
+`drawn` is a poster, not a product photograph — the panel says so under the
+image. To get real photographs, point the `openai` provider at OpenAI or at a
+relay that speaks the same API:
+
+```dotenv
+LIULIANGCHUHAI_IMAGE_PROVIDER=openai
+LIULIANGCHUHAI_IMAGE_API_KEY=sk-...
+LIULIANGCHUHAI_IMAGE_BASE_URL=https://your-relay.example/v1   # omit for OpenAI
+LIULIANGCHUHAI_IMAGE_MODEL=gpt-image-1
+LIULIANGCHUHAI_IMAGE_SIZE=1024x1536
+```
+
+Both `b64_json` and `url` responses are accepted, and the bytes are always copied
+into local media so an expiring signed URL cannot break the page later.
+
 ## Digital-human video
 
 The analysis page turns a finished live script into a presenter video. Three

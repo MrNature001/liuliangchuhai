@@ -13,6 +13,7 @@ class ProviderStatusResponse(BaseModel):
 class ProvidersResponse(BaseModel):
     llm: ProviderStatusResponse
     digital_human: ProviderStatusResponse
+    image: ProviderStatusResponse
 
 
 class HealthResponse(BaseModel):

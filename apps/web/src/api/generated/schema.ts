@@ -73,6 +73,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Key Visual */
+        post: operations["generate_image"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/product-analysis": {
         parameters: {
             query?: never;
@@ -263,6 +280,32 @@ export interface components {
              */
             status: "ok";
         };
+        /** ImageErrorResponse */
+        ImageErrorResponse: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "image_unavailable" | "image_rejected" | "invalid_image_response";
+            /** Message */
+            message: string;
+        };
+        /** ImageRequest */
+        ImageRequest: {
+            /** Headline */
+            headline: string;
+            /** Language */
+            language: string;
+            /** Prompt */
+            prompt: string;
+        };
+        /** ImageResponse */
+        ImageResponse: {
+            /** Media Url */
+            media_url: string;
+            /** Provider */
+            provider: string;
+        };
         /** ProductAnalysisErrorResponse */
         ProductAnalysisErrorResponse: {
             /**
@@ -420,6 +463,7 @@ export interface components {
         /** ProvidersResponse */
         ProvidersResponse: {
             digital_human: components["schemas"]["ProviderStatusResponse"];
+            image: components["schemas"]["ProviderStatusResponse"];
             llm: components["schemas"]["ProviderStatusResponse"];
         };
         /**
@@ -636,6 +680,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    generate_image: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageResponse"];
+                };
+            };
+            /** @description Provider rejected the prompt */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageErrorResponse"];
+                };
+            };
+            /** @description Provider returned an unreadable result */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageErrorResponse"];
+                };
+            };
+            /** @description Provider is temporarily unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImageErrorResponse"];
                 };
             };
         };

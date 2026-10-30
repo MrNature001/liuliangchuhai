@@ -30,6 +30,15 @@ class Settings(BaseSettings):
     heygen_avatar_id: str = ""
     heygen_voice_id: str = ""
     digital_human_timeout_seconds: float = Field(default=300, gt=0)
+    # Key visuals. `drawn` composites the plan's prompt into the site's own art
+    # with no key at all; `openai` speaks the Images API and also works through
+    # a third-party relay, which is why the base URL is configurable.
+    image_provider: str = "drawn"
+    image_base_url: str = "https://api.openai.com/v1"
+    image_api_key: SecretStr | None = None
+    image_model: str = "gpt-image-1"
+    image_size: str = "1024x1536"
+    image_timeout_seconds: float = Field(default=120, gt=0)
     # Alibaba Cloud Bailian (DashScope) talking-head renderer. `videoretalk`
     # re-drives the lips of one source clip, so the clip must be reachable.
     dashscope_api_key: SecretStr | None = None
@@ -84,4 +93,10 @@ class Settings(BaseSettings):
                     "LIULIANGCHUHAI_DASHSCOPE_SOURCE_VIDEO_URL is required when the "
                     "digital-human provider is dashscope"
                 )
+        if self.image_provider == "openai" and (
+            self.image_api_key is None or not self.image_api_key.get_secret_value().strip()
+        ):
+            raise ValueError(
+                "LIULIANGCHUHAI_IMAGE_API_KEY is required when the image provider is openai"
+            )
         return self

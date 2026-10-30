@@ -20,5 +20,6 @@ async def test_app_boots_and_health_uses_wired_providers() -> None:
         "providers": {
             "llm": {"provider": "mock", "available": True},
             "digital_human": {"provider": "mock", "available": True},
+            "image": {"provider": "drawn", "available": True},
         },
     }

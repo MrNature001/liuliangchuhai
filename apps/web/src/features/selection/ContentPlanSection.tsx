@@ -12,6 +12,7 @@ import { useLocale } from "@/lib/i18n/LocaleProvider"
 
 import { CopyButton } from "./CopyButton"
 import { DigitalHumanSection } from "./DigitalHumanSection"
+import { ImageSection } from "./ImageSection"
 import styles from "./analysis.module.css"
 
 type ContentPlanState =
@@ -109,7 +110,14 @@ export default function ContentPlanSection({
         </div>
       )}
       {plan.status === "success" && (
-        <DigitalHumanSection script={plan.result.live_script} defaultLanguage={language} />
+        <>
+          <ImageSection
+            prompt={plan.result.image_prompt}
+            headline={plan.result.key_selling_points[0] ?? plan.result.image_prompt}
+            language={language}
+          />
+          <DigitalHumanSection script={plan.result.live_script} defaultLanguage={language} />
+        </>
       )}
     </section>
   )

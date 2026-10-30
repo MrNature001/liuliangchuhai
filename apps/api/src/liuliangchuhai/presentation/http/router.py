@@ -24,6 +24,7 @@ def create_router(get_system_status: GetSystemStatus) -> APIRouter:
             providers=ProvidersResponse(
                 llm=_map_provider(result.llm),
                 digital_human=_map_provider(result.digital_human),
+                image=_map_provider(result.image),
             ),
         )
 

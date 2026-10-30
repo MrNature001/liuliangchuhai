@@ -4,6 +4,7 @@ from importlib.resources import as_file, files
 from liuliangchuhai.application.ports.assistant import AssistantPort
 from liuliangchuhai.application.ports.content_planner import ContentPlannerPort
 from liuliangchuhai.application.ports.digital_human import DigitalHumanPort
+from liuliangchuhai.application.ports.image import ImagePort
 from liuliangchuhai.application.ports.llm import LLMPort
 from liuliangchuhai.application.ports.product_repository import ProductRepository
 from liuliangchuhai.application.use_cases.analyze_product import AnalyzeProductUseCase
@@ -13,6 +14,7 @@ from liuliangchuhai.application.use_cases.create_content_plan_by_id import (
     CreateContentPlanByIdUseCase,
 )
 from liuliangchuhai.application.use_cases.generate_digital_human import GenerateDigitalHumanUseCase
+from liuliangchuhai.application.use_cases.generate_image import GenerateImageUseCase
 from liuliangchuhai.application.use_cases.get_product import GetProduct
 from liuliangchuhai.application.use_cases.get_system_status import GetSystemStatus
 from liuliangchuhai.application.use_cases.list_products import ListProducts
@@ -28,6 +30,11 @@ from liuliangchuhai.infrastructure.digital_human.dashscope import (
 from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
 from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPresenterAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
+from liuliangchuhai.infrastructure.images.drawn import DrawnImageAdapter
+from liuliangchuhai.infrastructure.images.mock import MockImageAdapter
+from liuliangchuhai.infrastructure.images.openai_compatible import (
+    OpenAICompatibleImageAdapter,
+)
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
 from liuliangchuhai.infrastructure.products.enrichment import EnrichedProductRepository
@@ -45,6 +52,8 @@ class Container:
     create_content_plan_by_id: CreateContentPlanByIdUseCase
     digital_human: DigitalHumanPort
     generate_digital_human: GenerateDigitalHumanUseCase
+    images: ImagePort
+    generate_image: GenerateImageUseCase
     get_system_status: GetSystemStatus
     product_repository: ProductRepository
     list_products: ListProducts
@@ -121,6 +130,28 @@ def _build_digital_human(settings: Settings) -> DigitalHumanPort:
     raise ValueError(f"Unsupported digital-human provider: {settings.digital_human_provider!r}")
 
 
+def _build_images(settings: Settings) -> ImagePort:
+    if settings.image_provider == "mock":
+        return MockImageAdapter()
+    if settings.image_provider == "drawn":
+        return DrawnImageAdapter(
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+        )
+    if settings.image_provider == "openai":
+        assert settings.image_api_key is not None
+        return OpenAICompatibleImageAdapter(
+            api_key=settings.image_api_key.get_secret_value(),
+            model=settings.image_model,
+            base_url=settings.image_base_url,
+            size=settings.image_size,
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+            timeout_seconds=settings.image_timeout_seconds,
+        )
+    raise ValueError(f"Unsupported image provider: {settings.image_provider!r}")
+
+
 def _build_product_repository(settings: Settings, curated: ProductRepository) -> ProductRepository:
     if settings.product_source == "off":
         return curated
@@ -135,6 +166,7 @@ def _build_product_repository(settings: Settings, curated: ProductRepository) ->
 def build_container(settings: Settings) -> Container:
     llm = _build_llm(settings)
     digital_human = _build_digital_human(settings)
+    images = _build_images(settings)
     catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
     with as_file(catalog) as path:
         curated_repository = JsonProductRepository(path)
@@ -153,7 +185,9 @@ def build_container(settings: Settings) -> Container:
         llm=llm,
         digital_human=digital_human,
         generate_digital_human=GenerateDigitalHumanUseCase(digital_human),
-        get_system_status=GetSystemStatus(llm=llm, digital_human=digital_human),
+        images=images,
+        generate_image=GenerateImageUseCase(images),
+        get_system_status=GetSystemStatus(llm=llm, digital_human=digital_human, images=images),
         product_repository=product_repository,
         list_products=ListProducts(product_repository),
         get_product=get_product,

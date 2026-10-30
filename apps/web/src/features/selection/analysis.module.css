@@ -60,6 +60,8 @@
 
 .digitalHumanVideo { width: 100%; max-width: 480px; aspect-ratio: 16 / 9; border-radius: var(--card-radius); background: #000; }
 
+.keyVisual { width: 100%; max-width: 480px; height: auto; border-radius: var(--card-radius); border: 1px solid var(--line); background: var(--surface-muted); }
+
 .captionRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .captionRow a { text-decoration: none; }
 
