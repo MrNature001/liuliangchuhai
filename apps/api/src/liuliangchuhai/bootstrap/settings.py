@@ -59,6 +59,11 @@ class Settings(BaseSettings):
     # or oss:// URL, or a local path the adapter uploads for you.
     dashscope_avatar_portrait: str = ""
     dashscope_s2v_resolution: str = "720P"
+    # Qwen TTS writes the narration to a signed URL, which is the only shape
+    # `wan2.2-s2v` accepts for audio. Point this at the workspace /api/v1 root.
+    dashscope_tts_base_url: str = ""
+    dashscope_tts_model: str = "qwen-audio-3.1-tts-flash"
+    dashscope_tts_voice: str = "longanhuan_v3.1"
     # Where the key-free local presenter writes rendered MP4 files. Relative
     # values resolve against apps/api so the path is independent of the CWD.
     media_dir: str = "media"

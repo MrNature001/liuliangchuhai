@@ -17,7 +17,9 @@ silently truncated.
 from __future__ import annotations
 
 import asyncio
+import base64
 import hashlib
+import io
 from pathlib import Path
 from typing import Final
 
@@ -32,8 +34,7 @@ from liuliangchuhai.application.ports.digital_human_errors import (
 )
 from liuliangchuhai.application.ports.status import ProviderStatus
 from liuliangchuhai.domain.digital_human import DigitalHumanGenerationInput, GeneratedVideo
-from liuliangchuhai.infrastructure.digital_human import mux, speech
-from liuliangchuhai.infrastructure.digital_human.uploads import upload_file
+from liuliangchuhai.infrastructure.digital_human import mux, qwen_tts
 
 _BASE_URL: Final = "https://dashscope.aliyuncs.com/api/v1"
 _SUBMIT_PATH: Final = "/services/aigc/image2video/video-synthesis"
@@ -62,6 +63,9 @@ class WanSpeechToVideoAdapter:
         media_root: Path,
         media_url_prefix: str = "/media",
         resolution: str = "720P",
+        tts_base_url: str = "",
+        tts_model: str = "qwen-audio-3.1-tts-flash",
+        tts_voice: str = "longanhuan_v3.1",
         poll_interval_seconds: float = _POLL_SECONDS,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
@@ -77,6 +81,9 @@ class WanSpeechToVideoAdapter:
         self._media_root = media_root
         self._media_url_prefix = media_url_prefix.rstrip("/")
         self._resolution = resolution
+        self._tts_base_url = tts_base_url.strip().rstrip("/")
+        self._tts_model = tts_model
+        self._tts_voice = tts_voice
         self._poll_interval = poll_interval_seconds
         self._transport = transport
 
@@ -91,7 +98,10 @@ class WanSpeechToVideoAdapter:
         """Report reachability without spending quota."""
         try:
             async with httpx.AsyncClient(
-                base_url=_BASE_URL, timeout=httpx.Timeout(10.0), transport=self._transport
+                base_url=_BASE_URL,
+                timeout=httpx.Timeout(10.0),
+                transport=self._transport,
+                trust_env=False,
             ) as client:
                 response = await client.get(
                     _TASK_PATH.format(task_id="probe"), headers=self._headers()
@@ -110,7 +120,10 @@ class WanSpeechToVideoAdapter:
             "parameters": {"resolution": self._resolution},
         }
         async with httpx.AsyncClient(
-            base_url=_BASE_URL, timeout=httpx.Timeout(30.0), transport=self._transport
+            base_url=_BASE_URL,
+            timeout=httpx.Timeout(30.0),
+            transport=self._transport,
+            trust_env=False,
         ) as client:
             task_id = await self._submit(client, payload)
             try:
@@ -123,14 +136,29 @@ class WanSpeechToVideoAdapter:
         return GeneratedVideo(media_url=await self._persist(remote))
 
     async def _upload_narration(self, generation: DigitalHumanGenerationInput) -> str:
-        """Speak the script, then make the file reachable from Alibaba's side."""
+        """Speak the script through Qwen TTS and keep the URL it returns.
+
+        The video model downloads the audio itself, so it needs a real URL with
+        an .mp3 extension — a data URI is rejected on file-type detection and a
+        local file is unreachable. Qwen TTS writes one for us. The file is also
+        cached so its duration can be measured before spending a render.
+        """
+        if not self._tts_base_url:
+            raise DigitalHumanUnavailable("no speech endpoint is configured for this provider")
+        url = await qwen_tts.synthesise_url(
+            api_key=self._api_key,
+            text=generation.script,
+            model=self._tts_model,
+            voice=self._tts_voice,
+            base_url=self._tts_base_url,
+            transport=self._transport,
+        )
         digest = hashlib.sha256(f"{generation.script}|{generation.language}".encode()).hexdigest()[
             :24
         ]
         self._media_root.mkdir(parents=True, exist_ok=True)
         cached = self._media_root / f"narration-{digest}.mp3"
-        if not cached.is_file() or cached.stat().st_size == 0:
-            await speech.synthesise(generation.script, generation.language, None, cached)
+        await qwen_tts.download(url, cached, transport=self._transport)
         if cached.stat().st_size > _MAX_AUDIO_BYTES:
             raise DigitalHumanRejected("the narration exceeds the model's 15 MB audio limit")
         seconds = await mux.probe_duration(cached)
@@ -138,20 +166,33 @@ class WanSpeechToVideoAdapter:
             raise DigitalHumanRejected(
                 "the narration is longer than the model's 20-second audio limit"
             )
-        return await upload_file(
-            api_key=self._api_key, model=self._MODEL, source=cached, transport=self._transport
-        )
+        return url
 
     async def _upload_portrait(self) -> str:
-        """A URL is used as-is; a local file goes through the upload endpoint."""
-        if self._portrait.startswith(("http://", "https://", "oss://")):
+        """Inline a local picture; a remote URL is passed through untouched.
+
+        DashScope's upload endpoint issues private objects the render service
+        cannot read, so a base64 data URI is the only way a file on this machine
+        can be used without publishing it.
+        """
+        if self._portrait.startswith(("http://", "https://", "oss://", "data:")):
             return self._portrait
         path = Path(self._portrait).expanduser()
         if not path.is_file():
             raise DigitalHumanUnavailable("the configured portrait could not be found")
-        return await upload_file(
-            api_key=self._api_key, model=self._MODEL, source=path, transport=self._transport
-        )
+        try:
+            from PIL import Image, ImageOps
+
+            with Image.open(path) as opened:
+                picture = ImageOps.exif_transpose(opened).convert("RGB")
+        except OSError:
+            raise DigitalHumanRejected(
+                "the configured portrait is not a readable picture"
+            ) from None
+        picture.thumbnail((1024, 1024))
+        buffer = io.BytesIO()
+        picture.save(buffer, format="JPEG", quality=88)
+        return "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode()
 
     async def _submit(self, client: httpx.AsyncClient, payload: dict[str, object]) -> str:
         try:
@@ -209,7 +250,7 @@ class WanSpeechToVideoAdapter:
         self._media_root.mkdir(parents=True, exist_ok=True)
         try:
             async with httpx.AsyncClient(
-                timeout=httpx.Timeout(180.0), transport=self._transport
+                timeout=httpx.Timeout(180.0), transport=self._transport, trust_env=False
             ) as client:
                 response = await client.get(remote_url)
         except httpx.HTTPError:

@@ -219,9 +219,18 @@ LIULIANGCHUHAI_DASHSCOPE_S2V_RESOLUTION=720P                            # or 480
 ```
 
 The model caps the audio at 20 seconds and 15 MB, so a longer script is rejected
-with a clear error rather than silently truncated. Both the narration and a
-local portrait are pushed through DashScope's own upload endpoint first, so
-nothing needs a public server.
+with a clear error rather than silently truncated.
+
+Two input rules drive the wiring. The portrait is inlined as a base64 data URI,
+so a file on this machine is used without publishing it. The narration cannot be
+inlined — the model rejects a data URI on file-type detection and wants a real
+`.mp3` URL — so it is spoken by Qwen TTS, which writes one for us:
+
+```dotenv
+LIULIANGCHUHAI_DASHSCOPE_TTS_BASE_URL=https://<workspace>.cn-beijing.maas.aliyuncs.com/api/v1
+LIULIANGCHUHAI_DASHSCOPE_TTS_MODEL=qwen-audio-3.1-tts-flash
+LIULIANGCHUHAI_DASHSCOPE_TTS_VOICE=longanhuan_v3.1
+```
 
 ### Replacing the drawn art
 
