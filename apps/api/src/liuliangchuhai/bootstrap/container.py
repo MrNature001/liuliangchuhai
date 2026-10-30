@@ -27,6 +27,9 @@ from liuliangchuhai.infrastructure.content.mock import MockContentPlannerAdapter
 from liuliangchuhai.infrastructure.digital_human.dashscope import (
     DashScopeDigitalHumanAdapter,
 )
+from liuliangchuhai.infrastructure.digital_human.dashscope_s2v import (
+    WanSpeechToVideoAdapter,
+)
 from liuliangchuhai.infrastructure.digital_human.heygen import HeyGenDigitalHumanAdapter
 from liuliangchuhai.infrastructure.digital_human.local_presenter import LocalPresenterAdapter
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
@@ -123,6 +126,16 @@ def _build_digital_human(settings: Settings) -> DigitalHumanPort:
         return DashScopeDigitalHumanAdapter(
             api_key=settings.dashscope_api_key.get_secret_value(),
             source_video_url=settings.dashscope_source_video_url,
+            timeout_seconds=settings.digital_human_timeout_seconds,
+            media_root=settings.resolved_media_dir,
+            media_url_prefix=settings.media_url_prefix,
+        )
+    if settings.digital_human_provider == "wan_s2v":
+        assert settings.dashscope_api_key is not None
+        return WanSpeechToVideoAdapter(
+            api_key=settings.dashscope_api_key.get_secret_value(),
+            portrait=settings.dashscope_avatar_portrait,
+            resolution=settings.dashscope_s2v_resolution,
             timeout_seconds=settings.digital_human_timeout_seconds,
             media_root=settings.resolved_media_dir,
             media_url_prefix=settings.media_url_prefix,

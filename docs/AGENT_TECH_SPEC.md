@@ -282,6 +282,13 @@ class DigitalHumanPort(Protocol):
 泰文 → `th-TH-PremwadeeNeural`，越南文 → `vi-VN-HoaiMyNeural`，拉丁 → 多语声线），
 并准备有序候选列表，前一个失败自动降级到下一个。
 
+**配音选型：为什么还用 Edge TTS 而不是 Qwen TTS。** 评估过百炼的
+`qwen-audio-3.1-tts-*`：它音色更好、支持声音克隆，但有两个代价——按字符计费，
+而且只返回音频、不返回逐句边界事件。本项目的字幕时间轴正是靠边界事件对齐的，
+换过去要么退化成按语速估算（字幕会漂），要么再引入一个强制对齐模型。
+在"零成本 + 字幕精确"和"音色更好 + 要付费"之间，演示阶段选择了前者。
+声音克隆是唯一真正想要的特性，等有明确需求时再换，改动只在 `speech.py` 一个文件。
+
 **⑤ 字幕折行。** 每行按 900px 实测宽度折行；中文的 `，。、` 不允许出现在行首
 （typesetting 上的"避头点"），遇到就让它挂在上一行行尾；超过两行的字幕会在逗号处
 拆成两条独立时间轴，时间按语速估算分配，末条仍精确落在原句结束点。
@@ -328,7 +335,22 @@ sha256(话术 | 语言 | 声线 | 渲染器版本 | 素材指纹 | 虚拟主播�
 选择它的理由：这是唯一一个**个人实名、人民币结算、中国大陆直连、无需 GPU**就能开通的
 真人数字人服务。代价是必须提供一段本人的正脸视频作为形象资产。
 
-### 4.5 失败语义
+### 4.5 只要一张照片的路线：`wan2.2-s2v`
+
+`videoretalk` 要求源片是一段**视频**，也就是必须先录自己。`wan2.2-s2v` 只要求
+**一张图 + 一段音频**，这是"录一段"和"找张照片"的区别。
+
+核实过的接口形状：
+
+- 端点与 `videoretalk` 相同（`/services/aigc/image2video/video-synthesis`，`X-DashScope-Async: enable`）
+- 请求体：`{"model": "wan2.2-s2v", "input": {"image_url", "audio_url"}, "parameters": {"resolution": "480P" | "720P"}}`
+- 限制：音频 ≤ 20 秒、≤ 15 MB（wav/mp3）；图片 jpg/png/bmp/webp，边长 400–7000 像素
+- 计费：480P 0.5 元/秒，720P 0.9 元/秒
+
+两个输入都必须是阿里侧可访问的地址，所以配音和本地图片都先走 DashScope 自己的上传接口，
+和 `videoretalk` 复用同一个 `uploads.py`。音频超过 20 秒时**明确拒绝**而不是静默截断。
+
+### 4.6 失败语义
 
 | 故障 | 映射 |
 |---|---|
@@ -414,6 +436,8 @@ CI 里有一道 **drift 检查**：手改生成文件或忘记重新生成，构
 | `ASSISTANT_PROVIDER` | `mock` | 商品助手独立开关 |
 | `DIGITAL_HUMAN_PROVIDER` | `mock` | `mock` / `local` / `dashscope` / `heygen` |
 | `DIGITAL_HUMAN_TIMEOUT_SECONDS` | `300` | 渲染截止时间 |
+| `DASHSCOPE_AVATAR_PORTRAIT` | 空 | `wan_s2v` 的形象照片（路径或 URL） |
+| `DASHSCOPE_S2V_RESOLUTION` | `720P` | `480P` / `720P` |
 | `IMAGE_PROVIDER` | `drawn` | `drawn` / `openai` / `mock` |
 | `IMAGE_BASE_URL` | `https://api.openai.com/v1` | 中转站地址 |
 | `IMAGE_API_KEY` | 空 | 配图密钥 |

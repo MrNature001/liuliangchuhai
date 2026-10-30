@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     # re-drives the lips of one source clip, so the clip must be reachable.
     dashscope_api_key: SecretStr | None = None
     dashscope_source_video_url: str = ""
+    # `wan2.2-s2v` needs a still portrait instead of a recorded clip: an http(s)
+    # or oss:// URL, or a local path the adapter uploads for you.
+    dashscope_avatar_portrait: str = ""
+    dashscope_s2v_resolution: str = "720P"
     # Where the key-free local presenter writes rendered MP4 files. Relative
     # values resolve against apps/api so the path is independent of the CWD.
     media_dir: str = "media"
@@ -92,6 +96,20 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LIULIANGCHUHAI_DASHSCOPE_SOURCE_VIDEO_URL is required when the "
                     "digital-human provider is dashscope"
+                )
+        if self.digital_human_provider == "wan_s2v":
+            if (
+                self.dashscope_api_key is None
+                or not self.dashscope_api_key.get_secret_value().strip()
+            ):
+                raise ValueError(
+                    "LIULIANGCHUHAI_DASHSCOPE_API_KEY is required when the digital-human "
+                    "provider is wan_s2v"
+                )
+            if not self.dashscope_avatar_portrait.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_DASHSCOPE_AVATAR_PORTRAIT is required when the "
+                    "digital-human provider is wan_s2v"
                 )
         if self.image_provider == "openai" and (
             self.image_api_key is None or not self.image_api_key.get_secret_value().strip()

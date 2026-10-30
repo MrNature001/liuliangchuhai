@@ -164,9 +164,27 @@ renderers are available behind one port; the default needs no account at all.
 | `LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER` | What it produces | Needs |
 |---|---|---|
 | `local` (default) | 1080×1920 clip: neural narration, burned captions, a drawn Southeast Asian scene cut into three cross-faded shots | Nothing — runs on any laptop |
+| `wan_s2v` | Talking portrait from a single still: `wan2.2-s2v` animates a photo with the narration | A personal Alibaba Cloud key and one photo |
 | `dashscope` | Photoreal talking head: your own source clip re-driven with the narration | A personal Alibaba Cloud account and one recorded clip |
 | `heygen` | Photoreal talking head from HeyGen avatars | HeyGen key, avatar and voice ids |
 | `mock` | Fixed placeholder URL | Nothing |
+
+### A photo instead of a recording (`wan_s2v`)
+
+`videoretalk` needs a video of you; `wan2.2-s2v` needs only a still picture,
+which is the difference between "record yourself" and "find a photo".
+
+```dotenv
+LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER=wan_s2v
+LIULIANGCHUHAI_DASHSCOPE_API_KEY=sk-...
+LIULIANGCHUHAI_DASHSCOPE_AVATAR_PORTRAIT=apps/api/media/presenter.png  # or an https URL
+LIULIANGCHUHAI_DASHSCOPE_S2V_RESOLUTION=720P                            # or 480P
+```
+
+The model caps the audio at 20 seconds and 15 MB, so a longer script is rejected
+with a clear error rather than silently truncated. Both the narration and a
+local portrait are pushed through DashScope's own upload endpoint first, so
+nothing needs a public server.
 
 ### Replacing the drawn art
 
