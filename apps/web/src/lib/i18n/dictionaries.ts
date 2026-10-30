@@ -70,6 +70,11 @@ export type Dictionary = {
     statusGenerating: string; statusReady: string; placeholder: string; imageLabel: string
     mockNote: string; download: string; drawnNote: string
   }
+  video: {
+    title: string; intro: string; generate: string; generating: string
+    statusGenerating: string; statusReady: string; placeholder: string; videoLabel: string
+    mockNote: string; download: string; note: string
+  }
   assistant: {
     label: string; eyebrow: string; title: string; subtitle: string; close: string; expand: string; collapse: string
     scope: string; contextProduct: string; welcomeTitle: string; welcomeProduct: string; welcomeGeneric: string
@@ -79,7 +84,7 @@ export type Dictionary = {
   }
   errors: {
     products: string; analysis: string; contentPlan: string; assistant: string; catalog: string
-    digitalHuman: string; image: string
+    digitalHuman: string; image: string; video: string
   }
 }
 
@@ -187,6 +192,15 @@ const zh: Dictionary = {
     download: "下载图片",
     drawnNote: "当前用站内绘制：这是版式底图，不是商品实拍。",
   },
+  video: {
+    title: "商品短视频", intro: "把配图变成一段几秒钟的动态画面。",
+    generate: "生成短视频", generating: "生成中…",
+    statusGenerating: "正在渲染短视频，通常一到三分钟…", statusReady: "短视频已生成。",
+    placeholder: "尚未生成短视频", videoLabel: "商品短视频",
+    mockNote: "当前为演示模式：返回的是占位地址，不会真的渲染。",
+    download: "下载视频",
+    note: "画面由 AI 生成，商品细节可能与实物不同。",
+  },
   assistant: {
     label: "商品助手", eyebrow: "广西 · 商品导览", title: "桂品 AI 助手", subtitle: "了解商品 · 文化背景 · 出海分析",
     close: "收起助手", expand: "打开桂品 AI 助手", collapse: "收起桂品 AI 助手",
@@ -204,6 +218,7 @@ const zh: Dictionary = {
     contentPlan: "无法生成内容方案，请重试。", assistant: "当前助手暂时无法回答，请稍后再试。", catalog: "无法加载商品目录。",
       digitalHuman: "数字人视频暂时无法生成，请稍后再试。",
       image: "配图暂时无法生成，请稍后再试。",
+      video: "短视频暂时无法生成，请稍后再试。",
   },
 }
 
@@ -311,6 +326,15 @@ const en: Dictionary = {
     download: "Download image",
     drawnNote: "Drawn locally: this is a designed backdrop, not a product photograph.",
   },
+  video: {
+    title: "Product clip", intro: "Turn the key visual into a few seconds of motion.",
+    generate: "Generate clip", generating: "Generating…",
+    statusGenerating: "Rendering the clip. This usually takes one to three minutes…", statusReady: "Clip ready.",
+    placeholder: "No clip yet", videoLabel: "Product clip",
+    mockNote: "Demo mode: a placeholder address is returned and nothing is rendered.",
+    download: "Download clip",
+    note: "Generated imagery — product details may differ from the real item.",
+  },
   assistant: {
     label: "Product assistant", eyebrow: "GUANGXI · PRODUCT GUIDE", title: "Guipin AI Assistant", subtitle: "Products · Culture · Market entry",
     close: "Close assistant", expand: "Open the Guipin AI assistant", collapse: "Close the Guipin AI assistant",
@@ -328,6 +352,7 @@ const en: Dictionary = {
     contentPlan: "Unable to create content plan. Please try again.", assistant: "The assistant is unavailable right now. Please try again later.", catalog: "Unable to load products. Please try again.",
       digitalHuman: "The digital-human video could not be generated. Please try again.",
       image: "The key visual could not be generated. Please try again.",
+      video: "The clip could not be generated. Please try again.",
   },
 }
 
@@ -435,6 +460,15 @@ const vi: Dictionary = {
     download: "Tải ảnh",
     drawnNote: "Vẽ cục bộ: đây là nền thiết kế, không phải ảnh chụp sản phẩm.",
   },
+  video: {
+    title: "Video ngắn sản phẩm", intro: "Biến ảnh minh hoạ thành vài giây chuyển động.",
+    generate: "Tạo video", generating: "Đang tạo…",
+    statusGenerating: "Đang kết xuất video ngắn, thường mất một đến ba phút…", statusReady: "Video đã sẵn sàng.",
+    placeholder: "Chưa có video", videoLabel: "Video ngắn sản phẩm",
+    mockNote: "Chế độ demo: trả về địa chỉ tạm, không kết xuất thật.",
+    download: "Tải video",
+    note: "Hình ảnh do AI tạo, chi tiết sản phẩm có thể khác thực tế.",
+  },
   assistant: {
     label: "Trợ lý sản phẩm", eyebrow: "QUẢNG TÂY · HƯỚNG DẪN SẢN PHẨM", title: "Trợ lý AI Guipin", subtitle: "Sản phẩm · Văn hóa · Phân tích thị trường",
     close: "Đóng trợ lý", expand: "Mở trợ lý AI Guipin", collapse: "Đóng trợ lý AI Guipin",
@@ -452,6 +486,7 @@ const vi: Dictionary = {
     contentPlan: "Không thể tạo kế hoạch nội dung. Vui lòng thử lại.", assistant: "Trợ lý hiện không khả dụng. Vui lòng thử lại sau.", catalog: "Không thể tải danh mục sản phẩm.",
       digitalHuman: "Không thể tạo video người dẫn ảo. Vui lòng thử lại.",
       image: "Không thể tạo ảnh minh hoạ. Vui lòng thử lại.",
+      video: "Không thể tạo video ngắn. Vui lòng thử lại.",
   },
 }
 
@@ -559,6 +594,15 @@ const th: Dictionary = {
     download: "ดาวน์โหลดภาพ",
     drawnNote: "วาดในเครื่อง: นี่คือพื้นหลังที่ออกแบบไว้ ไม่ใช่ภาพถ่ายสินค้า",
   },
+  video: {
+    title: "วิดีโอสั้นสินค้า", intro: "เปลี่ยนภาพประกอบให้เป็นภาพเคลื่อนไหวไม่กี่วินาที",
+    generate: "สร้างวิดีโอ", generating: "กำลังสร้าง…",
+    statusGenerating: "กำลังเรนเดอร์วิดีโอสั้น ปกติใช้เวลาหนึ่งถึงสามนาที…", statusReady: "วิดีโอพร้อมแล้ว",
+    placeholder: "ยังไม่มีวิดีโอ", videoLabel: "วิดีโอสั้นสินค้า",
+    mockNote: "โหมดสาธิต: คืนที่อยู่ตัวอย่าง ไม่ได้เรนเดอร์จริง",
+    download: "ดาวน์โหลดวิดีโอ",
+    note: "ภาพสร้างโดย AI รายละเอียดสินค้าอาจต่างจากของจริง",
+  },
   assistant: {
     label: "ผู้ช่วยสินค้า", eyebrow: "กว่างซี · ไกด์สินค้า", title: "ผู้ช่วย AI Guipin", subtitle: "สินค้า · วัฒนธรรม · การวิเคราะห์ตลาด",
     close: "ปิดผู้ช่วย", expand: "เปิดผู้ช่วย AI Guipin", collapse: "ปิดผู้ช่วย AI Guipin",
@@ -576,6 +620,7 @@ const th: Dictionary = {
     contentPlan: "สร้างแผนเนื้อหาไม่สำเร็จ กรุณาลองอีกครั้ง", assistant: "ผู้ช่วยไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่ภายหลัง", catalog: "โหลดแคตตาล็อกสินค้าไม่ได้",
       digitalHuman: "ไม่สามารถสร้างวิดีโอผู้ประกาศดิจิทัลได้ โปรดลองอีกครั้ง",
       image: "ไม่สามารถสร้างภาพประกอบได้ โปรดลองอีกครั้ง",
+      video: "ไม่สามารถสร้างวิดีโอสั้นได้ โปรดลองอีกครั้ง",
   },
 }
 
@@ -684,6 +729,15 @@ const ms: Dictionary = {
     download: "Muat turun imej",
     drawnNote: "Dilukis setempat: ini latar reka bentuk, bukan gambar produk.",
   },
+  video: {
+    title: "Klip pendek produk", intro: "Tukar imej utama kepada beberapa saat gerakan.",
+    generate: "Jana klip", generating: "Menjana…",
+    statusGenerating: "Menjana klip pendek, biasanya satu hingga tiga minit…", statusReady: "Klip sedia.",
+    placeholder: "Belum ada klip", videoLabel: "Klip pendek produk",
+    mockNote: "Mod demo: alamat pemegang tempat dikembalikan, tiada render sebenar.",
+    download: "Muat turun klip",
+    note: "Imej dijana AI, butiran produk mungkin berbeza daripada yang sebenar.",
+  },
   assistant: {
     label: "Pembantu produk", eyebrow: "GUANGXI · PANDUAN PRODUK", title: "Pembantu AI Guipin", subtitle: "Produk · Budaya · Analisis pasaran",
     close: "Tutup pembantu", expand: "Buka pembantu AI Guipin", collapse: "Tutup pembantu AI Guipin",
@@ -701,6 +755,7 @@ const ms: Dictionary = {
     contentPlan: "Tidak dapat mencipta pelan kandungan. Sila cuba lagi.", assistant: "Pembantu tidak tersedia sekarang. Sila cuba lagi nanti.", catalog: "Tidak dapat memuatkan katalog produk.",
       digitalHuman: "Video penyampai digital tidak dapat dijana. Sila cuba lagi.",
       image: "Imej utama tidak dapat dijana. Sila cuba lagi.",
+      video: "Klip tidak dapat dijana. Sila cuba lagi.",
   },
 }
 
@@ -809,6 +864,15 @@ const id: Dictionary = {
     download: "Unduh gambar",
     drawnNote: "Digambar lokal: ini latar desain, bukan foto produk.",
   },
+  video: {
+    title: "Klip pendek produk", intro: "Ubah gambar utama menjadi beberapa detik gerakan.",
+    generate: "Buat klip", generating: "Membuat…",
+    statusGenerating: "Merender klip pendek, biasanya satu sampai tiga menit…", statusReady: "Klip siap.",
+    placeholder: "Belum ada klip", videoLabel: "Klip pendek produk",
+    mockNote: "Mode demo: alamat pengganti dikembalikan, tidak ada render sungguhan.",
+    download: "Unduh klip",
+    note: "Gambar dibuat AI, detail produk bisa berbeda dari aslinya.",
+  },
   assistant: {
     label: "Asisten produk", eyebrow: "GUANGXI · PANDUAN PRODUK", title: "Asisten AI Guipin", subtitle: "Produk · Budaya · Analisis pasar",
     close: "Tutup asisten", expand: "Buka asisten AI Guipin", collapse: "Tutup asisten AI Guipin",
@@ -826,6 +890,7 @@ const id: Dictionary = {
     contentPlan: "Tidak dapat membuat rencana konten. Silakan coba lagi.", assistant: "Asisten tidak tersedia saat ini. Silakan coba lagi nanti.", catalog: "Tidak dapat memuat katalog produk.",
       digitalHuman: "Video pembawa acara digital tidak dapat dibuat. Silakan coba lagi.",
       image: "Gambar utama tidak dapat dibuat. Silakan coba lagi.",
+      video: "Klip tidak dapat dibuat. Silakan coba lagi.",
   },
 }
 

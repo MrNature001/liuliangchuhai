@@ -78,6 +78,9 @@ def analysis_app(
         generate_image=SimpleNamespace(
             execute=AsyncMock(side_effect=AssertionError("Analysis must not generate images"))
         ),
+        generate_video=SimpleNamespace(
+            execute=AsyncMock(side_effect=AssertionError("Analysis must not generate video"))
+        ),
         list_products=SimpleNamespace(
             execute=AsyncMock(side_effect=AssertionError("Analysis must not list products"))
         ),

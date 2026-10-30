@@ -172,6 +172,24 @@ LIULIANGCHUHAI_DASHSCOPE_IMAGE_MODEL=wanx2.1-t2i-turbo
 LIULIANGCHUHAI_DASHSCOPE_IMAGE_SIZE=720*1280
 ```
 
+## Short clip
+
+One still, a few seconds of motion. `POST /video` takes a prompt — or a public
+`image_url` — and renders a clip with `wan2.2-i2v-flash`.
+
+```dotenv
+LIULIANGCHUHAI_VIDEO_PROVIDER=wan_i2v
+LIULIANGCHUHAI_VIDEO_RESOLUTION=480P          # or 720P
+LIULIANGCHUHAI_VIDEO_STILL_BASE_URL=https://<workspace>.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+LIULIANGCHUHAI_VIDEO_STILL_MODEL=qwen-image-3.0-pro
+```
+
+The model fetches its input by URL, so the still must be publicly reachable.
+A file on this machine will not do: DashScope's upload endpoint issues private
+objects the video service is not authorised to read. With no `image_url` the
+adapter draws one through the still endpoint, which returns a signed URL — that
+is the path the demo uses.
+
 ## Digital-human video
 
 The analysis page turns a finished live script into a presenter video. Three

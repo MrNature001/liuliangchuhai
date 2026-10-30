@@ -1218,6 +1218,81 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "VideoErrorResponse": {
+        "properties": {
+          "code": {
+            "enum": [
+              "video_unavailable",
+              "video_rejected",
+              "invalid_video_response",
+              "video_deadline_exceeded"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "VideoErrorResponse",
+        "type": "object"
+      },
+      "VideoRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "image_url": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "prompt": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "title": "VideoRequest",
+        "type": "object"
+      },
+      "VideoResponse": {
+        "properties": {
+          "media_url": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Media Url",
+            "type": "string"
+          },
+          "provider": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "media_url",
+          "provider"
+        ],
+        "title": "VideoResponse",
+        "type": "object"
       }
     }
   },
@@ -1630,6 +1705,74 @@
           }
         },
         "summary": "Get Catalog Product"
+      }
+    },
+    "/video": {
+      "post": {
+        "operationId": "generate_video",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VideoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoErrorResponse"
+                }
+              }
+            },
+            "description": "Provider rejected the input"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoErrorResponse"
+                }
+              }
+            },
+            "description": "Unreadable provider result"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoErrorResponse"
+                }
+              }
+            },
+            "description": "Provider is unavailable"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VideoErrorResponse"
+                }
+              }
+            },
+            "description": "Render exceeded the local deadline"
+          }
+        },
+        "summary": "Generate Short Clip"
       }
     }
   }

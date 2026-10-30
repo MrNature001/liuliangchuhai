@@ -141,6 +141,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Short Clip */
+        post: operations["generate_video"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -483,6 +500,30 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /** VideoErrorResponse */
+        VideoErrorResponse: {
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "video_unavailable" | "video_rejected" | "invalid_video_response" | "video_deadline_exceeded";
+            /** Message */
+            message: string;
+        };
+        /** VideoRequest */
+        VideoRequest: {
+            /** Image Url */
+            image_url?: string | null;
+            /** Prompt */
+            prompt: string;
+        };
+        /** VideoResponse */
+        VideoResponse: {
+            /** Media Url */
+            media_url: string;
+            /** Provider */
+            provider: string;
         };
     };
     responses: never;
@@ -851,6 +892,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_video: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoResponse"];
+                };
+            };
+            /** @description Provider rejected the input */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoErrorResponse"];
+                };
+            };
+            /** @description Unreadable provider result */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoErrorResponse"];
+                };
+            };
+            /** @description Provider is unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoErrorResponse"];
+                };
+            };
+            /** @description Render exceeded the local deadline */
+            504: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VideoErrorResponse"];
                 };
             };
         };

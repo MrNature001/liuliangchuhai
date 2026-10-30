@@ -7,6 +7,7 @@ from liuliangchuhai.application.ports.digital_human import DigitalHumanPort
 from liuliangchuhai.application.ports.image import ImagePort
 from liuliangchuhai.application.ports.llm import LLMPort
 from liuliangchuhai.application.ports.product_repository import ProductRepository
+from liuliangchuhai.application.ports.video import VideoPort
 from liuliangchuhai.application.use_cases.analyze_product import AnalyzeProductUseCase
 from liuliangchuhai.application.use_cases.analyze_product_by_id import AnalyzeProductByIdUseCase
 from liuliangchuhai.application.use_cases.create_content_plan import CreateContentPlanUseCase
@@ -15,6 +16,7 @@ from liuliangchuhai.application.use_cases.create_content_plan_by_id import (
 )
 from liuliangchuhai.application.use_cases.generate_digital_human import GenerateDigitalHumanUseCase
 from liuliangchuhai.application.use_cases.generate_image import GenerateImageUseCase
+from liuliangchuhai.application.use_cases.generate_video import GenerateVideoUseCase
 from liuliangchuhai.application.use_cases.get_product import GetProduct
 from liuliangchuhai.application.use_cases.get_system_status import GetSystemStatus
 from liuliangchuhai.application.use_cases.list_products import ListProducts
@@ -44,6 +46,8 @@ from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
 from liuliangchuhai.infrastructure.products.enrichment import EnrichedProductRepository
 from liuliangchuhai.infrastructure.products.json_repository import JsonProductRepository
 from liuliangchuhai.infrastructure.products.openfoodfacts import OpenFoodFactsSource
+from liuliangchuhai.infrastructure.video.mock import MockVideoAdapter
+from liuliangchuhai.infrastructure.video.wan_i2v import WanImageToVideoAdapter
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +62,8 @@ class Container:
     generate_digital_human: GenerateDigitalHumanUseCase
     images: ImagePort
     generate_image: GenerateImageUseCase
+    videos: VideoPort
+    generate_video: GenerateVideoUseCase
     get_system_status: GetSystemStatus
     product_repository: ProductRepository
     list_products: ListProducts
@@ -176,6 +182,24 @@ def _build_images(settings: Settings) -> ImagePort:
     raise ValueError(f"Unsupported image provider: {settings.image_provider!r}")
 
 
+def _build_videos(settings: Settings) -> VideoPort:
+    if settings.video_provider == "off" or settings.video_provider == "mock":
+        return MockVideoAdapter()
+    if settings.video_provider == "wan_i2v":
+        assert settings.dashscope_api_key is not None
+        return WanImageToVideoAdapter(
+            api_key=settings.dashscope_api_key.get_secret_value(),
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+            model=settings.video_model,
+            resolution=settings.video_resolution,
+            still_base_url=settings.video_still_base_url,
+            still_model=settings.video_still_model,
+            timeout_seconds=settings.video_timeout_seconds,
+        )
+    raise ValueError(f"Unsupported video provider: {settings.video_provider!r}")
+
+
 def _build_product_repository(settings: Settings, curated: ProductRepository) -> ProductRepository:
     if settings.product_source == "off":
         return curated
@@ -191,6 +215,7 @@ def build_container(settings: Settings) -> Container:
     llm = _build_llm(settings)
     digital_human = _build_digital_human(settings)
     images = _build_images(settings)
+    videos = _build_videos(settings)
     catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
     with as_file(catalog) as path:
         curated_repository = JsonProductRepository(path)
@@ -211,6 +236,8 @@ def build_container(settings: Settings) -> Container:
         generate_digital_human=GenerateDigitalHumanUseCase(digital_human),
         images=images,
         generate_image=GenerateImageUseCase(images),
+        videos=videos,
+        generate_video=GenerateVideoUseCase(videos),
         get_system_status=GetSystemStatus(llm=llm, digital_human=digital_human, images=images),
         product_repository=product_repository,
         list_products=ListProducts(product_repository),

@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     image_model: str = "gpt-image-1"
     image_size: str = "1024x1536"
     image_timeout_seconds: float = Field(default=120, gt=0)
+    # Image-to-video. `wan_i2v` needs a publicly reachable still, so when the
+    # caller sends only a prompt the adapter draws one first through the
+    # OpenAI-compatible endpoint below (which returns a signed URL, not bytes).
+    video_provider: str = "off"
+    video_model: str = "wan2.2-i2v-flash"
+    video_resolution: str = "480P"
+    video_still_base_url: str = ""
+    video_still_model: str = "qwen-image-3.0-pro"
+    video_timeout_seconds: float = Field(default=600, gt=0)
     # Reuses the Bailian key above, so one account covers images and video.
     dashscope_image_model: str = "wanx2.1-t2i-turbo"
     dashscope_image_size: str = "720*1280"
@@ -114,6 +123,12 @@ class Settings(BaseSettings):
                     "LIULIANGCHUHAI_DASHSCOPE_AVATAR_PORTRAIT is required when the "
                     "digital-human provider is wan_s2v"
                 )
+        if self.video_provider == "wan_i2v" and (
+            self.dashscope_api_key is None or not self.dashscope_api_key.get_secret_value().strip()
+        ):
+            raise ValueError(
+                "LIULIANGCHUHAI_DASHSCOPE_API_KEY is required when the video provider is wan_i2v"
+            )
         if self.image_provider == "dashscope" and (
             self.dashscope_api_key is None or not self.dashscope_api_key.get_secret_value().strip()
         ):

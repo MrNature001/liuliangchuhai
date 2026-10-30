@@ -127,3 +127,53 @@ async def test_upload_file_rejects_an_unreadable_policy(tmp_path: Path) -> None:
 
 def test_policy_json_is_plain_data() -> None:
     assert json.loads(json.dumps(POLICY))["data"]["upload_host"] == "https://bucket.oss.example"
+
+
+NEW_POLICY = {
+    "data": {
+        "upload_host": "https://bucket.oss.example",
+        "upload_dir": "dashscope/tmp",
+        "signature": "sig",
+        "policy": "pol",
+        "oss_access_key_id": "oak",
+        "x_oss_object_acl": "private",
+        "x_oss_forbid_overwrite": "true",
+        "expire_in_seconds": 300,
+    }
+}
+
+
+def test_parse_policy_accepts_the_upload_dir_shape() -> None:
+    policy = parse_policy(NEW_POLICY)
+
+    assert policy.object_key == ""
+    assert policy.upload_dir == "dashscope/tmp"
+    assert policy.key_for("narration.mp3") == "dashscope/tmp/narration.mp3"
+    fields = policy.form_fields(policy.key_for("narration.mp3"))
+    assert fields["key"] == "dashscope/tmp/narration.mp3"
+    assert fields["x-oss-object-acl"] == "private"
+    assert fields["x-oss-forbid-overwrite"] == "true"
+    assert "x-oss-security-token" not in fields
+
+
+@pytest.mark.asyncio
+async def test_upload_file_names_the_object_when_only_a_directory_is_signed(
+    tmp_path: Path,
+) -> None:
+    seen: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "GET":
+            return httpx.Response(200, json=NEW_POLICY)
+        seen["body"] = request.content
+        return httpx.Response(200, text="")
+
+    url = await upload_file(
+        api_key="sk-test",
+        model="wan2.2-s2v",
+        source=_audio(tmp_path),
+        transport=httpx.MockTransport(handler),
+    )
+
+    assert url == "oss://dashscope/tmp/narration.mp3"
+    assert b"dashscope/tmp/narration.mp3" in seen["body"]

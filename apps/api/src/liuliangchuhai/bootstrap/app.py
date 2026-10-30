@@ -12,6 +12,7 @@ from liuliangchuhai.presentation.http.image_router import create_image_router
 from liuliangchuhai.presentation.http.product_analysis_router import create_product_analysis_router
 from liuliangchuhai.presentation.http.products_router import create_products_router
 from liuliangchuhai.presentation.http.router import create_router
+from liuliangchuhai.presentation.http.video_router import create_video_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -42,6 +43,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(create_content_plan_router(container.create_content_plan_by_id))
     app.include_router(create_digital_human_router(container.generate_digital_human))
     app.include_router(create_image_router(container.generate_image))
+    app.include_router(create_video_router(container.generate_video))
     app.include_router(create_router(container.get_system_status))
     app.include_router(create_product_analysis_router(container.analyze_product_by_id))
     app.include_router(create_products_router(container.list_products, container.get_product))
