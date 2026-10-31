@@ -43,8 +43,11 @@ class Settings(BaseSettings):
     # caller sends only a prompt the adapter draws one first through the
     # OpenAI-compatible endpoint below (which returns a signed URL, not bytes).
     video_provider: str = "off"
-    video_model: str = "wan2.2-i2v-flash"
+    video_model: str = "wan2.5-i2v-preview"
     video_resolution: str = "480P"
+    # 10 is the longest this model accepts; wan2.2-i2v-flash rejects the
+    # parameter outright, so switching models means dropping back to 5.
+    video_duration_seconds: int = Field(default=10, gt=0)
     video_still_base_url: str = ""
     video_still_model: str = "qwen-image-3.0-pro"
     video_timeout_seconds: float = Field(default=600, gt=0)

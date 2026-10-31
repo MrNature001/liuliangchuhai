@@ -196,6 +196,7 @@ def _build_videos(settings: Settings) -> VideoPort:
             public_prefix=settings.media_url_prefix,
             model=settings.video_model,
             resolution=settings.video_resolution,
+            duration_seconds=settings.video_duration_seconds,
             still_base_url=settings.video_still_base_url,
             still_model=settings.video_still_model,
             timeout_seconds=settings.video_timeout_seconds,

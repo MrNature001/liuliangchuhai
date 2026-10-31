@@ -58,9 +58,9 @@ async def test_it_animates_the_supplied_image(tmp_path: Path) -> None:
     assert clip.provider == "wan-i2v"
     assert (tmp_path / Path(clip.media_url).name).read_bytes() == b"mp4-bytes"
     body = seen["submit"]
-    assert body["model"] == "wan2.2-i2v-flash"
+    assert body["model"] == "wan2.5-i2v-preview"
     assert body["input"]["img_url"] == "https://cdn.example/still.png"
-    assert body["parameters"]["resolution"] == "480P"
+    assert body["parameters"] == {"resolution": "480P", "duration": 10}
 
 
 @pytest.mark.asyncio

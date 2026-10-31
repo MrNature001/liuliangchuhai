@@ -54,8 +54,9 @@ class WanImageToVideoAdapter:
         api_key: str,
         media_root: Path,
         public_prefix: str = "/media",
-        model: str = "wan2.2-i2v-flash",
+        model: str = "wan2.5-i2v-preview",
         resolution: str = "480P",
+        duration_seconds: int = 10,
         still_base_url: str = "",
         still_model: str = "qwen-image-3.0-pro",
         still_size: str = "1024x1536",
@@ -74,6 +75,7 @@ class WanImageToVideoAdapter:
         self._public_prefix = public_prefix.strip().rstrip("/")
         self._model = model
         self._resolution = resolution
+        self._duration = duration_seconds
         self._still_base_url = still_base_url.strip().rstrip("/")
         self._still_model = still_model
         self._still_size = still_size
@@ -194,7 +196,7 @@ class WanImageToVideoAdapter:
         payload: dict[str, object] = {
             "model": self._model,
             "input": {"img_url": image_url, "prompt": prompt},
-            "parameters": {"resolution": self._resolution},
+            "parameters": {"resolution": self._resolution, "duration": self._duration},
         }
         try:
             response = await client.post(_SUBMIT_PATH, json=payload, headers=self._headers())
