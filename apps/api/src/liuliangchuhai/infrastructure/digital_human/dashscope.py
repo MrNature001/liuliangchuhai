@@ -87,6 +87,7 @@ class DashScopeDigitalHumanAdapter:
         """Report reachability without spending quota."""
         try:
             async with httpx.AsyncClient(
+                trust_env=False,
                 base_url=_BASE_URL,
                 timeout=httpx.Timeout(10.0),
                 transport=self._transport,
@@ -144,6 +145,7 @@ class DashScopeDigitalHumanAdapter:
         }
 
         async with httpx.AsyncClient(
+            trust_env=False,
             base_url=_BASE_URL,
             timeout=httpx.Timeout(30.0),
             transport=self._transport,
@@ -173,7 +175,7 @@ class DashScopeDigitalHumanAdapter:
         self._media_root.mkdir(parents=True, exist_ok=True)
         try:
             async with httpx.AsyncClient(
-                timeout=httpx.Timeout(120.0), transport=self._transport
+                trust_env=False, timeout=httpx.Timeout(120.0), transport=self._transport
             ) as client:
                 response = await client.get(remote_url)
         except httpx.HTTPError:

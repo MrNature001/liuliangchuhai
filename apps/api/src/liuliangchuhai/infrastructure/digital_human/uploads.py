@@ -199,7 +199,7 @@ async def upload_file(
     if not content:
         raise DigitalHumanUnavailable("narration audio is empty")
 
-    async with httpx.AsyncClient(base_url=base_url, transport=transport) as client:
+    async with httpx.AsyncClient(trust_env=False, base_url=base_url, transport=transport) as client:
         policy = await _request_policy(client, api_key, model)
         key = policy.key_for(source.name)
         try:

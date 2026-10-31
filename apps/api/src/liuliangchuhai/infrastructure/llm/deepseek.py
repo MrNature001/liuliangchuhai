@@ -123,6 +123,7 @@ class DeepSeekLLMAdapter:
         for attempt in range(2):
             try:
                 async with httpx.AsyncClient(
+                    trust_env=False,
                     base_url=_BASE_URL,
                     headers=self._headers,
                     timeout=self._timeout,

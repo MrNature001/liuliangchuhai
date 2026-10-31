@@ -190,6 +190,7 @@ class DeepSeekContentPlannerAdapter:
             async with (
                 asyncio.timeout(self._timeout_seconds),
                 httpx.AsyncClient(
+                    trust_env=False,
                     base_url="https://api.deepseek.com",
                     headers=self._headers,
                     timeout=self._timeout_seconds,

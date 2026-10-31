@@ -65,6 +65,7 @@ class OpenAICompatibleImageAdapter:
         """Report reachability cheaply; generation is what costs money."""
         try:
             async with httpx.AsyncClient(
+                trust_env=False,
                 base_url=self._base_url,
                 timeout=httpx.Timeout(10.0),
                 transport=self._transport,
@@ -84,6 +85,7 @@ class OpenAICompatibleImageAdapter:
             "size": self._size,
         }
         async with httpx.AsyncClient(
+            trust_env=False,
             base_url=self._base_url,
             timeout=httpx.Timeout(self._timeout),
             transport=self._transport,

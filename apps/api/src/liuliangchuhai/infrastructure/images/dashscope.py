@@ -79,7 +79,10 @@ class DashScopeImageAdapter:
         """Report reachability without spending quota."""
         try:
             async with httpx.AsyncClient(
-                base_url=_BASE_URL, timeout=httpx.Timeout(10.0), transport=self._transport
+                trust_env=False,
+                base_url=_BASE_URL,
+                timeout=httpx.Timeout(10.0),
+                transport=self._transport,
             ) as client:
                 response = await client.get(
                     _TASK_PATH.format(task_id="probe"), headers=self._headers()
@@ -95,7 +98,10 @@ class DashScopeImageAdapter:
             "parameters": {"size": self._size, "n": 1},
         }
         async with httpx.AsyncClient(
-            base_url=_BASE_URL, timeout=httpx.Timeout(30.0), transport=self._transport
+            trust_env=False,
+            base_url=_BASE_URL,
+            timeout=httpx.Timeout(30.0),
+            transport=self._transport,
         ) as client:
             task_id = await self._submit(client, payload)
             try:

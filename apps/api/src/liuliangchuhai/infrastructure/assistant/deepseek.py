@@ -98,6 +98,7 @@ class DeepSeekAssistantAdapter:
             # A total deadline also bounds responses that keep sending partial bytes.
             async with asyncio.timeout(self._timeout_seconds):
                 async with httpx.AsyncClient(
+                    trust_env=False,
                     base_url="https://api.deepseek.com",
                     headers=self._headers,
                     timeout=httpx.Timeout(self._timeout_seconds),
