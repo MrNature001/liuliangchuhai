@@ -45,6 +45,9 @@ export function DigitalHumanSection({
         : video.result.media_url
       : ""
   const fileName = mediaSrc ? mediaSrc.split("/").pop() ?? "presenter.mp4" : "presenter.mp4"
+  // The configured presenter still, so the panel shows whose voice this is
+  // before anything is rendered. A missing file just leaves the frame black.
+  const posterSrc = `${apiBase}/media/hero-zhuang.png`
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -105,6 +108,7 @@ export function DigitalHumanSection({
             <video
               className={styles.digitalHumanVideo}
               src={mediaSrc}
+              poster={posterSrc}
               controls
               playsInline
               aria-label={t.digitalHuman.videoLabel}
