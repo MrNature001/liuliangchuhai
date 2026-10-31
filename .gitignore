@@ -10,3 +10,7 @@ node_modules/
 .env
 .env.local
 apps/api/media/
+
+# Generated submission package (binary, uploaded separately)
+提交材料/
+提交材料.zip

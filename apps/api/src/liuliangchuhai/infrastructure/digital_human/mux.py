@@ -37,10 +37,14 @@ def ffmpeg_path() -> str:
 
 
 def _probe_blocking(media: Path) -> float:
+    # ffmpeg's banner can carry UTF-8 metadata; decode it explicitly so a
+    # non-UTF-8 system locale cannot crash the probe.
     process = subprocess.run(
         [ffmpeg_path(), "-hide_banner", "-i", str(media)],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         check=False,
     )
     banner = process.stderr
