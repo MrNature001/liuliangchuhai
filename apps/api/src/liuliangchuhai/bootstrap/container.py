@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from importlib.resources import as_file, files
+from pathlib import Path
 
 from liuliangchuhai.application.ports.assistant import AssistantPort
 from liuliangchuhai.application.ports.content_planner import ContentPlannerPort
@@ -220,9 +221,14 @@ def build_container(settings: Settings) -> Container:
     digital_human = _build_digital_human(settings)
     images = _build_images(settings)
     videos = _build_videos(settings)
-    catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
-    with as_file(catalog) as path:
-        curated_repository = JsonProductRepository(path)
+    if settings.catalog_file.strip():
+        curated_repository = JsonProductRepository(
+            Path(settings.catalog_file).expanduser().resolve()
+        )
+    else:
+        catalog = files("liuliangchuhai.infrastructure.products").joinpath("demo_products.json")
+        with as_file(catalog) as path:
+            curated_repository = JsonProductRepository(path)
     product_repository: ProductRepository = _build_product_repository(settings, curated_repository)
     get_product = GetProduct(product_repository)
     analyze_product = AnalyzeProductUseCase(llm)

@@ -14,3 +14,7 @@ apps/api/media/
 # Generated submission package (binary, uploaded separately)
 提交材料/
 提交材料.zip
+
+# Client deliverables are generated media; keep them out of the repo
+接单/交付/
+接单/商品目录.json

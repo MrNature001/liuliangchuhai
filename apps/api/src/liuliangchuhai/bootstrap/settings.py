@@ -74,6 +74,9 @@ class Settings(BaseSettings):
     # Optional catalog enrichment. `off` keeps the curated demo catalog exactly
     # as shipped; `openfoodfacts` adds a product photo/link where it has a match.
     product_source: str = "off"
+    # Point this at your own catalog to work on products outside the demo set;
+    # the packaging default is used when it is blank.
+    catalog_file: str = ""
     product_source_timeout_seconds: float = Field(default=8, gt=0)
     cors_origins: list[str] = ["http://localhost:3000"]
 
