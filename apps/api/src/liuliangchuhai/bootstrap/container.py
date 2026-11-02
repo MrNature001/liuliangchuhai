@@ -47,6 +47,7 @@ from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
 from liuliangchuhai.infrastructure.products.enrichment import EnrichedProductRepository
 from liuliangchuhai.infrastructure.products.json_repository import JsonProductRepository
 from liuliangchuhai.infrastructure.products.openfoodfacts import OpenFoodFactsSource
+from liuliangchuhai.infrastructure.video.ark_video import ArkVideoAdapter
 from liuliangchuhai.infrastructure.video.mock import MockVideoAdapter
 from liuliangchuhai.infrastructure.video.wan_i2v import WanImageToVideoAdapter
 
@@ -200,6 +201,21 @@ def _build_videos(settings: Settings) -> VideoPort:
             duration_seconds=settings.video_duration_seconds,
             still_base_url=settings.video_still_base_url,
             still_model=settings.video_still_model,
+            timeout_seconds=settings.video_timeout_seconds,
+        )
+    if settings.video_provider == "ark":
+        assert settings.ark_video_api_key is not None
+        return ArkVideoAdapter(
+            api_key=settings.ark_video_api_key.get_secret_value(),
+            base_url=settings.ark_video_base_url,
+            model=settings.ark_video_model,
+            resolution=settings.ark_video_resolution,
+            duration_seconds=settings.ark_video_duration_seconds,
+            ratio=settings.ark_video_ratio,
+            generate_audio=settings.ark_video_generate_audio,
+            watermark=settings.ark_video_watermark,
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
             timeout_seconds=settings.video_timeout_seconds,
         )
     raise ValueError(f"Unsupported video provider: {settings.video_provider!r}")

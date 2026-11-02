@@ -193,6 +193,29 @@ DashScope's own upload endpoint is deliberately not used here: it issues private
 objects the video service is not authorised to read, which surfaced as a 403 on
 the signed URL and as `DataInspection` errors on submit.
 
+### Seedance through a relay (`ark`)
+
+`ark` speaks Volcengine's asynchronous video-task API
+(`/api/v3/contents/generations/tasks`), which both Ark itself and relay stations
+expose. It animates a still as the first frame, or renders from the prompt alone.
+
+```dotenv
+LIULIANGCHUHAI_VIDEO_PROVIDER=ark
+LIULIANGCHUHAI_ARK_VIDEO_BASE_URL=https://api.qinggekeji.top   # or https://ark.cn-beijing.volces.com
+LIULIANGCHUHAI_ARK_VIDEO_API_KEY=sk-...
+LIULIANGCHUHAI_ARK_VIDEO_MODEL=seedance2.5-A
+LIULIANGCHUHAI_ARK_VIDEO_RESOLUTION=480P                       # or 720P / 1080P
+LIULIANGCHUHAI_ARK_VIDEO_DURATION_SECONDS=5                    # relay group: 4-15
+```
+
+As with image relays, the key has to come from the relay's video group (视频分组).
+A chat or image-group key is refused with `... is not enabled for this group`,
+which the API reports as a 503. One paid clip confirms the wiring:
+
+```sh
+uv run --project apps/api python scripts/video_smoke.py --prompt "a basket of ripe mangoes, morning light"
+```
+
 ## Digital-human video
 
 The analysis page turns a finished live script into a presenter video. Three

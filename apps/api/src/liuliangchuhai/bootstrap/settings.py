@@ -51,6 +51,23 @@ class Settings(BaseSettings):
     video_still_base_url: str = ""
     video_still_model: str = "qwen-image-3.0-pro"
     video_timeout_seconds: float = Field(default=600, gt=0)
+    # Ark-compatible video tasks (`ark` provider): Seedance 2.5 and similar,
+    # direct from Volcengine or through a relay that mirrors the same task API.
+    # A relay key must belong to the group that sells video, not to chat/image;
+    # otherwise the first render comes back 403 "not enabled for this group".
+    ark_video_base_url: str = "https://ark.cn-beijing.volces.com"
+    ark_video_api_key: SecretStr | None = None
+    ark_video_model: str = "seedance2.5-A"
+    ark_video_resolution: str = "480P"
+    # The relay's video group accepts 4-15 second clips; 5 keeps a smoke test
+    # under ¥4 while still giving the model room to move.
+    ark_video_duration_seconds: int = Field(default=5, gt=0)
+    # Used only for prompt-only renders; a still always keeps its own ratio.
+    ark_video_ratio: str = "9:16"
+    # Leave both unset to use the model's defaults. `false` keeps the clip
+    # silent for a narration track added later.
+    ark_video_generate_audio: bool | None = None
+    ark_video_watermark: bool | None = None
     # Reuses the Bailian key above, so one account covers images and video.
     dashscope_image_model: str = "wanx2.1-t2i-turbo"
     dashscope_image_size: str = "720*1280"
@@ -140,6 +157,24 @@ class Settings(BaseSettings):
             raise ValueError(
                 "LIULIANGCHUHAI_DASHSCOPE_API_KEY is required when the video provider is wan_i2v"
             )
+        if self.video_provider == "ark":
+            if (
+                self.ark_video_api_key is None
+                or not self.ark_video_api_key.get_secret_value().strip()
+            ):
+                raise ValueError(
+                    "LIULIANGCHUHAI_ARK_VIDEO_API_KEY is required when the video provider is ark"
+                )
+            if not self.ark_video_base_url.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_ARK_VIDEO_BASE_URL must not be blank when the video "
+                    "provider is ark"
+                )
+            if not self.ark_video_model.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_ARK_VIDEO_MODEL must not be blank when the video "
+                    "provider is ark"
+                )
         if self.image_provider == "dashscope" and (
             self.dashscope_api_key is None or not self.dashscope_api_key.get_secret_value().strip()
         ):

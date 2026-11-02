@@ -12,6 +12,7 @@ from liuliangchuhai.infrastructure.digital_human.dashscope import (
 from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAdapter
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
+from liuliangchuhai.infrastructure.video.ark_video import ArkVideoAdapter
 
 
 def test_container_wires_mock_providers() -> None:
@@ -109,3 +110,18 @@ def test_container_wires_the_dashscope_talking_head(tmp_path) -> None:
     )
 
     assert isinstance(container.digital_human, DashScopeDigitalHumanAdapter)
+
+
+def test_container_wires_the_ark_video_provider(tmp_path) -> None:
+    container = build_container(
+        Settings(
+            _env_file=None,
+            video_provider="ark",
+            ark_video_api_key="sk-test",
+            ark_video_base_url="https://relay.example",
+            ark_video_model="seedance2.5-A",
+            media_dir=str(tmp_path),
+        )
+    )
+
+    assert isinstance(container.videos, ArkVideoAdapter)

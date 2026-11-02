@@ -33,6 +33,35 @@ def test_selected_deepseek_requires_api_key() -> None:
         Settings(_env_file=None, llm_provider="deepseek")
 
 
+def test_ark_video_configuration_works() -> None:
+    settings = Settings(
+        _env_file=None,
+        video_provider="ark",
+        ark_video_api_key="sk-video",
+        ark_video_base_url="https://relay.example",
+        ark_video_model="seedance2.5-A",
+        ark_video_duration_seconds=10,
+    )
+
+    assert settings.ark_video_api_key is not None
+    assert settings.ark_video_api_key.get_secret_value() == "sk-video"
+    assert settings.ark_video_base_url == "https://relay.example"
+    assert settings.ark_video_duration_seconds == 10
+
+
+def test_selected_ark_video_requires_api_key() -> None:
+    with pytest.raises(ValidationError, match="ARK_VIDEO_API_KEY"):
+        Settings(_env_file=None, video_provider="ark")
+
+
+def test_ark_video_settings_are_unset_by_default() -> None:
+    settings = Settings(_env_file=None)
+
+    assert settings.ark_video_api_key is None
+    assert settings.ark_video_generate_audio is None
+    assert settings.ark_video_watermark is None
+
+
 def test_provider_settings_use_project_prefix(monkeypatch) -> None:
     monkeypatch.setenv("LIULIANGCHUHAI_LLM_PROVIDER", "env-test-llm")
     monkeypatch.setenv("LIULIANGCHUHAI_DIGITAL_HUMAN_PROVIDER", "env-test-digital-human")
