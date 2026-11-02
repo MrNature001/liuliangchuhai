@@ -54,6 +54,27 @@ def test_selected_ark_video_requires_api_key() -> None:
         Settings(_env_file=None, video_provider="ark")
 
 
+def test_grok_video_configuration_works() -> None:
+    settings = Settings(
+        _env_file=None,
+        video_provider="grok",
+        grok_video_api_key="sk-video",
+        grok_video_base_url="https://relay.example",
+        grok_video_model="grok-imagine-video-1.5",
+        grok_video_duration_seconds=6,
+    )
+
+    assert settings.grok_video_api_key is not None
+    assert settings.grok_video_api_key.get_secret_value() == "sk-video"
+    assert settings.grok_video_base_url == "https://relay.example"
+    assert settings.grok_video_duration_seconds == 6
+
+
+def test_selected_grok_video_requires_api_key() -> None:
+    with pytest.raises(ValidationError, match="GROK_VIDEO_API_KEY"):
+        Settings(_env_file=None, video_provider="grok")
+
+
 def test_ark_video_settings_are_unset_by_default() -> None:
     settings = Settings(_env_file=None)
 

@@ -243,8 +243,12 @@ async def test_a_stuck_render_hits_the_local_deadline(tmp_path: Path) -> None:
 
 class _SlowSubmit(httpx.AsyncBaseTransport):
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
-        await asyncio.sleep(0.3)
-        return httpx.Response(200, json={"id": "t1"})
+        if request.method == "POST":
+            await asyncio.sleep(0.3)
+            return httpx.Response(200, json={"id": "t1"})
+        # A fast, terminal answer: without a bound on submission this poll would
+        # raise InvalidVideoResponse instead of the deadline error.
+        return httpx.Response(200, json={"id": "t1", "status": "mystery"})
 
 
 @pytest.mark.asyncio
@@ -260,6 +264,24 @@ async def test_the_deadline_covers_submission_too(tmp_path: Path) -> None:
 
     with pytest.raises(VideoDeadlineExceeded):
         await adapter.generate(REQUEST)
+
+
+@pytest.mark.asyncio
+async def test_a_malformed_result_url_maps_to_unavailable(tmp_path: Path) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            return httpx.Response(200, json={"id": "t1"})
+        return httpx.Response(
+            200,
+            json={
+                "id": "t1",
+                "status": "succeeded",
+                "content": {"video_url": "https://cdn.example:abc/out.mp4"},
+            },
+        )
+
+    with pytest.raises(VideoUnavailable):
+        await _adapter(handler, tmp_path).generate(REQUEST)
 
 
 @pytest.mark.asyncio

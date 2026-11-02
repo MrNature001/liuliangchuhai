@@ -208,13 +208,32 @@ LIULIANGCHUHAI_ARK_VIDEO_RESOLUTION=480P                       # or 720P / 1080P
 LIULIANGCHUHAI_ARK_VIDEO_DURATION_SECONDS=5                    # relay group: 4-15
 ```
 
-As with image relays, the key has to come from the relay's video group (视频分组).
-A chat or image-group key is refused with `... is not enabled for this group`,
-which the API reports as a 503. One paid clip confirms the wiring:
+On a relay, Ark tasks are only served to a token from an OpenAI or composite
+group. The video group (视频分组) on this relay answers `Seedance requires an
+OpenAI or composite group` instead; for that key use the `grok` provider below. One paid clip confirms the wiring:
 
 ```sh
 uv run --project apps/api python scripts/video_smoke.py --prompt "a basket of ripe mangoes, morning light"
 ```
+
+### Grok Imagine through a video-group relay (`grok`)
+
+The same relay's video group serves `grok-imagine-video-1.5` on xAI's
+submit/poll/download API instead of Ark's task protocol. Seedance calls on that
+key come back `Seedance requires an OpenAI or composite group`, so the `ark`
+provider only works with a token issued to one of those groups.
+
+```dotenv
+LIULIANGCHUHAI_VIDEO_PROVIDER=grok
+LIULIANGCHUHAI_GROK_VIDEO_BASE_URL=https://api.qinggekeji.top
+LIULIANGCHUHAI_GROK_VIDEO_API_KEY=sk-...
+LIULIANGCHUHAI_GROK_VIDEO_MODEL=grok-imagine-video-1.5
+LIULIANGCHUHAI_GROK_VIDEO_DURATION_SECONDS=4                    # 1-15
+LIULIANGCHUHAI_GROK_VIDEO_RESOLUTION=480P                       # or 720P / 1080P
+```
+
+The relay answers `pending` while rendering and `done` with a `video.url` path;
+the adapter copies the MP4 out before that link expires.
 
 ## Digital-human video
 

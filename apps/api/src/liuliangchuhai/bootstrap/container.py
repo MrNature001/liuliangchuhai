@@ -48,6 +48,7 @@ from liuliangchuhai.infrastructure.products.enrichment import EnrichedProductRep
 from liuliangchuhai.infrastructure.products.json_repository import JsonProductRepository
 from liuliangchuhai.infrastructure.products.openfoodfacts import OpenFoodFactsSource
 from liuliangchuhai.infrastructure.video.ark_video import ArkVideoAdapter
+from liuliangchuhai.infrastructure.video.grok_video import GrokVideoAdapter
 from liuliangchuhai.infrastructure.video.mock import MockVideoAdapter
 from liuliangchuhai.infrastructure.video.wan_i2v import WanImageToVideoAdapter
 
@@ -214,6 +215,19 @@ def _build_videos(settings: Settings) -> VideoPort:
             ratio=settings.ark_video_ratio,
             generate_audio=settings.ark_video_generate_audio,
             watermark=settings.ark_video_watermark,
+            media_root=settings.resolved_media_dir,
+            public_prefix=settings.media_url_prefix,
+            timeout_seconds=settings.video_timeout_seconds,
+        )
+    if settings.video_provider == "grok":
+        assert settings.grok_video_api_key is not None
+        return GrokVideoAdapter(
+            api_key=settings.grok_video_api_key.get_secret_value(),
+            base_url=settings.grok_video_base_url,
+            model=settings.grok_video_model,
+            resolution=settings.grok_video_resolution,
+            duration_seconds=settings.grok_video_duration_seconds,
+            aspect_ratio=settings.grok_video_aspect_ratio,
             media_root=settings.resolved_media_dir,
             public_prefix=settings.media_url_prefix,
             timeout_seconds=settings.video_timeout_seconds,

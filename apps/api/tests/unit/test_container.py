@@ -13,6 +13,7 @@ from liuliangchuhai.infrastructure.digital_human.mock import MockDigitalHumanAda
 from liuliangchuhai.infrastructure.llm.deepseek import DeepSeekLLMAdapter
 from liuliangchuhai.infrastructure.llm.mock import MockLLMAdapter
 from liuliangchuhai.infrastructure.video.ark_video import ArkVideoAdapter
+from liuliangchuhai.infrastructure.video.grok_video import GrokVideoAdapter
 
 
 def test_container_wires_mock_providers() -> None:
@@ -125,3 +126,18 @@ def test_container_wires_the_ark_video_provider(tmp_path) -> None:
     )
 
     assert isinstance(container.videos, ArkVideoAdapter)
+
+
+def test_container_wires_the_grok_video_provider(tmp_path) -> None:
+    container = build_container(
+        Settings(
+            _env_file=None,
+            video_provider="grok",
+            grok_video_api_key="sk-test",
+            grok_video_base_url="https://relay.example",
+            grok_video_model="grok-imagine-video-1.5",
+            media_dir=str(tmp_path),
+        )
+    )
+
+    assert isinstance(container.videos, GrokVideoAdapter)

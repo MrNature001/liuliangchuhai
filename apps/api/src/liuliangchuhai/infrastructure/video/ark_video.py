@@ -109,7 +109,7 @@ class ArkVideoAdapter:
                 response = await client.get(
                     _TASK_PATH.format(task_id="probe"), headers=self._headers()
                 )
-        except httpx.HTTPError:
+        except (httpx.HTTPError, httpx.InvalidURL):
             return ProviderStatus(provider=self._PROVIDER, available=False)
         return ProviderStatus(provider=self._PROVIDER, available=response.status_code < 500)
 
@@ -197,7 +197,7 @@ class ArkVideoAdapter:
     async def _submit(self, client: httpx.AsyncClient, payload: dict[str, object]) -> str:
         try:
             response = await client.post(_TASKS_PATH, json=payload, headers=self._headers())
-        except httpx.HTTPError:
+        except (httpx.HTTPError, httpx.InvalidURL):
             raise VideoUnavailable("the video relay request failed") from None
 
         if response.status_code in {400, 422}:
@@ -218,7 +218,7 @@ class ArkVideoAdapter:
                 response = await client.get(
                     _TASK_PATH.format(task_id=task_id), headers=self._headers()
                 )
-            except httpx.HTTPError:
+            except (httpx.HTTPError, httpx.InvalidURL):
                 raise VideoUnavailable("the video relay request failed") from None
             if not response.is_success:
                 raise VideoUnavailable("the video relay request failed")
@@ -240,7 +240,7 @@ class ArkVideoAdapter:
     async def _download(self, client: httpx.AsyncClient, url: str) -> bytes:
         try:
             response = await client.get(url)
-        except httpx.HTTPError:
+        except (httpx.HTTPError, httpx.InvalidURL):
             raise VideoUnavailable("the finished clip could not be downloaded") from None
         if not response.is_success or not response.content:
             raise VideoUnavailable("the finished clip could not be downloaded")

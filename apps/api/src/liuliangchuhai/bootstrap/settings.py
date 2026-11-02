@@ -68,6 +68,15 @@ class Settings(BaseSettings):
     # silent for a narration track added later.
     ark_video_generate_audio: bool | None = None
     ark_video_watermark: bool | None = None
+    # Grok Imagine video (`grok` provider): xAI's submit/poll/download API,
+    # which is also what a relay's video group serves. Duration is 1-15s.
+    grok_video_base_url: str = "https://api.x.ai"
+    grok_video_api_key: SecretStr | None = None
+    grok_video_model: str = "grok-imagine-video-1.5"
+    grok_video_resolution: str = "480P"
+    grok_video_duration_seconds: int = Field(default=4, gt=0)
+    # Used only for prompt-only renders; a still drives the framing itself.
+    grok_video_aspect_ratio: str = "9:16"
     # Reuses the Bailian key above, so one account covers images and video.
     dashscope_image_model: str = "wanx2.1-t2i-turbo"
     dashscope_image_size: str = "720*1280"
@@ -174,6 +183,24 @@ class Settings(BaseSettings):
                 raise ValueError(
                     "LIULIANGCHUHAI_ARK_VIDEO_MODEL must not be blank when the video "
                     "provider is ark"
+                )
+        if self.video_provider == "grok":
+            if (
+                self.grok_video_api_key is None
+                or not self.grok_video_api_key.get_secret_value().strip()
+            ):
+                raise ValueError(
+                    "LIULIANGCHUHAI_GROK_VIDEO_API_KEY is required when the video provider is grok"
+                )
+            if not self.grok_video_base_url.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_GROK_VIDEO_BASE_URL must not be blank when the video "
+                    "provider is grok"
+                )
+            if not self.grok_video_model.strip():
+                raise ValueError(
+                    "LIULIANGCHUHAI_GROK_VIDEO_MODEL must not be blank when the video "
+                    "provider is grok"
                 )
         if self.image_provider == "dashscope" and (
             self.dashscope_api_key is None or not self.dashscope_api_key.get_secret_value().strip()
