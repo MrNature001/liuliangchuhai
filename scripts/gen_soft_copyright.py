@@ -539,7 +539,14 @@ def _wrap_line(line: str, limit: int = WRAP_AT) -> list[str]:
             out.append(prefix + rest)
             break
         seg = rest[:cut]
-        brk = max(seg.rfind(" "), seg.rfind(","), seg.rfind("("), seg.rfind(")"), seg.rfind("="))
+        brk = max(
+            seg.rfind(" "),
+            seg.rfind(","),
+            seg.rfind("("),
+            seg.rfind(")"),
+            seg.rfind("="),
+            seg.rfind("/"),
+        )
         if brk >= max(20, cut // 2):
             cut = brk + 1
         out.append(prefix + rest[:cut])
@@ -650,7 +657,9 @@ def build_manual_doc(bundle: dict, out: Path, shots: list[tuple[str, str]]) -> P
         p = ROOT / rel
         if not p.exists():
             continue
-        body.append(_para(caption, size_half=22, align="center", line_twips=360))
+        body.append(
+            _para(caption, size_half=22, align="center", line_twips=360, page_break_before=True)
+        )
         body.append(_image_para(f"rId{10 + len(media)}", p, len(media) + 1))
         body.append(_para("", size_half=20))
         media.append(p)
