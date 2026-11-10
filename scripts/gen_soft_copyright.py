@@ -576,6 +576,12 @@ def iter_source_lines(files: list[Path]) -> list[str]:
 
 def build_source_doc(bundle: dict, out: Path) -> tuple[Path, int, int]:
     files = collect_source_files(bundle)
+    actual_lines = 0
+    for f in files:
+        try:
+            actual_lines += len(f.read_text(encoding="utf-8").splitlines())
+        except UnicodeDecodeError:
+            actual_lines += len(f.read_text(encoding="utf-8", errors="replace").splitlines())
     lines = iter_source_lines(files)
     pages = [lines[i : i + LINES_PER_PAGE] for i in range(0, len(lines), LINES_PER_PAGE)]
     omitted = 0
@@ -600,7 +606,7 @@ def build_source_doc(bundle: dict, out: Path) -> tuple[Path, int, int]:
     name = f"{bundle['name']}（{bundle['version']}）——源程序.docx"
     path = out / name
     write_docx(path, body, f"{bundle['name']}  {bundle['version']}")
-    return path, len(lines), omitted
+    return path, actual_lines, omitted
 
 
 # --------------------------------------------------------------------------
@@ -798,7 +804,7 @@ def build_application_info(bundle: dict, out: Path, lines_count: int) -> Path:
 
 def build_plan_snippet(out: Path, results: list[dict]) -> Path:
     rows = "\n".join(
-        f"| {i} | {r['name']} | {r['version']} | 已提交登记（受理号待填） | {r['lines']} 行 |"
+        f"| {i} | {r['name']} | {r['version']} | 待提交登记（受理号待填） | {r['lines']} 行 |"
         for i, r in enumerate(results, 1)
     )
     text = f"""# 计划书「知识产权成果」段落（可直接粘贴）
@@ -806,7 +812,7 @@ def build_plan_snippet(out: Path, results: list[dict]) -> Path:
 ## 自主知识产权
 
 项目团队围绕跨境电商内容生产的关键环节，自主研发并形成了以下软件成果，
-均已向中国版权保护中心提交软件著作权登记申请：
+正在办理软件著作权登记：
 
 | 序号 | 软件名称 | 版本 | 状态 | 源程序量 |
 |---|---|---|---|---|
